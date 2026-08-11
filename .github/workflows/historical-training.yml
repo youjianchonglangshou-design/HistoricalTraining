@@ -1,4 +1,4 @@
-name: Historical S-state Training
+name: Historical S-state Training v2
 
 on:
   workflow_dispatch:
@@ -9,9 +9,9 @@ on:
         default: "ALL"
         type: string
       max_records:
-        description: "本地歷史保留上限（第一次 Pionex 最多回填10000；建議先5000）"
+        description: "本地歷史保留上限；目前已有完整 cache 請維持 10000"
         required: true
-        default: "5000"
+        default: "10000"
         type: string
       step_bars:
         description: "每幾根 4H 建一筆決策樣本；1=完整"
@@ -19,9 +19,9 @@ on:
         default: "1"
         type: string
       full_refresh:
-        description: "重新抓完整歷史；第一次請勾選"
+        description: "重新抓完整歷史；只有首次建庫才勾。已有 cache 請不要勾"
         required: true
-        default: true
+        default: false
         type: boolean
 
 permissions:
@@ -57,7 +57,7 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
 
-      - name: Historical download + replay + probability model
+      - name: Historical replay + 4-way outcome model
         shell: bash
         run: |
           EXTRA=""
@@ -87,5 +87,5 @@ jobs:
             echo "No learned-data changes."
             exit 0
           fi
-          git commit -m "training: update historical S-state probability model"
+          git commit -m "training: update historical S-state 4-way outcome model"
           git push
