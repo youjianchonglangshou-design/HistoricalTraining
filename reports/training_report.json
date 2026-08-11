@@ -1,3 +1,206 @@
 {
-  "status": "NOT_TRAINED_YET"
+  "generated_at": "2026-08-11T03:08:02.825131+00:00",
+  "model_id": "33ca887fd6f29860",
+  "total_cases": 2842,
+  "historical_case_count": 2842,
+  "live_case_count": 0,
+  "live_since_ms": 1786147200000,
+  "live_since_tw": "2026-08-08T08:00:00+08:00",
+  "engine_api_version": "opportunity-state-v4.8-30d-structure",
+  "symbols": [
+    {
+      "symbol": "BTC",
+      "bars": 5000,
+      "cases": 1418,
+      "states": {
+        "S0.5": 410,
+        "S1": 327,
+        "S2": 546,
+        "S3": 135
+      },
+      "ok": true
+    },
+    {
+      "symbol": "ETH",
+      "bars": 5000,
+      "cases": 1424,
+      "states": {
+        "S0.5": 466,
+        "S1": 308,
+        "S2": 498,
+        "S3": 152
+      },
+      "ok": true
+    }
+  ],
+  "state_horizon_baselines": {
+    "S0.5": {
+      "3": {
+        "samples": 876,
+        "wins": 140,
+        "raw_probability": 0.159817,
+        "probability": 0.159817,
+        "wilson95": [
+          0.137044,
+          0.185561
+        ]
+      },
+      "6": {
+        "samples": 876,
+        "wins": 225,
+        "raw_probability": 0.256849,
+        "probability": 0.256849,
+        "wilson95": [
+          0.229022,
+          0.286799
+        ]
+      },
+      "12": {
+        "samples": 876,
+        "wins": 347,
+        "raw_probability": 0.396119,
+        "probability": 0.396119,
+        "wilson95": [
+          0.364251,
+          0.428893
+        ]
+      },
+      "18": {
+        "samples": 876,
+        "wins": 410,
+        "raw_probability": 0.468037,
+        "probability": 0.468037,
+        "wilson95": [
+          0.435205,
+          0.501148
+        ]
+      }
+    },
+    "S1": {
+      "3": {
+        "samples": 635,
+        "wins": 107,
+        "raw_probability": 0.168504,
+        "probability": 0.168504,
+        "wilson95": [
+          0.141402,
+          0.199592
+        ]
+      },
+      "6": {
+        "samples": 635,
+        "wins": 191,
+        "raw_probability": 0.300787,
+        "probability": 0.300787,
+        "wilson95": [
+          0.266403,
+          0.337568
+        ]
+      },
+      "12": {
+        "samples": 635,
+        "wins": 296,
+        "raw_probability": 0.466142,
+        "probability": 0.466142,
+        "wilson95": [
+          0.427661,
+          0.50503
+        ]
+      },
+      "18": {
+        "samples": 635,
+        "wins": 344,
+        "raw_probability": 0.541732,
+        "probability": 0.541732,
+        "wilson95": [
+          0.502843,
+          0.58012
+        ]
+      }
+    },
+    "S2": {
+      "3": {
+        "samples": 1044,
+        "wins": 114,
+        "raw_probability": 0.109195,
+        "probability": 0.109195,
+        "wilson95": [
+          0.09169,
+          0.129567
+        ]
+      },
+      "6": {
+        "samples": 1044,
+        "wins": 198,
+        "raw_probability": 0.189655,
+        "probability": 0.189655,
+        "wilson95": [
+          0.167029,
+          0.214557
+        ]
+      },
+      "12": {
+        "samples": 1044,
+        "wins": 367,
+        "raw_probability": 0.351533,
+        "probability": 0.351533,
+        "wilson95": [
+          0.323163,
+          0.380991
+        ]
+      },
+      "18": {
+        "samples": 1044,
+        "wins": 472,
+        "raw_probability": 0.452107,
+        "probability": 0.452107,
+        "wilson95": [
+          0.422147,
+          0.482419
+        ]
+      }
+    },
+    "S3": {
+      "3": {
+        "samples": 287,
+        "wins": 77,
+        "raw_probability": 0.268293,
+        "probability": 0.268293,
+        "wilson95": [
+          0.22034,
+          0.322367
+        ]
+      },
+      "6": {
+        "samples": 287,
+        "wins": 114,
+        "raw_probability": 0.397213,
+        "probability": 0.397213,
+        "wilson95": [
+          0.342317,
+          0.454824
+        ]
+      },
+      "12": {
+        "samples": 287,
+        "wins": 153,
+        "raw_probability": 0.533101,
+        "probability": 0.533101,
+        "wilson95": [
+          0.475324,
+          0.590004
+        ]
+      },
+      "18": {
+        "samples": 287,
+        "wins": 168,
+        "raw_probability": 0.585366,
+        "probability": 0.585366,
+        "wilson95": [
+          0.527607,
+          0.64087
+        ]
+      }
+    }
+  }
 }
