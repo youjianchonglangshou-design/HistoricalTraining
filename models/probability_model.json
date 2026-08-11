@@ -1,0 +1,5 @@
+{
+  "schema_version": 1,
+  "status": "NOT_TRAINED_YET",
+  "message": "Run the GitHub Actions historical training workflow first."
+}

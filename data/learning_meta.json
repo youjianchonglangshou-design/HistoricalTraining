@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "live_since_ms": null,
+  "live_since_tw": null,
+  "note": "The first successful historical full-refresh sets the cutoff. Later cases after this timestamp are live/out-of-sample continuation data."
+}
