@@ -1,0 +1,91 @@
+name: Historical S-state Training
+
+on:
+  workflow_dispatch:
+    inputs:
+      symbols:
+        description: "ALL 或逗號分隔，例如 BTC,ETH,LINK"
+        required: true
+        default: "ALL"
+        type: string
+      max_records:
+        description: "本地歷史保留上限（第一次 Pionex 最多回填10000；建議先5000）"
+        required: true
+        default: "5000"
+        type: string
+      step_bars:
+        description: "每幾根 4H 建一筆決策樣本；1=完整"
+        required: true
+        default: "1"
+        type: string
+      full_refresh:
+        description: "重新抓完整歷史；第一次請勾選"
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: crypto-state-learning
+  cancel-in-progress: false
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Verify Python files
+        run: python -m compileall -q engine training run_training.py predict_from_model.py
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Historical download + replay + probability model
+        shell: bash
+        run: |
+          EXTRA=""
+          if [ "${{ inputs.full_refresh }}" = "true" ]; then EXTRA="--full-refresh"; fi
+          python run_training.py \
+            --symbols "${{ inputs.symbols }}" \
+            --max-records "${{ inputs.max_records }}" \
+            --step-bars "${{ inputs.step_bars }}" \
+            --min-samples 50 \
+            $EXTRA
+
+      - name: Upload audit cases
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-cases-${{ github.run_number }}
+          path: data/cases/history_cases.jsonl.gz
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Commit learned data and JSON model
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/cache/4h data/learning_meta.json models/probability_model.json reports/training_report.json
+          if git diff --cached --quiet; then
+            echo "No learned-data changes."
+            exit 0
+          fi
+          git commit -m "training: update historical S-state probability model"
+          git push
