@@ -33,7 +33,7 @@ def parse_symbols(text: str) -> list[str]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Historical S-state replay + probability JSON builder")
+    parser = argparse.ArgumentParser(description="Historical S-state replay + 4-way outcome probability JSON builder")
     parser.add_argument("--symbols", default="ALL", help="ALL or comma-separated symbols, e.g. BTC,ETH,LINK")
     parser.add_argument("--max-records", type=int, default=5000, help="Local 4H history capacity per symbol; first backfill is capped by Pionex at 10000")
     parser.add_argument("--full-refresh", action="store_true", help="Refetch full configured history instead of latest-page merge")
@@ -108,9 +108,11 @@ def main() -> int:
     }
     save_json(MODEL_PATH, model)
 
+    primary_horizon = "18"
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "model_id": model.get("model_id"),
+        "schema_version": model.get("schema_version"),
         "total_cases": len(all_cases),
         "historical_case_count": len(historical_cases),
         "live_case_count": len(live_cases),
@@ -125,6 +127,15 @@ def main() -> int:
             }
             for state, state_node in model.get("states", {}).items()
         },
+        "primary_72h_outcomes": {
+            state: (state_node.get("horizons", {}).get(primary_horizon, {}).get("baseline", {}).get("outcomes") or {})
+            for state, state_node in model.get("states", {}).items()
+        },
+        "primary_72h_structural_survival": {
+            state: state_node.get("horizons", {}).get(primary_horizon, {}).get("baseline", {}).get("structural_survival_probability")
+            for state, state_node in model.get("states", {}).items()
+        },
+        "outcome_note": "72H main view: success + alive_slow + true_fail + other = 100%. Existing probability remains success-within-horizon for UI compatibility.",
     }
     save_json(REPORT_PATH, report)
     print(f"MODEL={MODEL_PATH}")

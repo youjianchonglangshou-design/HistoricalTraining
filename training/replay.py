@@ -5,9 +5,11 @@ from typing import Any
 from engine.runtime_core import build_record_from_daily_and_4h, iso_tw, utc_day_start_ms
 from engine.scoring_rules import build_long_opportunity
 from .features import extract_features
+from .outcomes import classify_outcome
 
 TARGET_STATES = {"S0.5", "S1", "S2", "S3"}
 DEFAULT_HORIZONS = (3, 6, 12, 18)  # 12H / 24H / 48H / 72H
+LATE_SUCCESS_END_BAR = 42  # optional diagnostic: day 4-7 after the 72H capital-efficiency window
 
 
 def _target_name(state: str) -> str:
@@ -122,8 +124,10 @@ def replay_symbol(
             max_return = 0.0
             min_return = 0.0
             entry_price = float(snapshot["price"])
+            future_slice: list[dict[str, Any] | None] = []
             for future_idx in range(idx + 1, idx + horizon + 1):
                 future = snapshots[future_idx]
+                future_slice.append(future)
                 if future is None:
                     continue
                 future_state = str(future["state"])
@@ -135,13 +139,40 @@ def replay_symbol(
                 min_return = min(min_return, ret)
                 if hit_bar is None and _target_hit(state, future_state, future_bandpos):
                     hit_bar = future_idx - idx
-            labels[str(horizon)] = {
+
+            outcome_info = classify_outcome(
+                state,
+                future_slice,
+                target_hit=hit_bar is not None,
+            )
+            label = {
                 "hit": hit_bar is not None,
                 "bars_to_hit": hit_bar,
                 "max_bandpos": round(max_bandpos, 8),
                 "max_return": round(max_return, 8),
                 "max_drawdown": round(min_return, 8),
+                **outcome_info,
             }
+
+            # Optional audit metric: if the 72H capital-efficiency target was
+            # missed, did the exact same target arrive on day 4-7?  This does
+            # not change the 4-way outcome at 72H; it only explains "slow" paths.
+            if horizon == max_h and hit_bar is None:
+                if idx + LATE_SUCCESS_END_BAR < len(rows):
+                    late_hit_bar = None
+                    for late_idx in range(idx + horizon + 1, idx + LATE_SUCCESS_END_BAR + 1):
+                        future = snapshots[late_idx]
+                        if future is None:
+                            continue
+                        if _target_hit(state, str(future["state"]), float(future["bandpos"])):
+                            late_hit_bar = late_idx - idx
+                            break
+                    label["late_success_4_7d"] = late_hit_bar is not None
+                    label["late_bars_to_hit"] = late_hit_bar
+                else:
+                    label["late_success_4_7d"] = None
+                    label["late_bars_to_hit"] = None
+            labels[str(horizon)] = label
 
         cases.append(
             {

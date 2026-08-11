@@ -3,6 +3,14 @@ import unittest
 from engine.runtime_core import aggregate_4h_to_daily, build_live_compatible_record
 from engine.scoring_rules import build_long_opportunity
 from training.model_builder import build_model, lookup_probability
+from training.outcomes import (
+    OUTCOME_ALIVE,
+    OUTCOME_FAIL,
+    OUTCOME_KEYS,
+    OUTCOME_OTHER,
+    OUTCOME_SUCCESS,
+    classify_outcome,
+)
 from training.replay import DEFAULT_HORIZONS, replay_symbol
 
 
@@ -29,6 +37,24 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(daily[0]["open"], rows[0]["open"])
         self.assertEqual(daily[0]["close"], rows[5]["close"])
 
+    def test_four_way_outcome_classifier(self):
+        self.assertEqual(
+            classify_outcome("S3", [{"state": "S3", "bandpos": 0.60}], target_hit=True)["outcome"],
+            OUTCOME_SUCCESS,
+        )
+        self.assertEqual(
+            classify_outcome("S3", [{"state": "S2", "bandpos": 0.49}], target_hit=False)["outcome"],
+            OUTCOME_ALIVE,
+        )
+        self.assertEqual(
+            classify_outcome("S3", [{"state": "OTHER", "bandpos": 0.31}], target_hit=False)["outcome"],
+            OUTCOME_FAIL,
+        )
+        self.assertEqual(
+            classify_outcome("S3", [{"state": "S0.5", "bandpos": 0.45}], target_hit=False)["outcome"],
+            OUTCOME_OTHER,
+        )
+
     def test_engine_record_and_replay(self):
         rows = self.synthetic_rows()
         record = build_live_compatible_record("TEST", rows)
@@ -38,12 +64,24 @@ class CoreTests(unittest.TestCase):
         self.assertIn(opportunity["market_state_id"], {"S0", "S0.5", "S1", "S2", "S3", "OTHER"})
         cases = replay_symbol("TEST", rows)
         self.assertGreater(len(cases), 0)
+        primary = cases[0]["labels"]["18"]
+        self.assertIn(primary["outcome"], OUTCOME_KEYS)
+
         model = build_model(cases, DEFAULT_HORIZONS, min_samples=10)
+        self.assertEqual(model["schema_version"], 2)
         first = cases[0]
         pred = lookup_probability(model, first["state"], 6, first["features"])
         self.assertTrue(pred["available"])
         self.assertGreaterEqual(pred["probability"], 0.0)
         self.assertLessEqual(pred["probability"], 1.0)
+        self.assertEqual(set(pred["outcomes"].keys()), set(OUTCOME_KEYS))
+        total = sum(float(v["probability"]) for v in pred["outcomes"].values())
+        self.assertAlmostEqual(total, 1.0, places=5)
+        self.assertAlmostEqual(
+            pred["structural_survival_probability"],
+            float(pred["outcomes"][OUTCOME_SUCCESS]["probability"]) + float(pred["outcomes"][OUTCOME_ALIVE]["probability"]),
+            places=5,
+        )
 
 
 if __name__ == "__main__":
