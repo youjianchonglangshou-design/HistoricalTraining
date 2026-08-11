@@ -1,0 +1,66 @@
+name: Daily S-state Learning
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 00:25 UTC = 台灣 08:25。只抓各幣最新 500 根並與既有歷史合併。
+    - cron: "25 0 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: crypto-state-learning
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Update history and retrain JSON parameters
+        run: |
+          python run_training.py \
+            --symbols ALL \
+            --max-records 20000 \
+            --step-bars 1 \
+            --min-samples 50
+
+      - name: Upload audit cases
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-cases-${{ github.run_number }}
+          path: data/cases/history_cases.jsonl.gz
+          retention-days: 3
+          if-no-files-found: warn
+
+      - name: Commit new candles and evolved probability JSON
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/cache/4h data/learning_meta.json models/probability_model.json reports/training_report.json
+          if git diff --cached --quiet; then
+            echo "No new candle/model changes."
+            exit 0
+          fi
+          git commit -m "learning: append market history and refresh probability model"
+          git push
