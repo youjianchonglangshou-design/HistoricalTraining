@@ -127,17 +127,105 @@ jobs:
             --data-binary "@data/learning_meta.json" \
             "$WORKER_BASE_URL/api/internal/learning/meta?model_id=$MODEL_ID"
 
+      - name: Ensure a shadow Challenger exists
+        shell: bash
+        run: |
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            "$WORKER_BASE_URL/api/internal/model/challenger/ensure" \
+            -o /tmp/challenger-ensure.json
+          cat /tmp/challenger-ensure.json
+
+      - name: Download Champion and current Challenger
+        shell: bash
+        run: |
+          curl --fail --silent --show-error \
+            -o /tmp/active-model.json \
+            "$WORKER_BASE_URL/api/model/active"
+          curl --fail --silent --show-error \
+            -o /tmp/challenger-manifest.json \
+            "$WORKER_BASE_URL/api/model/challenger/current"
+          curl --fail --silent --show-error \
+            -o /tmp/challenger-model.json \
+            "$WORKER_BASE_URL/api/model/challenger/model"
+
+      - name: Evaluate Champion vs Challenger on future settled OOS cases
+        shell: bash
+        run: |
+          python evaluate_challenger.py \
+            --cases data/cases/history_cases.jsonl.gz \
+            --active /tmp/active-model.json \
+            --challenger /tmp/challenger-model.json \
+            --manifest /tmp/challenger-manifest.json \
+            --out reports/champion_challenger_evaluation.json
+
+          EVAL_DECISION=$(python - <<'PY2'
+          import json
+          d=json.load(open("reports/champion_challenger_evaluation.json", encoding="utf-8"))
+          print(d["decision"])
+          PY2
+          )
+          EVAL_MODEL_ID=$(python - <<'PY2'
+          import json
+          d=json.load(open("reports/champion_challenger_evaluation.json", encoding="utf-8"))
+          print(d["challenger_model_id"])
+          PY2
+          )
+          echo "EVAL_DECISION=$EVAL_DECISION" >> "$GITHUB_ENV"
+          echo "EVAL_MODEL_ID=$EVAL_MODEL_ID" >> "$GITHUB_ENV"
+
+      - name: Store Champion vs Challenger evaluation in R2
+        shell: bash
+        run: |
+          curl --fail --silent --show-error \
+            -X PUT \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary "@reports/champion_challenger_evaluation.json" \
+            "$WORKER_BASE_URL/api/internal/model/evaluation?model_id=$EVAL_MODEL_ID"
+
+      - name: Promote Challenger when all OOS gates pass
+        if: ${{ env.EVAL_DECISION == 'PROMOTE' }}
+        shell: bash
+        run: |
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"model_id\":\"$EVAL_MODEL_ID\"}" \
+            "$WORKER_BASE_URL/api/internal/model/promote"
+
+      - name: Reject Challenger when OOS evidence is clearly worse or expires
+        if: ${{ env.EVAL_DECISION == 'REJECT' }}
+        shell: bash
+        run: |
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"model_id\":\"$EVAL_MODEL_ID\"}" \
+            "$WORKER_BASE_URL/api/internal/model/reject"
+
       - name: Report candidate ready
         shell: bash
         run: |
           BODY=$(python - <<'PY'
           import json, os
+          decision = os.environ.get("EVAL_DECISION", "NOT_EVALUATED")
+          status = "CANDIDATE_READY"
+          if decision == "PROMOTE":
+              status = "MODEL_PROMOTED"
+          elif decision == "REJECT":
+              status = "CHALLENGER_REJECTED"
           print(json.dumps({
             "run_id": os.environ["LEARNING_RUN_ID"],
-            "status": "CANDIDATE_READY",
+            "status": status,
             "percent": 100,
             "model_id": os.environ["MODEL_ID"],
-            "message": "New model trained and stored as candidate. Active model was not overwritten.",
+            "challenger_model_id": os.environ.get("EVAL_MODEL_ID"),
+            "evaluation_decision": decision,
+            "message": "Daily model stored as candidate. Champion/Challenger decision uses future settled out-of-sample evidence; Active changes only after PROMOTE.",
             "github_run_id": os.environ.get("GITHUB_RUN_ID"),
           }))
           PY
@@ -153,7 +241,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: daily-cases-${{ github.run_number }}
-          path: data/cases/history_cases.jsonl.gz
+          path: |
+            data/cases/history_cases.jsonl.gz
+            reports/champion_challenger_evaluation.json
           retention-days: 3
           if-no-files-found: warn
 
