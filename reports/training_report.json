@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-12T02:08:28.490757+00:00",
-  "model_id": "0646373957af58d5",
+  "generated_at": "2026-08-12T03:14:06.944310+00:00",
+  "model_id": "49a67e1ead2df83e",
   "schema_version": 2,
   "total_cases": 199453,
   "historical_case_count": 199213,
@@ -1253,8 +1253,8 @@
         "other_probability": 0.000141,
         "late_success_4_7d": {
           "eligible_samples": 29109,
-          "count": 11135,
-          "probability": 0.382528,
+          "count": 11136,
+          "probability": 0.382562,
           "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
         }
       }

@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "generated_at": "2026-08-12T02:08:11.048914+00:00",
+  "generated_at": "2026-08-12T03:13:52.893484+00:00",
   "engine_contract": "S-state rules fixed; probability/outcome parameters evolve in JSON",
   "settlement_contract": "Each horizon is decomposed into SUCCESS_WITHIN_HORIZON + ALIVE_SLOW + TRUE_FAIL + OTHER = 100%.",
   "outcome_keys": [
@@ -18755,8 +18755,8 @@
             "other_probability": 0.000141,
             "late_success_4_7d": {
               "eligible_samples": 29109,
-              "count": 11135,
-              "probability": 0.382528,
+              "count": 11136,
+              "probability": 0.382562,
               "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
             }
           },
@@ -18808,8 +18808,8 @@
                   "other_probability": 0.000321,
                   "late_success_4_7d": {
                     "eligible_samples": 12876,
-                    "count": 5614,
-                    "probability": 0.436005,
+                    "count": 5615,
+                    "probability": 0.436083,
                     "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
                   },
                   "signature": "midline_state=falling",
@@ -19009,8 +19009,8 @@
                   "other_probability": 0.000347,
                   "late_success_4_7d": {
                     "eligible_samples": 11194,
-                    "count": 5008,
-                    "probability": 0.447383,
+                    "count": 5009,
+                    "probability": 0.447472,
                     "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
                   },
                   "signature": "midline_state=falling|bandpos_bin=025_050",
@@ -19535,8 +19535,8 @@
                   "other_probability": 0.000347,
                   "late_success_4_7d": {
                     "eligible_samples": 11194,
-                    "count": 5008,
-                    "probability": 0.447383,
+                    "count": 5009,
+                    "probability": 0.447472,
                     "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
                   },
                   "signature": "midline_state=falling|bandpos_bin=025_050|trigger_stage=T2",
@@ -20023,25 +20023,25 @@
               "rules": [
                 {
                   "samples": 17299,
-                  "wins": 9503,
-                  "raw_probability": 0.549338,
-                  "probability": 0.549262,
+                  "wins": 9504,
+                  "raw_probability": 0.549396,
+                  "probability": 0.549319,
                   "wilson95": [
-                    0.541913,
-                    0.556741
+                    0.541971,
+                    0.556799
                   ],
                   "outcomes": {
                     "SUCCESS_WITHIN_HORIZON": {
                       "label_zh": "期限內成功",
-                      "count": 9503,
-                      "raw_probability": 0.549338,
-                      "probability": 0.549262
+                      "count": 9504,
+                      "raw_probability": 0.549396,
+                      "probability": 0.549319
                     },
                     "ALIVE_SLOW": {
                       "label_zh": "還活著只是慢",
-                      "count": 6038,
-                      "raw_probability": 0.349038,
-                      "probability": 0.349065
+                      "count": 6037,
+                      "raw_probability": 0.34898,
+                      "probability": 0.349007
                     },
                     "TRUE_FAIL": {
                       "label_zh": "真失敗",
@@ -20062,8 +20062,8 @@
                   "other_probability": 0.000404,
                   "late_success_4_7d": {
                     "eligible_samples": 7726,
-                    "count": 3428,
-                    "probability": 0.443697,
+                    "count": 3429,
+                    "probability": 0.443826,
                     "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
                   },
                   "signature": "midline_state=falling|bandpos_bin=025_050|trigger_stage=T2|bandwidth_trend=CONTRACTING",
@@ -20215,25 +20215,25 @@
                 },
                 {
                   "samples": 4889,
-                  "wins": 1847,
-                  "raw_probability": 0.377787,
-                  "probability": 0.378216,
+                  "wins": 1846,
+                  "raw_probability": 0.377582,
+                  "probability": 0.378012,
                   "wilson95": [
-                    0.364297,
-                    0.391468
+                    0.364094,
+                    0.391263
                   ],
                   "outcomes": {
                     "SUCCESS_WITHIN_HORIZON": {
                       "label_zh": "期限內成功",
-                      "count": 1847,
-                      "raw_probability": 0.377787,
-                      "probability": 0.378216
+                      "count": 1846,
+                      "raw_probability": 0.377582,
+                      "probability": 0.378012
                     },
                     "ALIVE_SLOW": {
                       "label_zh": "還活著只是慢",
-                      "count": 2667,
-                      "raw_probability": 0.54551,
-                      "probability": 0.544805
+                      "count": 2668,
+                      "raw_probability": 0.545715,
+                      "probability": 0.545009
                     },
                     "TRUE_FAIL": {
                       "label_zh": "真失敗",
@@ -21403,25 +21403,25 @@
                 },
                 {
                   "samples": 4091,
-                  "wins": 2202,
-                  "raw_probability": 0.538255,
-                  "probability": 0.537986,
+                  "wins": 2203,
+                  "raw_probability": 0.538499,
+                  "probability": 0.538229,
                   "wilson95": [
-                    0.522949,
-                    0.553489
+                    0.523194,
+                    0.553732
                   ],
                   "outcomes": {
                     "SUCCESS_WITHIN_HORIZON": {
                       "label_zh": "期限內成功",
-                      "count": 2202,
-                      "raw_probability": 0.538255,
-                      "probability": 0.537986
+                      "count": 2203,
+                      "raw_probability": 0.538499,
+                      "probability": 0.538229
                     },
                     "ALIVE_SLOW": {
                       "label_zh": "還活著只是慢",
-                      "count": 1429,
-                      "raw_probability": 0.349303,
-                      "probability": 0.349416
+                      "count": 1428,
+                      "raw_probability": 0.349059,
+                      "probability": 0.349173
                     },
                     "TRUE_FAIL": {
                       "label_zh": "真失敗",
@@ -21490,8 +21490,8 @@
                   "other_probability": 0.000334,
                   "late_success_4_7d": {
                     "eligible_samples": 1304,
-                    "count": 511,
-                    "probability": 0.391871,
+                    "count": 512,
+                    "probability": 0.392638,
                     "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
                   },
                   "signature": "midline_state=falling|bandpos_bin=025_050|trigger_stage=T2|bandwidth_trend=CONTRACTING|state_age_bin=1",
@@ -22555,25 +22555,25 @@
                 },
                 {
                   "samples": 782,
-                  "wins": 288,
-                  "raw_probability": 0.368286,
-                  "probability": 0.371148,
+                  "wins": 287,
+                  "raw_probability": 0.367008,
+                  "probability": 0.369901,
                   "wilson95": [
-                    0.3352,
-                    0.402661
+                    0.333952,
+                    0.401364
                   ],
                   "outcomes": {
                     "SUCCESS_WITHIN_HORIZON": {
                       "label_zh": "期限內成功",
-                      "count": 288,
-                      "raw_probability": 0.368286,
-                      "probability": 0.371148
+                      "count": 287,
+                      "raw_probability": 0.367008,
+                      "probability": 0.369901
                     },
                     "ALIVE_SLOW": {
                       "label_zh": "還活著只是慢",
-                      "count": 430,
-                      "raw_probability": 0.549872,
-                      "probability": 0.545447
+                      "count": 431,
+                      "raw_probability": 0.551151,
+                      "probability": 0.546694
                     },
                     "TRUE_FAIL": {
                       "label_zh": "真失敗",
@@ -116379,7 +116379,7 @@
       }
     }
   },
-  "model_id": "0646373957af58d5",
+  "model_id": "49a67e1ead2df83e",
   "training": {
     "case_count": 199453,
     "symbols_requested": [
