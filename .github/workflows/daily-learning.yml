@@ -2,9 +2,12 @@ name: Daily S-state Learning
 
 on:
   workflow_dispatch:
-  schedule:
-    # 00:25 UTC = 台灣 08:25。只抓各幣最新 500 根並與既有歷史合併。
-    - cron: "25 0 * * *"
+    inputs:
+      run_id:
+        description: "Cloudflare learning run id；手動執行可留空"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: write
@@ -17,12 +20,50 @@ jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 330
+    env:
+      WORKER_BASE_URL: ${{ secrets.WORKER_BASE_URL }}
+      WORKER_CALLBACK_TOKEN: ${{ secrets.WORKER_CALLBACK_TOKEN }}
+      LEARNING_RUN_ID: ${{ inputs.run_id }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+
+      - name: Resolve learning run id
+        shell: bash
+        run: |
+          if [ -z "$LEARNING_RUN_ID" ]; then
+            echo "LEARNING_RUN_ID=manual_learning_${GITHUB_RUN_ID}_${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Validate Cloudflare bridge secrets
+        shell: bash
+        run: |
+          test -n "$WORKER_BASE_URL" || (echo "WORKER_BASE_URL missing" && exit 1)
+          test -n "$WORKER_CALLBACK_TOKEN" || (echo "WORKER_CALLBACK_TOKEN missing" && exit 1)
+
+      - name: Report learning started
+        shell: bash
+        run: |
+          BODY=$(python - <<'PY'
+          import json, os
+          print(json.dumps({
+            "run_id": os.environ["LEARNING_RUN_ID"],
+            "status": "RUNNING",
+            "percent": 5,
+            "message": "HistoricalTraining Daily S-state Learning started",
+            "github_run_id": os.environ.get("GITHUB_RUN_ID"),
+          }))
+          PY
+          )
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$BODY" \
+            "$WORKER_BASE_URL/api/internal/learning/status"
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -44,6 +85,70 @@ jobs:
             --step-bars 1 \
             --min-samples 50
 
+      - name: Resolve candidate model id
+        shell: bash
+        run: |
+          MODEL_ID=$(python - <<'PY'
+          import json
+          print(json.load(open("models/probability_model.json", encoding="utf-8"))["model_id"])
+          PY
+          )
+          test -n "$MODEL_ID" || (echo "candidate model_id missing" && exit 1)
+          echo "MODEL_ID=$MODEL_ID" >> "$GITHUB_ENV"
+          echo "Candidate model: $MODEL_ID"
+
+      - name: Upload candidate model to R2
+        shell: bash
+        run: |
+          curl --fail --silent --show-error \
+            -X PUT \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary "@models/probability_model.json" \
+            "$WORKER_BASE_URL/api/internal/model/candidate"
+
+      - name: Upload candidate training report to R2
+        shell: bash
+        run: |
+          curl --fail --silent --show-error \
+            -X PUT \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary "@reports/training_report.json" \
+            "$WORKER_BASE_URL/api/internal/learning/report?model_id=$MODEL_ID"
+
+      - name: Upload learning meta to R2
+        shell: bash
+        run: |
+          curl --fail --silent --show-error \
+            -X PUT \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary "@data/learning_meta.json" \
+            "$WORKER_BASE_URL/api/internal/learning/meta?model_id=$MODEL_ID"
+
+      - name: Report candidate ready
+        shell: bash
+        run: |
+          BODY=$(python - <<'PY'
+          import json, os
+          print(json.dumps({
+            "run_id": os.environ["LEARNING_RUN_ID"],
+            "status": "CANDIDATE_READY",
+            "percent": 100,
+            "model_id": os.environ["MODEL_ID"],
+            "message": "New model trained and stored as candidate. Active model was not overwritten.",
+            "github_run_id": os.environ.get("GITHUB_RUN_ID"),
+          }))
+          PY
+          )
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$BODY" \
+            "$WORKER_BASE_URL/api/internal/learning/status"
+
       - name: Upload audit cases
         uses: actions/upload-artifact@v4
         with:
@@ -52,7 +157,7 @@ jobs:
           retention-days: 3
           if-no-files-found: warn
 
-      - name: Commit new candles and evolved probability JSON
+      - name: Commit new candles and candidate probability JSON
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
@@ -62,5 +167,28 @@ jobs:
             echo "No new candle/model changes."
             exit 0
           fi
-          git commit -m "learning: append market history and refresh 4-way outcome model"
+          git commit -m "learning: append market history and build candidate model"
           git push
+
+      - name: Report learning failure
+        if: ${{ failure() }}
+        shell: bash
+        run: |
+          BODY=$(python - <<'PY'
+          import json, os
+          print(json.dumps({
+            "run_id": os.environ.get("LEARNING_RUN_ID", "manual_learning_failed"),
+            "status": "FAILED",
+            "percent": 0,
+            "model_id": os.environ.get("MODEL_ID"),
+            "message": "Daily S-state Learning failed. Check GitHub Actions logs.",
+            "github_run_id": os.environ.get("GITHUB_RUN_ID"),
+          }))
+          PY
+          )
+          curl --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$BODY" \
+            "$WORKER_BASE_URL/api/internal/learning/status" || true
