@@ -161,7 +161,7 @@ def score_model(model: dict[str, Any], cases: list[dict[str, Any]]) -> tuple[dic
     return metrics, scored
 
 
-def _cluster_bootstrap_probability(active_rows: list[dict[str, Any]], challenger_rows: list[dict[str, Any]], iterations: int = 1000) -> float:
+def _cluster_bootstrap_probability(active_rows: list[dict[str, Any]], challenger_rows: list[dict[str, Any]], iterations: int = 1000) -> float | None:
     amap = {(r["symbol"], r["time"]): r for r in active_rows}
     cmap = {(r["symbol"], r["time"]): r for r in challenger_rows}
     keys = sorted(set(amap) & set(cmap))
@@ -171,7 +171,8 @@ def _cluster_bootstrap_probability(active_rows: list[dict[str, Any]], challenger
         by_symbol[key[0]].append((a["brier"], c["brier"]))
     symbols = sorted(by_symbol)
     if len(symbols) < 2:
-        return 0.5
+        # No meaningful OOS evidence yet.  Do not invent a neutral 50% confidence.
+        return None
     rng = random.Random(260812)
     score = 0.0
     for _ in range(iterations):
@@ -197,7 +198,7 @@ def promotion_decision(
     challenger: dict[str, Any],
     *,
     candidate_age_hours: float,
-    p_brier_better: float,
+    p_brier_better: float | None,
     min_cases: int = 180,
     min_symbols: int = 50,
     min_age_hours: float = 72.0,
@@ -213,7 +214,19 @@ def promotion_decision(
     if symbols < min_symbols:
         reasons.append(f"symbols {symbols} < {min_symbols}")
     if reasons:
+        # Timeout must win over WAITING_EVIDENCE. Otherwise a Challenger that never
+        # accumulates 180 cases / 50 symbols can remain WAITING forever.
+        if candidate_age_hours >= max_age_hours:
+            reasons.append("challenger reached max shadow age without sufficient OOS evidence")
+            return "REJECT", reasons, {
+                "timeout": True,
+                "evidence": {"cases": n, "symbols": symbols},
+            }
         return "WAITING_EVIDENCE", reasons, {}
+
+    # At this point evidence is sufficient, so bootstrap confidence must be real.
+    # Defensive fallback only; with >= min_symbols paired symbols this should not be None.
+    p_brier_better_value = float(p_brier_better) if p_brier_better is not None else 0.0
 
     ab = float(active["multiclass_brier"])
     cb = float(challenger["multiclass_brier"])
@@ -244,7 +257,7 @@ def promotion_decision(
     gates = {
         "brier_improvement": brier_delta >= 0.002,
         "logloss_not_worse": logloss_delta >= 0.0,
-        "bootstrap_confidence": p_brier_better >= 0.70,
+        "bootstrap_confidence": p_brier_better_value >= 0.70,
         "true_fail_not_worse": fail_brier_delta >= -0.01,
         "success_calibration_not_worse": success_ece_delta >= -0.02,
         "state_guardrail": state_guardrail_ok,
@@ -262,7 +275,7 @@ def promotion_decision(
             "state_details": state_details,
         }
 
-    clearly_worse = brier_delta <= -0.003 and p_brier_better <= 0.30
+    clearly_worse = brier_delta <= -0.003 and p_brier_better_value <= 0.30
     too_old = candidate_age_hours >= max_age_hours
     if clearly_worse or too_old:
         if clearly_worse:
@@ -333,7 +346,7 @@ def main() -> int:
         "paired_oos_symbols": int(challenger_metrics.get("symbols") or 0),
         "active": active_metrics,
         "challenger": challenger_metrics,
-        "bootstrap_probability_challenger_brier_better": round(p_better, 6),
+        "bootstrap_probability_challenger_brier_better": round(p_better, 6) if p_better is not None else None,
         "decision": decision,
         "reasons": reasons,
         "decision_detail": detail,

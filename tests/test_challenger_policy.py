@@ -1,6 +1,6 @@
 import unittest
 
-from evaluate_challenger import promotion_decision
+from evaluate_challenger import _cluster_bootstrap_probability, promotion_decision
 
 
 def metrics(brier, logloss, fail_brier, success_ece, cases=220, symbols=70):
@@ -32,6 +32,20 @@ class ChallengerPolicyTests(unittest.TestCase):
         c = metrics(0.47, 0.84, 0.10, 0.04)
         decision, _, _ = promotion_decision(a, c, candidate_age_hours=96, p_brier_better=0.90)
         self.assertEqual(decision, "PROMOTE")
+
+
+    def test_rejects_expired_challenger_even_when_evidence_is_insufficient(self):
+        a = metrics(0.50, 0.90, 0.12, 0.05)
+        c = metrics(0.49, 0.89, 0.11, 0.05, cases=0, symbols=0)
+        decision, reasons, detail = promotion_decision(
+            a, c, candidate_age_hours=168, p_brier_better=None
+        )
+        self.assertEqual(decision, "REJECT")
+        self.assertTrue(detail.get("timeout"))
+        self.assertTrue(any("max shadow age" in r for r in reasons))
+
+    def test_bootstrap_returns_none_without_oos_evidence(self):
+        self.assertIsNone(_cluster_bootstrap_probability([], []))
 
     def test_rejects_clear_loser(self):
         a = metrics(0.48, 0.85, 0.10, 0.04)
