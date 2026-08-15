@@ -1,272 +1,158 @@
-# SState Market Terminal
+# Crypto S-state Learning Engine v2
 
-### v0.1.37 GLM response parser + reasoning retry 修正
+這個儲存庫用 Pionex 歷史 4H K 線逐根重播正式 S-state 引擎，然後把每個歷史決策點的未來結果結算成 JSON 參數，供 Crypto Monitor / HTML 使用。
 
-這版修正 v0.1.35 的關鍵 bug：Cloudflare GLM-4.7-Flash 回傳的是 chat-completions wrapper，真正 JSON 在 `choices[0].message.content`。v0.1.35 把 wrapper 本身當 JSON，所以即使 GLM 已選出事件，最後仍被寫成 `selected_count: 0`。
+## 核心契約
 
-另外 GLM 偶爾會把 completion token 全花在 reasoning，造成 `message.content = null`。v0.1.37 先使用 `reasoning_effort: low`，若仍沒有 final JSON，自動以精簡候選資料重試一次；兩次都失敗才回 502，而且不寫入 24H 快取。
+- `engine/scoring_rules.py`：**不由訓練程式改寫**。S0 / S0.5 / S1 / S2 / S3 仍由正式引擎判斷。
+- `models/probability_model.json`：訓練結果；會隨歷史與每日新行情持續進化。
+- Replay 與即時系統必須使用同版 S-state 引擎。
+- LLM 不發明機率；機率來自已結算歷史樣本。
 
-### v0.1.35 Tavily 廣搜 + GLM-4.7-Flash 語意篩選 / 繁中
+## v2：不再把「沒在期限內達標」全部叫 LOSS
 
-- Pionex 美股/RWA token 先解析「代幣 → underlying ticker → 正式名稱/別名 → asset_type」，補齊目前 active/pending 清單中原先只剩 ticker 的公司、ETF 與商品。
-- Tavily 搜尋依 public/private company、ETF、commodity 分流，不再拿同一套「公司財報」Prompt 查 USO / WTI / 黃金 / 半導體 ETF。
-- 搜尋仍維持 `search_depth=basic`、最多 10 則；`include_answer=advanced` 只用來取得更完整的繁中 Answer。
-- Worker 新增 `summary_zh_tw`、`display_title_zh_tw`、`display_detail_zh_tw`；主 UI 優先顯示繁體中文，原始英文標題只保留在查證來源。
-- 新 pipeline 會使舊 Tavily 24H cache 失效一次，下一次點擊會重新取得新格式資料。
-
-**版本：`TERMINAL v0.1.37｜GLM-PARSER-RETRY`**
-
-#### v0.1.35 新聞管線
+每一個 horizon 都拆成四個互斥結果，合計固定 100%：
 
 ```text
-點擊 S3 / S0.5 / S1 新聞
-  ↓
-資產 Profile：派網代幣 → underlying / 公司或資產別名 / asset_type
-  ↓
-Tavily Basic Search（topic=news、week、max_results=20、chunks_per_source=3）
-  ↓
-Cloudflare Workers AI：@cf/zai-org/glm-4.7-flash
-  ↓
-依原始搜尋指令判斷所有候選：保留真正重大事件、淘汰舊事件/索引頁/投資評論/無關內容
-  ↓
-產出繁中 summary_zh_tw + display_title_zh_tw + display_detail_zh_tw
-  ↓
-每則事件綁定 Tavily source_index；只使用原候選 URL 做查證
-  ↓
-R2 24H cache.json + latest.json
+SUCCESS_WITHIN_HORIZON  期限內成功
+ALIVE_SLOW              還活著只是慢
+TRUE_FAIL               真失敗
+OTHER                    其他／已離開原路徑但尚未觸發硬失效
 ```
 
-注意：Tavily Search API 的 `max_results` 官方上限是 20，所以 v0.1.35 是「不再限制 10 則」，直接使用 API 可取的最大 20 則；若省略此參數反而會回到預設 5。GLM 不設定固定最終事件數，有幾則真正符合就保留幾則。
-
-Cloudflare Worker 必須新增 **Workers AI binding**，名稱固定為 `AI`；`TAVILY_API_KEY` Secret 與 `JSON_BUCKET` R2 binding 照舊。
-
-Streamlit 脫殼 Stage 1：GitHub Pages 靜態 HTML/JS/CSS + Cloudflare Worker/R2 + GitHub Actions Python 引擎。
-
-## 已完成的資料流
+主波段判定仍以 `18 根 4H = 72H = 3天` 為核心。例如最後可以得到：
 
 ```text
-GitHub Pages
-  ├─ 開站：只讀 R2 最後一次 snapshot + 已查詢新聞快取
-  ├─ 完整分析：POST Cloudflare Worker → full-analysis.yml → Pionex + S-state + R2
-  └─ S3 / S0.5 / S1 卡片「🔎 等待查詢」：使用者點擊單一標的
-                                     ↓
-                         Cloudflare Worker 直接呼叫 Tavily
-                                     ↓
-                         Basic Search 廣搜最多 10 則
-                                     ↓
-                         資產 Profile → GLM-4.7-Flash 語意篩選 + 繁中
-                                     ↓
-                         該標的固定 24H Cache + research R2
+S3 相似樣本 1,171
+3日內成功       48%
+還活著只是慢    30%
+真失敗          12%
+其他            10%
+-------------------
+合計           100%
+
+結構存活率 = 成功 + 還活著 = 78%
 ```
 
-新聞查詢與完整分析是兩條完全獨立的事件。完整分析與自動排程都不會自動查新聞。
+### TRUE_FAIL 不使用新發明的跌幅門檻
 
-Stage 1 **不使用 D1**。Runtime 最新 JSON 以 R2 為唯一 source of truth；GitHub 只負責程式碼與 Actions。
+直接沿用正式引擎已有的硬失效線：
 
-## Repo 主要檔案
+- S2 / S3：`S2_BREAKDOWN_FLOOR_BANDPOS`
+- S0.5 / S1：`BREAKOUT_INVALIDATE_BANDPOS`
 
-- `index.html`：GitHub Pages 主畫面
-- `styles.css`：Streamlit 視覺脫殼版
-- `app.js`：讀 latest / 完整分析 / polling / JSON 下載 / SVG 圖表
-- `config.js`：只需填 Worker URL
-- `engine/`：由原 Streamlit 拆出的 headless Python S-state engine
-- `.github/workflows/full-analysis.yml`：Cloudflare 呼叫的完整分析
-- `.github/workflows/deploy-pages.yml`：GitHub Pages
-- `cloudflare/worker.js`：R2 + GitHub dispatch + 單一標的 Tavily 廣搜 / GLM-4.7-Flash 篩選 / 公司別名
-- `cloudflare/wrangler.toml.example`：R2 binding / Worker vars
-- `data/bootstrap/`：R2 尚未設定時的最後一次畫面 fallback
+因此 v2 只改 **Settlement / 統計方式**，不改 S-state。
 
-## 第一次部署順序
+### ALIVE_SLOW 的意思
 
-### 1. 把整包內容上傳到 `SStateMarketTerminal`
+期限內沒有達成目標，但：
 
-保留目錄層級。原本 GitHub 自動建立的 `README.md` 可以直接用本檔覆蓋。
+1. 沒有觸發引擎硬失效線；
+2. 72H 結束時仍處於可恢復的同一波段幾何。
 
-### 2. GitHub Pages
+S3 回到 S2 不是自動判失敗；正常回踩仍可屬於 `ALIVE_SLOW`。
 
-Repository → Settings → Pages → Source 選 **GitHub Actions**。
+### OTHER 的意思
 
-`Deploy GitHub Pages` workflow 會部署根目錄的 `index.html`。
+沒有成功、也沒有碰到硬失效，但已離開原本可明確追蹤的路徑。保留 `OTHER` 是為了避免把所有「沒死」都硬算成「還活著」。
 
-### 3. Cloudflare 建 R2
+## 四個 S-state 預測目標
 
-建議 bucket：
+| 現在狀態 | 目標 |
+|---|---|
+| S0.5 | 進入 S1 或更高上攻階段 |
+| S1 | HA Band Position > 0.75 |
+| S2 | 進入 S3 |
+| S3 | HA Band Position > 0.75 |
+
+同時計算 3 / 6 / 12 / 18 根 4H，也就是 12 / 24 / 48 / 72 小時。UI 主判斷建議用 72H，24H / 48H 當速度參考。
+
+另外 v2 會額外記錄 `late_success_4_7d`：三天內沒成功的案例，如果資料完整，再觀察第 4～7 天是否最後才成功。這個欄位只作解釋，不會改掉 72H 四分類結果。
+
+## 防止偷看未來
+
+Replay 在歷史第 `i` 根 4H 時，只能用 `<= i` 的 K 線建立當時 S-state 與特徵；未來 K 只允許 Settlement 階段讀取。
+
+歷史 4H 也會聚合成當時「尚未走完的日 K」，避免拿完整收盤日 K 回頭判斷盤中狀態。
+
+## 主要檔案
 
 ```text
-sstate-market-data
+engine/
+  scoring_rules.py          正式 S-state 引擎（固定）
+  runtime_core.py           無 Streamlit 計算層
+
+training/
+  pionex_history.py         Pionex 4H cache
+  replay.py                 逐根 Replay + Settlement
+  outcomes.py               v2 四分類結果判定
+  features.py               模型特徵
+  model_builder.py          四分類統計、平滑、Fallback
+
+models/
+  probability_model.json    JSON 模型參數
+
+reports/
+  training_report.json      訓練摘要，含 72H 四分類 baseline
 ```
 
-Worker 的 R2 binding 固定叫：
+## probability_model.json v2
+
+為了不讓目前 Streamlit 立刻壞掉，舊欄位仍保留：
+
+```json
+"probability": 0.48,
+"samples": 1171,
+"wins": 562
+```
+
+其中 `probability` 仍表示「期限內成功率」。
+
+v2 同時新增：
+
+```json
+"outcomes": {
+  "SUCCESS_WITHIN_HORIZON": {"probability": 0.48},
+  "ALIVE_SLOW": {"probability": 0.30},
+  "TRUE_FAIL": {"probability": 0.12},
+  "OTHER": {"probability": 0.10}
+},
+"structural_survival_probability": 0.78,
+"true_fail_probability": 0.12
+```
+
+條件規則仍使用 Level 1～5 + Fallback；樣本不足 50 就退回較粗層級。四分類使用同一個 empirical-Bayes prior 做多分類平滑，避免小樣本出現假 90%。
+
+## 你現在這個 Repository 已經有 10,000 根歷史 cache 時怎麼操作
+
+**不要再重新下載完整 Pionex 歷史。**
+
+上傳 v2 後：
+
+1. Actions → **Historical S-state Training v2** → Run workflow
+2. `symbols = ALL`
+3. `max_records = 10000`
+4. `step_bars = 1`
+5. **`full_refresh = false`，不要勾**
+
+程式會使用既有 `data/cache/4h/*.csv`，抓最新一頁合併後，重新 Replay / Settlement，然後把舊的二元模型重建成 v2 四分類模型。
+
+第一次 v2 成功後，檢查：
+
+- `models/probability_model.json` → `schema_version` 應為 `2`
+- `reports/training_report.json` → 應有 `primary_72h_outcomes`
+
+## Daily S-state Learning
+
+後續 `Daily S-state Learning` 不需要另外換邏輯，它會直接呼叫同一個 v2：
 
 ```text
-JSON_BUCKET
+最新 Pionex 4H
+→ 合併既有 cache
+→ 同一顆 S-state 引擎 Replay
+→ v2 四分類 Settlement
+→ 重建 probability_model.json
+→ GitHub commit / push
 ```
 
-### 4. 建 Cloudflare Worker
-
-把 `cloudflare/worker.js` 貼進 Worker，並綁定上面的 R2 bucket。
-
-Worker Variables：
-
-```text
-GITHUB_REPOSITORY = youjianchonglangshou-design/SStateMarketTerminal
-GITHUB_BRANCH = main
-ALLOWED_ORIGIN = https://youjianchonglangshou-design.github.io
-```
-
-Worker Secrets：
-
-```text
-GITHUB_TOKEN
-CALLBACK_TOKEN
-TAVILY_API_KEY
-```
-
-`TAVILY_API_KEY` 只放在 Cloudflare Worker Secret。GitHub Pages 不會拿到這把 Key。
-
-`GITHUB_TOKEN` 建議用 fine-grained token，只授權此 repo，Repository permissions → **Actions: Read and write**。
-
-`CALLBACK_TOKEN` 自己產生一串長隨機字串，例如 40+ 字元；它只用於 GitHub Actions 回寫 Worker。
-
-### 5. GitHub Actions Secrets
-
-SStateMarketTerminal → Settings → Secrets and variables → Actions：
-
-```text
-WORKER_BASE_URL
-WORKER_CALLBACK_TOKEN
-```
-
-其中：
-
-```text
-WORKER_BASE_URL = https://你的-worker.workers.dev
-WORKER_CALLBACK_TOKEN = 與 Cloudflare CALLBACK_TOKEN 完全相同
-```
-
-### 6. `config.js` 填 Worker URL
-
-```js
-window.SSTATE_CONFIG = {
-  workerUrl: "https://你的-worker.workers.dev",
-  ...
-};
-```
-
-前端**不放 GitHub Token，也不放 CALLBACK_TOKEN**。
-
-### 7. 第一次 Seed R2（推薦）
-
-Windows PowerShell 在 repo 根目錄：
-
-```powershell
-.\tools\seed-r2.ps1 `
-  -WorkerUrl "https://你的-worker.workers.dev" `
-  -CallbackToken "你的 CALLBACK_TOKEN"
-```
-
-會把：
-
-```text
-engine/models/probability_model.json
-→ models/active/probability_model.json
-
-data/bootstrap/snapshot_ai.json
-→ latest/crypto/snapshot_ai.json
-
-data/bootstrap/snapshot_us_stock_ai.json
-→ latest/us-stock/snapshot_us_stock_ai.json
-```
-
-如果不 seed，網站仍會先讀 repo bootstrap；第一次完整分析成功後，R2 snapshot 會自動建立。Active model 若 R2 尚不存在，Action 會先用 repo 內的模型 fallback。
-
-## 網站行為
-
-### 開啟網站
-
-不抓 Pionex、不跑 Python：
-
-```text
-GET /api/snapshot?market=crypto
-```
-
-只呈現 R2 最後一次成功資料。
-
-### 按「完整分析」
-
-```text
-POST /api/analysis/start
-```
-
-Worker 建 `run_id` → 呼叫 `full-analysis.yml` → Python 重新抓 Pionex → S-state → Level 5 → R2。
-
-### S3 / S0.5 / S1 卡片的「🔎 等待查詢」
-
-只有目前 S-state 為 `S3` / `S0.5` / `S1` 的美股代幣會顯示呼吸光暈查詢膠囊。**不點就完全不呼叫 Tavily。**
-
-點單一標的：
-
-```text
-POST /api/research/us-stock/symbol
-{ "symbol": "MSFTX" }
-```
-
-Worker 先讀 R2 最新美股 snapshot 核對該標的與 S-state，再執行：
-
-```text
-Tavily Basic Search（最多 10 個候選）
-→ Cloudflare Workers AI GLM-4.7-Flash 依原始指令做語意過濾、事件判斷與繁中整理
-→ research/us-stock/cache.json
-→ research/us-stock/latest.json
-```
-
-成功結果在 24 小時內固定不換：再次點擊同一標的只回傳既有 Cache，不重新搜尋、不覆蓋。重新整理頁面後仍從 R2 載入同一份結果。
-
-完整分析與 Auto Batch **不包含新聞研究 step**，因此市場排程不會消耗 Tavily credits。
-
-### 右上角 JSON
-
-市場 JSON 下載的是目前頁面同一份 R2 snapshot。`⬇ 新聞 JSON` 則下載 `research/us-stock/latest.json`，內容只包含使用者曾主動查詢並成功寫入 R2 的新聞結果。
-
-## R2 Key v1
-
-```text
-latest/crypto/snapshot_ai.json
-latest/us-stock/snapshot_us_stock_ai.json
-runs/<run_id>/status.json
-runs/<run_id>/snapshot_ai.json
-runs/<run_id>/snapshot_us_stock_ai.json
-models/active/probability_model.json
-```
-
-## Stage 2（尚未接）
-
-下一階段才接 `HistoricalTraining`：
-
-```text
-Cloudflare Cron
-  ↓
-Daily S-state Learning
-  ↓
-Candidate probability model
-  ↓
-Champion / Challenger evaluation
-  ↓
-通過 promotion gate
-  ↓
-R2 models/active/probability_model.json
-```
-
-不採用「每天產生新模型就直接覆蓋 active」。
-
-
-## v0.1.37 LLAMA-JSONMODE
-
-- 修正 v0.1.36：GLM-4.7-Flash 可能只回 reasoning、沒有 final JSON，造成 502。
-- 不再使用 GLM 作新聞語意篩選器。
-- Primary：`@cf/meta/llama-3.1-8b-instruct-fast`
-- Fallback：`@cf/meta/llama-3.3-70b-instruct-fp8-fast`
-- 兩者皆走 Workers AI JSON Mode `json_schema`。
-- Parser 同時支援 Workers AI JSON Mode 的 `{ response: {...} }` 物件輸出。
-- Tavily 仍負責廣搜最多 20 個候選；AI 負責事件過濾與 zh-TW 改寫。
-- Primary 失敗才啟用 70B fallback；兩層失敗才回 502，而且不寫入 24H cache。
+所以仍是：**引擎固定，JSON 參數持續進化。**
