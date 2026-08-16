@@ -42,13 +42,13 @@
   function renderHistory() {
     const panel = $('sessionHistory');
     const body = $('historyBody');
+    const count = $('historyCount');
     if (!panel || !body) return;
+    if (count) count.textContent = String(state.history.length);
     if (!state.history.length) {
-      panel.classList.add('hidden');
-      body.innerHTML = '';
+      body.innerHTML = '<tr class="history-empty-row"><td colspan="7">尚無平倉紀錄。你可以先做一筆交易，之後隨時打開這個面板調閱。</td></tr>';
       return;
     }
-    panel.classList.remove('hidden');
     body.innerHTML = state.history.map((r, i) => {
       const directionClass = r.direction === 'LONG' ? 'positive-text' : 'negative-text';
       const pnlClass = r.pnl > 0 ? 'positive-text' : r.pnl < 0 ? 'negative-text' : '';
@@ -62,6 +62,16 @@
         <td>${escapeHtml(formatModelSnapshot(r.modelAtEntry))}</td>
       </tr>`;
     }).join('');
+  }
+
+  function openHistoryPanel() {
+    $('sessionHistory')?.classList.remove('hidden');
+    $('historyBackdrop')?.classList.remove('hidden');
+  }
+
+  function closeHistoryPanel() {
+    $('sessionHistory')?.classList.add('hidden');
+    $('historyBackdrop')?.classList.add('hidden');
   }
 
   async function init() {
@@ -93,6 +103,9 @@
     $('newQuestionBtn').addEventListener('click', newQuestion);
     $('playBtn').addEventListener('click', revealOneDay);
     $('closeBtn').addEventListener('click', closeTrade);
+    $('historyFab')?.addEventListener('click', openHistoryPanel);
+    $('closeHistoryBtn')?.addEventListener('click', closeHistoryPanel);
+    $('historyBackdrop')?.addEventListener('click', closeHistoryPanel);
     $('resetRevealBtn').addEventListener('click', resetSameQuestion);
     $('blindMode').addEventListener('change', () => { renderQuestionMeta(); draw(); });
     document.querySelectorAll('.decision').forEach(btn => {
@@ -144,6 +157,7 @@
     state.trade = null;
     state.closedTrades = [];
     state.revealed = 0;
+    closeHistoryPanel();
     state.hoverIndex = null;
     $('tradePanel').classList.add('hidden');
     $('chartEmpty').classList.remove('hidden');

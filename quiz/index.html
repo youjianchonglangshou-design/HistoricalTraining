@@ -93,10 +93,19 @@
         <div class="trade-verdict"><span>狀態</span><b id="tradeVerdict">持倉中</b></div>
       </div>
 
-      <div id="sessionHistory" class="history-panel hidden">
-        <div class="history-head">
-          <strong>本次頁面戰績</strong>
-          <span>只有按「平倉」才結算；重新整理或重開網頁後歸 0</span>
+      <button id="historyFab" class="history-fab" type="button" aria-label="開啟本次頁面戰績">
+        <span class="history-fab-label">戰績</span>
+        <span id="historyCount" class="history-fab-count">0</span>
+      </button>
+
+      <div id="historyBackdrop" class="history-backdrop hidden"></div>
+      <div id="sessionHistory" class="history-floating hidden" role="dialog" aria-modal="false" aria-labelledby="historyPanelTitle">
+        <div class="history-floating-head">
+          <div>
+            <strong id="historyPanelTitle">本次頁面戰績</strong>
+            <span>只有按「平倉」才結算；重新整理或重開網頁後歸 0</span>
+          </div>
+          <button id="closeHistoryBtn" class="history-close" type="button" aria-label="關閉戰績面板">✕</button>
         </div>
         <div class="history-table-wrap">
           <table class="history-table">

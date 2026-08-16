@@ -191,3 +191,79 @@ summary{color:#dbe6f7;cursor:pointer;font-weight:750}
   .history-table-wrap{max-height:60px}
   .prompt-note{display:none}
 }
+
+
+/* ===== 懸浮戰績面板 ===== */
+.history-fab{
+  position:fixed;
+  left:14px;
+  bottom:14px;
+  z-index:40;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-width:84px;
+  padding:8px 10px;
+  border-radius:999px;
+  border:1px solid rgba(85,167,255,.48);
+  background:rgba(10,17,28,.94);
+  box-shadow:0 10px 28px rgba(0,0,0,.35);
+  backdrop-filter:blur(8px);
+}
+.history-fab-label{font-size:11px;font-weight:900}
+.history-fab-count{
+  min-width:22px;height:22px;padding:0 6px;
+  display:grid;place-items:center;
+  border-radius:999px;
+  background:linear-gradient(180deg,#237fdc,#1764b4);
+  border:1px solid #4097ec;
+  font-size:11px;font-weight:900;
+}
+.history-backdrop{
+  position:fixed;inset:0;z-index:45;
+  background:rgba(3,6,12,.42);
+}
+.history-floating{
+  position:fixed;
+  left:14px;
+  bottom:64px;
+  z-index:50;
+  width:min(860px,calc(100vw - 28px));
+  max-height:min(52vh,460px);
+  display:flex;
+  flex-direction:column;
+  border:1px solid rgba(65,84,114,.95);
+  border-radius:12px;
+  background:linear-gradient(180deg,rgba(14,21,33,.98),rgba(8,13,22,.98));
+  box-shadow:0 16px 46px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+.history-floating-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding:9px 10px 7px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  background:rgba(11,17,27,.95);
+}
+.history-floating-head strong{display:block;font-size:11px;line-height:1.1}
+.history-floating-head span{display:block;margin-top:2px;color:var(--muted);font-size:8px;line-height:1.2}
+.history-close{
+  min-width:30px;padding:5px 8px;border-radius:8px;font-size:12px;
+  color:#cfd8ea;background:#131d2c;border-color:#30425d;
+}
+.history-table-wrap{max-height:none;overflow:auto;flex:1}
+.history-table{width:100%;border-collapse:collapse;font-size:9px}
+.history-table th,.history-table td{padding:4px 8px;border-bottom:1px solid rgba(255,255,255,.04);text-align:left;white-space:nowrap}
+.history-table th{position:sticky;top:0;z-index:1;background:#0c121c;color:var(--muted);font-size:8px}
+.history-table td:last-child{white-space:normal;min-width:260px;color:#c6d0df}
+.history-table tbody tr:last-child td{border-bottom:0}
+.history-empty-row td{padding:14px 10px;text-align:center;color:var(--muted);font-size:9px}
+
+@media(max-width:760px){
+  .history-fab{left:10px;bottom:10px;padding:7px 9px}
+  .history-floating{left:8px;right:8px;bottom:56px;width:auto;max-height:58vh}
+  .history-floating-head{padding:8px 9px 6px}
+  .history-table{min-width:820px}
+}
