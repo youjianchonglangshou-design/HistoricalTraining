@@ -13,34 +13,19 @@
       <div>
         <div class="eyebrow">HISTORICAL TRAINING</div>
         <h1>S-State 歷史行情考題</h1>
-        <p class="subtitle">真實歷史 K 線 · BB20 · 平均K黃紫階梯 · 未來逐根揭曉</p>
+        <p class="subtitle">真實歷史 K 線 · BB20 · 平均K黃紫階梯 · R2 Active 模型 · 每次只前進 1 天</p>
       </div>
       <div class="session-box">
-        <div><span>作答</span><b id="statTotal">0</b></div>
-        <div><span>方向命中</span><b id="statHit">0</b></div>
+        <div><span>已進場</span><b id="statTotal">0</b></div>
+        <div><span>3日命中</span><b id="statHit">0</b></div>
         <div><span>命中率</span><b id="statRate">—</b></div>
       </div>
     </header>
 
     <section class="toolbar card">
       <button id="newQuestionBtn" class="primary">🎲 隨機新題</button>
-      <label class="select-wrap">
-        <span>未來播放</span>
-        <select id="futureDaysSelect">
-          <option value="3">3 天</option>
-          <option value="7" selected>7 天</option>
-          <option value="12">12 天</option>
-        </select>
-      </label>
-      <label class="select-wrap">
-        <span>播放速度</span>
-        <select id="speedSelect">
-          <option value="1100">慢</option>
-          <option value="650" selected>正常</option>
-          <option value="300">快</option>
-        </select>
-      </label>
-      <label class="check-wrap"><input id="blindMode" type="checkbox" checked /> 盲測：作答前隱藏幣種與日期</label>
+      <label class="check-wrap"><input id="blindMode" type="checkbox" checked /> 盲測：進場前隱藏幣種與日期</label>
+      <div id="modelStatus" class="model-status">R2 Active 模型讀取中…</div>
       <div id="loadState" class="load-state">準備中</div>
     </section>
 
@@ -48,7 +33,7 @@
       <div class="question-head">
         <div>
           <div id="marketTitle" class="market-title">隨機市場</div>
-          <div id="marketMeta" class="market-meta">先看結構，再決定方向</div>
+          <div id="marketMeta" class="market-meta">沒有進場點就播放下一天</div>
         </div>
         <div class="state-chips">
           <span class="chip">普通 K</span>
@@ -62,53 +47,64 @@
         <canvas id="chartCanvas"></canvas>
         <div id="chartTooltip" class="chart-tooltip hidden"></div>
         <div id="chartEmpty" class="chart-empty">讀取歷史資料中…</div>
+
+        <div id="modelHud" class="model-hud">
+          <div class="model-hud-head">
+            <strong id="modelState">模型等待中</strong>
+            <span id="modelLevel">—</span>
+          </div>
+          <div class="model-hud-stats">
+            <span class="fail"><i></i>失敗 <b id="modelFail">—</b></span>
+            <span class="survival"><i></i>存活 <b id="modelSurvival">—</b></span>
+            <span class="samples"><i></i>樣本 <b id="modelSamples">—</b></span>
+          </div>
+          <div id="modelHint" class="model-hud-hint">以目前這一天的 S-state 條件匹配 R2 Active</div>
+        </div>
       </div>
 
-      <div class="decision-panel">
-        <div>
-          <div class="prompt">如果現在只能做一次方向判斷，你選哪一邊？</div>
-          <div class="prompt-note">先作答才可播放未來。這裡只測方向，不改寫正式 S-state 引擎。</div>
+      <div class="action-panel">
+        <div class="action-copy">
+          <div class="prompt">沒行情就繼續播放；看到真正的進場點才按做多或做空。</div>
+          <div class="prompt-note">模型數字會隨每一天重新匹配。考的是「何時進場」，不是一開始就被迫猜方向。</div>
         </div>
-        <div class="decision-buttons">
+        <div class="main-actions">
+          <button id="playBtn" class="next-day">▶ 播放下一天</button>
           <button class="decision long" data-choice="LONG">做多</button>
-          <button class="decision wait" data-choice="WAIT">觀望</button>
           <button class="decision short" data-choice="SHORT">做空</button>
         </div>
       </div>
-    </section>
 
-    <section class="reveal card">
-      <div class="reveal-left">
-        <button id="playBtn" disabled>▶ 播放結果</button>
-        <button id="stepBtn" disabled>＋1 天</button>
-        <button id="resetRevealBtn" disabled>↺ 重播</button>
+      <div class="timeline-strip">
+        <button id="resetRevealBtn">↺ 回到起點</button>
         <div class="progress-track"><div id="progressBar"></div></div>
-        <span id="progressText">尚未作答</span>
+        <span id="progressText">起始日</span>
+        <span id="tradeBadge" class="choice-badge">尚未進場</span>
       </div>
-      <div id="choiceBadge" class="choice-badge">尚未選擇</div>
-    </section>
 
-    <section id="resultPanel" class="result-grid hidden">
-      <article class="metric card"><span>1D</span><strong id="ret1">—</strong><small>收盤報酬</small></article>
-      <article class="metric card"><span>3D</span><strong id="ret3">—</strong><small>主要方向判定</small></article>
-      <article class="metric card"><span>7D</span><strong id="ret7">—</strong><small>延伸結果</small></article>
-      <article class="metric card"><span>MFE</span><strong id="mfe">—</strong><small>期間最大有利幅度</small></article>
-      <article class="metric card"><span>MAE</span><strong id="mae">—</strong><small>期間最大不利幅度</small></article>
-      <article class="metric verdict card"><span>判定</span><strong id="verdict">—</strong><small id="verdictNote">以第 3 天收盤方向計</small></article>
+      <div id="tradePanel" class="trade-strip hidden">
+        <div><span>方向</span><b id="tradeDirection">—</b></div>
+        <div><span>入場價</span><b id="tradeEntry">—</b></div>
+        <div><span>目前價</span><b id="tradeCurrent">—</b></div>
+        <div><span>目前損益</span><b id="tradePnl">—</b></div>
+        <div><span>MFE / MAE</span><b id="tradeExcursion">—</b></div>
+        <div><span>持有</span><b id="tradeHeld">0 天</b></div>
+        <div class="trade-verdict"><span>3日判定</span><b id="tradeVerdict">等待</b></div>
+      </div>
     </section>
 
     <section class="explain card">
       <details>
-        <summary>這張考題圖怎麼算？</summary>
+        <summary>這張考題圖與模型怎麼算？</summary>
         <div class="explain-grid">
-          <p><b>普通 K：</b>由 cache 的 4H OHLC 依 UTC 日聚合，與正式歷史 replay 的日 K 聚合方式一致。</p>
-          <p><b>BB20：</b>普通日 K close 的 20 日母體標準差，basis ± 2σ。</p>
-          <p><b>平均K：</b>沿用正式引擎的 Heikin-Ashi：HA close=(O+H+L+C)/4；HA open 使用前一根 HA open/close 平均。</p>
-          <p><b>黃紫階梯：</b>HA close 高於 HA open 畫黃階梯；低於則畫紫階梯。階梯高度使用當日 HA close。</p>
+          <p><b>逐日播放：</b>畫面永遠維持最近 30 根日 K；每按一次只新增 1 天，像 TradingView 回放。</p>
+          <p><b>模型：</b>每一天使用該日最後一根 4H 的正式 S-state replay 特徵，再套目前 R2 Active probability model；非模型狀態明確顯示「無統計」。</p>
+          <p><b>失敗：</b>72H `TRUE_FAIL`；<b>存活：</b>72H 結構存活率；<b>樣本：</b>目前條件實際匹配到的歷史樣本數。</p>
+          <p><b>黃紫階梯：</b>沿用正式 Heikin-Ashi；BB20 使用普通日 K close 的 20 日母體標準差。</p>
         </div>
       </details>
     </section>
   </main>
+  <script src="./config.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>

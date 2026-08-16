@@ -3,17 +3,24 @@
 
   const CONTEXT_DAYS = 30;
   const BB_PERIOD = 20;
-  const MIN_CUTOFF_INDEX = (CONTEXT_DAYS - 1) + (BB_PERIOD - 1); // first visible day also has a full BB20
+  const MAX_FUTURE_DAYS = 45;
+  const MIN_CUTOFF_INDEX = (CONTEXT_DAYS - 1) + (BB_PERIOD - 1);
   const DAY_MS = 24 * 60 * 60 * 1000;
+  const MODEL_HORIZON = 18; // 72H = 18 x 4H
+  const MAX_MODEL_LEVEL = 5;
+  const cfg = window.SSTATE_QUIZ_CONFIG || {};
+  const workerUrl = String(cfg.workerUrl || '').replace(/\/$/, '');
+  const activeModelPath = String(cfg.activeModelPath || '/api/model/active');
 
   const state = {
     symbols: [],
     question: null,
-    choice: null,
+    trade: null,
     revealed: 0,
-    playing: false,
-    timer: null,
     hoverIndex: null,
+    activeModel: null,
+    modelError: '',
+    timelineCache: new Map(),
     stats: loadStats(),
   };
 
@@ -24,7 +31,7 @@
 
   function loadStats() {
     try {
-      const raw = JSON.parse(localStorage.getItem('sstate_quiz_stats') || '{}');
+      const raw = JSON.parse(localStorage.getItem('sstate_quiz_trade_stats_v2') || '{}');
       return { total: Number(raw.total) || 0, hit: Number(raw.hit) || 0 };
     } catch (_) {
       return { total: 0, hit: 0 };
@@ -32,7 +39,7 @@
   }
 
   function saveStats() {
-    localStorage.setItem('sstate_quiz_stats', JSON.stringify(state.stats));
+    localStorage.setItem('sstate_quiz_trade_stats_v2', JSON.stringify(state.stats));
     renderStats();
   }
 
@@ -48,6 +55,7 @@
     resizeCanvas();
     window.addEventListener('resize', () => { resizeCanvas(); draw(); });
 
+    const modelPromise = loadActiveModel();
     try {
       const res = await fetch('./symbols.json', { cache: 'no-store' });
       if (!res.ok) throw new Error(`symbols.json HTTP ${res.status}`);
@@ -59,17 +67,17 @@
       setLoadState(`載入失敗：${err.message}`);
       $('chartEmpty').textContent = '無法讀取題庫。請透過 GitHub Pages / HTTP 開啟，不要直接用 file://。';
     }
+    await modelPromise;
+    renderModelHud();
   }
 
   function bindEvents() {
     $('newQuestionBtn').addEventListener('click', newQuestion);
-    $('playBtn').addEventListener('click', togglePlay);
-    $('stepBtn').addEventListener('click', revealOne);
-    $('resetRevealBtn').addEventListener('click', resetReveal);
-    $('futureDaysSelect').addEventListener('change', () => state.question && newQuestion());
-    $('blindMode').addEventListener('change', renderQuestionMeta);
+    $('playBtn').addEventListener('click', revealOneDay);
+    $('resetRevealBtn').addEventListener('click', resetSameQuestion);
+    $('blindMode').addEventListener('change', () => { renderQuestionMeta(); draw(); });
     document.querySelectorAll('.decision').forEach(btn => {
-      btn.addEventListener('click', () => choose(btn.dataset.choice));
+      btn.addEventListener('click', () => enterTrade(btn.dataset.choice));
     });
 
     canvas.addEventListener('mousemove', onCanvasMove);
@@ -80,46 +88,85 @@
     });
   }
 
+  async function loadActiveModel() {
+    if (!workerUrl) {
+      state.modelError = '未設定 Worker URL';
+      renderModelStatus();
+      return;
+    }
+    try {
+      const url = `${workerUrl}${activeModelPath}?t=${Date.now()}`;
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const model = await res.json();
+      if (!model || !model.states || !model.model_id) throw new Error('模型格式不完整');
+      state.activeModel = model;
+      state.modelError = '';
+    } catch (err) {
+      state.activeModel = null;
+      state.modelError = err.message || String(err);
+    }
+    renderModelStatus();
+  }
+
+  function renderModelStatus() {
+    const el = $('modelStatus');
+    if (state.activeModel) {
+      el.textContent = `R2 Active｜${state.activeModel.model_id}`;
+      el.classList.remove('error');
+    } else {
+      el.textContent = `R2 Active 讀取失敗${state.modelError ? `｜${state.modelError}` : ''}`;
+      el.classList.add('error');
+    }
+  }
+
   async function newQuestion() {
-    stopPlayback();
-    resetDecisionUI();
-    $('resultPanel').classList.add('hidden');
+    state.trade = null;
+    state.revealed = 0;
+    state.hoverIndex = null;
+    $('tradePanel').classList.add('hidden');
     $('chartEmpty').classList.remove('hidden');
     $('chartEmpty').textContent = '隨機抽取歷史片段…';
     setLoadState('抽題中');
+    resetActionState();
 
-    const futureDays = Number($('futureDaysSelect').value) || 7;
     let lastError = null;
-
-    for (let attempt = 0; attempt < 12; attempt++) {
+    for (let attempt = 0; attempt < 16; attempt++) {
       const symbol = state.symbols[Math.floor(Math.random() * state.symbols.length)];
       try {
-        const fourH = await loadCsv(symbol);
+        const [fourH, timeline] = await Promise.all([loadCsv(symbol), loadTimeline(symbol)]);
         const daily = aggregate4hToDaily(fourH);
-        if (daily.length < MIN_CUTOFF_INDEX + futureDays + 2) continue;
+        if (daily.length < MIN_CUTOFF_INDEX + MAX_FUTURE_DAYS + 3) continue;
 
         const ha = calculateHeikinAshi(daily);
         const bb = rollingBollinger(daily);
-        const latestCutoff = daily.length - futureDays - 1;
+        const latestCutoff = daily.length - MAX_FUTURE_DAYS - 3;
         const earliestCutoff = MIN_CUTOFF_INDEX;
         if (latestCutoff <= earliestCutoff) continue;
 
-        // Avoid the newest 2 days so a daily update cannot turn the answer into a still-forming edge case.
-        const cappedLatest = Math.max(earliestCutoff, latestCutoff - 2);
-        const cutoff = randomInt(earliestCutoff, cappedLatest);
-        const contextStart = cutoff - CONTEXT_DAYS + 1;
-        const end = Math.min(daily.length - 1, cutoff + futureDays);
-
+        // Avoid the newest few days; every question must have a fully-known historical future.
+        const cutoff = randomInt(earliestCutoff, latestCutoff);
+        const end = Math.min(daily.length - 1, cutoff + MAX_FUTURE_DAYS);
         const rows = daily.map((d, i) => ({ ...d, ha: ha[i], bb: bb[i], index: i }));
-        state.question = { symbol, rows, contextStart, cutoff, end, futureDays };
-        state.choice = null;
+        const modelByDay = new Map((timeline.rows || []).map(x => [Number(x.day_time), x]));
+
+        state.question = {
+          symbol,
+          rows,
+          cutoff,
+          end,
+          maxFutureDays: end - cutoff,
+          modelByDay,
+          scored: false,
+        };
+        state.trade = null;
         state.revealed = 0;
         state.hoverIndex = null;
 
         $('chartEmpty').classList.add('hidden');
         setLoadState(`題庫 ${state.symbols.length} 種市場`);
-        renderQuestionMeta();
-        draw();
+        resetActionState();
+        renderAll();
         return;
       } catch (err) {
         lastError = err;
@@ -156,7 +203,15 @@
     return rows;
   }
 
-  // Matches engine/runtime_core.py aggregate_4h_to_daily(): group by UTC day first.
+  async function loadTimeline(symbol) {
+    if (state.timelineCache.has(symbol)) return state.timelineCache.get(symbol);
+    const res = await fetch(`./model_timeline/${encodeURIComponent(symbol)}.json`, { cache: 'no-store' });
+    if (!res.ok) throw new Error(`${symbol} 模型時間線 HTTP ${res.status}`);
+    const data = await res.json();
+    state.timelineCache.set(symbol, data);
+    return data;
+  }
+
   function aggregate4hToDaily(rows) {
     const out = [];
     let cur = null;
@@ -178,7 +233,6 @@
     return out;
   }
 
-  // Matches engine/runtime_core.py calculate_heikin_ashi().
   function calculateHeikinAshi(rows) {
     const out = [];
     let prevOpen = null;
@@ -186,21 +240,19 @@
     rows.forEach((c, i) => {
       const haClose = (c.open + c.high + c.low + c.close) / 4;
       const haOpen = i === 0 ? (c.open + c.close) / 2 : (prevOpen + prevClose) / 2;
-      const item = {
+      out.push({
         open: haOpen,
         high: Math.max(c.high, haOpen, haClose),
         low: Math.min(c.low, haOpen, haClose),
         close: haClose,
         color: haClose > haOpen ? 'yellow' : haClose < haOpen ? 'purple' : 'flat',
-      };
-      out.push(item);
+      });
       prevOpen = haOpen;
       prevClose = haClose;
     });
     return out;
   }
 
-  // Matches engine/runtime_core.py BB20: ordinary daily close, population std (ddof=0), basis ± 2σ.
   function rollingBollinger(rows) {
     const out = Array(rows.length).fill(null);
     for (let i = BB_PERIOD - 1; i < rows.length; i++) {
@@ -213,179 +265,288 @@
     return out;
   }
 
-  function choose(choice) {
-    if (!state.question || state.choice) return;
-    state.choice = choice;
-    document.querySelectorAll('.decision').forEach(btn => {
-      btn.disabled = true;
-      btn.classList.toggle('selected', btn.dataset.choice === choice);
-    });
-    $('playBtn').disabled = false;
-    $('stepBtn').disabled = false;
-    $('resetRevealBtn').disabled = false;
-    $('choiceBadge').textContent = choice === 'LONG' ? '你的判斷：做多' : choice === 'SHORT' ? '你的判斷：做空' : '你的判斷：觀望';
-    $('choiceBadge').style.color = choice === 'LONG' ? 'var(--green)' : choice === 'SHORT' ? 'var(--red)' : '#d4dceb';
-    renderQuestionMeta();
-    updateProgress();
-    draw();
+  function currentIndex() {
+    return state.question ? Math.min(state.question.end, state.question.cutoff + state.revealed) : 0;
   }
 
-  function resetDecisionUI() {
-    state.choice = null;
-    state.revealed = 0;
-    document.querySelectorAll('.decision').forEach(btn => { btn.disabled = false; btn.classList.remove('selected'); });
-    $('playBtn').disabled = true;
-    $('stepBtn').disabled = true;
-    $('resetRevealBtn').disabled = true;
-    $('playBtn').textContent = '▶ 播放結果';
-    $('choiceBadge').textContent = '尚未選擇';
-    $('choiceBadge').style.color = '';
-    updateProgress();
+  function revealOneDay() {
+    if (!state.question) return;
+    if (state.revealed >= state.question.maxFutureDays) return;
+    state.revealed += 1;
+    scoreTradeIfReady();
+    renderAll();
+    if (state.revealed >= state.question.maxFutureDays) {
+      $('playBtn').disabled = true;
+      document.querySelectorAll('.decision').forEach(btn => { if (!state.trade) btn.disabled = true; });
+    }
   }
 
-  function resetReveal() {
-    stopPlayback();
-    state.revealed = 0;
-    $('resultPanel').classList.add('hidden');
-    $('playBtn').textContent = '▶ 播放結果';
-    updateProgress();
-    draw();
-  }
-
-  function togglePlay() {
-    if (!state.choice || !state.question) return;
-    if (state.playing) {
-      stopPlayback();
+  function enterTrade(direction) {
+    if (!state.question || state.trade) return;
+    const idx = currentIndex();
+    if (idx + 3 > state.question.end) {
+      $('tradeBadge').textContent = '剩餘歷史不足 3 天';
       return;
     }
-    if (state.revealed >= availableFutureBars()) resetReveal();
-    state.playing = true;
-    $('playBtn').textContent = '⏸ 暫停';
-    const tick = () => {
-      if (!state.playing) return;
-      revealOne();
-      if (state.revealed >= availableFutureBars()) {
-        stopPlayback();
-        return;
-      }
-      state.timer = setTimeout(tick, Number($('speedSelect').value) || 650);
+    const row = state.question.rows[idx];
+    state.trade = {
+      direction,
+      entryIndex: idx,
+      entryPrice: row.close,
+      scored: false,
     };
-    tick();
+    document.querySelectorAll('.decision').forEach(btn => {
+      btn.disabled = true;
+      btn.classList.toggle('selected', btn.dataset.choice === direction);
+    });
+    $('tradePanel').classList.remove('hidden');
+    renderAll();
   }
 
-  function stopPlayback() {
-    state.playing = false;
-    if (state.timer) clearTimeout(state.timer);
-    state.timer = null;
-    if ($('playBtn')) $('playBtn').textContent = '▶ 播放結果';
+  function resetSameQuestion() {
+    if (!state.question) return;
+    state.revealed = 0;
+    state.trade = null;
+    state.hoverIndex = null;
+    resetActionState();
+    renderAll();
   }
 
-  function availableFutureBars() {
-    if (!state.question) return 0;
-    return state.question.end - state.question.cutoff;
+  function resetActionState() {
+    if (!$('playBtn')) return;
+    $('playBtn').disabled = !state.question;
+    document.querySelectorAll('.decision').forEach(btn => {
+      btn.disabled = !state.question;
+      btn.classList.remove('selected');
+    });
+    $('tradePanel').classList.add('hidden');
+    $('tradeBadge').textContent = '尚未進場';
+    $('tradeBadge').style.color = '';
   }
 
-  function revealOne() {
-    if (!state.question || !state.choice) return;
-    const max = availableFutureBars();
-    if (state.revealed < max) state.revealed += 1;
-    updateProgress();
+  function scoreTradeIfReady() {
+    const q = state.question;
+    const t = state.trade;
+    if (!q || !t || t.scored || q.scored) return;
+    if (currentIndex() < t.entryIndex + 3) return;
+    const entry = t.entryPrice;
+    const close3 = q.rows[t.entryIndex + 3].close;
+    const raw = (close3 / entry - 1) * 100;
+    const hit = t.direction === 'LONG' ? raw > 0 : raw < 0;
+    t.scored = true;
+    q.scored = true;
+    state.stats.total += 1;
+    if (hit) state.stats.hit += 1;
+    saveStats();
+  }
+
+  function renderAll() {
     renderQuestionMeta();
+    updateProgress();
+    renderTradePanel();
+    renderModelHud();
     draw();
-    if (state.revealed >= max) finishQuestion();
   }
 
   function updateProgress() {
-    const max = availableFutureBars();
+    if (!state.question) return;
+    const max = state.question.maxFutureDays;
     const pct = max ? Math.min(100, state.revealed / max * 100) : 0;
     $('progressBar').style.width = `${pct}%`;
-    $('progressText').textContent = state.choice ? `${state.revealed} / ${max} 天` : '尚未作答';
-  }
-
-  function finishQuestion() {
-    if (!state.question || !state.choice) return;
-    renderResults();
-    if (!state.question.scored && state.choice !== 'WAIT') {
-      const r3 = returnAt(3);
-      if (r3 !== null) {
-        state.stats.total += 1;
-        const hit = (state.choice === 'LONG' && r3 > 0) || (state.choice === 'SHORT' && r3 < 0);
-        if (hit) state.stats.hit += 1;
-        state.question.scored = true;
-        saveStats();
-      }
-    }
-  }
-
-  function returnAt(days) {
-    if (!state.question) return null;
-    const q = state.question;
-    const idx = q.cutoff + days;
-    if (idx > q.end || idx <= q.cutoff) return null;
-    return (q.rows[idx].close / q.rows[q.cutoff].close - 1) * 100;
-  }
-
-  function renderResults() {
-    const q = state.question;
-    const entry = q.rows[q.cutoff].close;
-    const future = q.rows.slice(q.cutoff + 1, q.end + 1);
-    const ret = (n) => returnAt(n);
-    const maxHigh = Math.max(...future.map(x => x.high));
-    const minLow = Math.min(...future.map(x => x.low));
-    const mfeLong = (maxHigh / entry - 1) * 100;
-    const maeLong = (minLow / entry - 1) * 100;
-
-    setMetric('ret1', ret(1));
-    setMetric('ret3', ret(3));
-    setMetric('ret7', ret(7));
-
-    let mfe = mfeLong, mae = maeLong;
-    if (state.choice === 'SHORT') {
-      mfe = (entry / minLow - 1) * 100;
-      mae = (entry / maxHigh - 1) * 100;
-    }
-    if (state.choice === 'WAIT') {
-      mfe = mfeLong;
-      mae = maeLong;
-    }
-    setMetric('mfe', mfe);
-    setMetric('mae', mae);
-
-    const r3 = ret(3);
-    const verdict = $('verdict');
-    const note = $('verdictNote');
-    const card = verdict.closest('.metric');
-    card.classList.remove('positive','negative','neutral');
-
-    if (state.choice === 'WAIT') {
-      verdict.textContent = '已觀望';
-      note.textContent = `3D 實際 ${fmtPct(r3)}；不計入命中率`;
-      card.classList.add('neutral');
-    } else {
-      const hit = (state.choice === 'LONG' && r3 > 0) || (state.choice === 'SHORT' && r3 < 0);
-      verdict.textContent = hit ? '方向命中' : '方向錯誤';
-      note.textContent = `以第 3 天收盤 ${fmtPct(r3)} 判定`;
-      card.classList.add(hit ? 'positive' : 'negative');
-    }
-    $('resultPanel').classList.remove('hidden');
-  }
-
-  function setMetric(id, value) {
-    const el = $(id);
-    el.textContent = value === null ? '—' : fmtPct(value);
-    const card = el.closest('.metric');
-    card.classList.remove('positive','negative','neutral');
-    if (value === null || Math.abs(value) < 1e-10) card.classList.add('neutral');
-    else card.classList.add(value > 0 ? 'positive' : 'negative');
+    $('progressText').textContent = state.revealed ? `已播放 ${state.revealed} 天` : '起始日';
+    $('playBtn').textContent = state.revealed >= max ? '歷史已播完' : '▶ 播放下一天';
+    $('playBtn').disabled = state.revealed >= max;
   }
 
   function renderQuestionMeta() {
     if (!state.question) return;
     const q = state.question;
-    const blind = $('blindMode').checked && !state.choice;
-    const cutoffDate = formatDate(q.rows[q.cutoff].time);
+    const idx = currentIndex();
+    const atEnd = state.revealed >= q.maxFutureDays;
+    const blind = $('blindMode').checked && !state.trade && !atEnd;
+    const currentDate = formatDate(q.rows[idx].time);
     $('marketTitle').textContent = blind ? '隨機市場 · 盲測中' : `${q.symbol} / USDT`;
-    $('marketMeta').textContent = blind ? `30 日結構 · 截止日已隱藏 · 未來 ${q.futureDays} 天未顯示` : `判斷截止：${cutoffDate} · 已揭曉 ${state.revealed}/${availableFutureBars()} 天`;
+    $('marketMeta').textContent = blind
+      ? `最近 30 日結構 · 已前進 ${state.revealed} 天 · 日期隱藏`
+      : `目前日期：${currentDate} · 從起始點前進 ${state.revealed} 天`;
+  }
+
+  function renderTradePanel() {
+    const q = state.question;
+    const t = state.trade;
+    if (!q || !t) {
+      $('tradePanel').classList.add('hidden');
+      if (q) {
+        $('tradeBadge').textContent = '尚未進場';
+        $('tradeBadge').style.color = '';
+      }
+      return;
+    }
+
+    const nowIdx = currentIndex();
+    const now = q.rows[nowIdx].close;
+    const held = Math.max(0, nowIdx - t.entryIndex);
+    const pnl = directionalReturn(t.direction, t.entryPrice, now);
+    const slice = q.rows.slice(t.entryIndex, nowIdx + 1);
+    const maxHigh = Math.max(...slice.map(x => x.high));
+    const minLow = Math.min(...slice.map(x => x.low));
+    let mfe, mae;
+    if (t.direction === 'LONG') {
+      mfe = (maxHigh / t.entryPrice - 1) * 100;
+      mae = (minLow / t.entryPrice - 1) * 100;
+    } else {
+      mfe = (t.entryPrice / minLow - 1) * 100;
+      mae = (t.entryPrice / maxHigh - 1) * 100;
+    }
+
+    $('tradePanel').classList.remove('hidden');
+    $('tradeDirection').textContent = t.direction === 'LONG' ? '做多' : '做空';
+    $('tradeDirection').className = t.direction === 'LONG' ? 'positive-text' : 'negative-text';
+    $('tradeEntry').textContent = formatPrice(t.entryPrice);
+    $('tradeCurrent').textContent = formatPrice(now);
+    $('tradePnl').textContent = fmtPct(pnl);
+    $('tradePnl').className = pnl >= 0 ? 'positive-text' : 'negative-text';
+    $('tradeExcursion').textContent = `${fmtPct(mfe)} / ${fmtPct(mae)}`;
+    $('tradeHeld').textContent = `${held} 天`;
+    $('tradeBadge').textContent = t.direction === 'LONG' ? '已做多' : '已做空';
+    $('tradeBadge').style.color = t.direction === 'LONG' ? 'var(--green)' : 'var(--red)';
+
+    const verdict = $('tradeVerdict');
+    if (held < 3) {
+      verdict.textContent = `等待 ${3-held} 天`;
+      verdict.className = '';
+    } else {
+      const close3 = q.rows[t.entryIndex + 3].close;
+      const r3 = directionalReturn(t.direction, t.entryPrice, close3);
+      const hit = r3 > 0;
+      verdict.textContent = `${hit ? '命中' : '錯誤'} ${fmtPct(r3)}`;
+      verdict.className = hit ? 'positive-text' : 'negative-text';
+    }
+  }
+
+  function directionalReturn(direction, entry, price) {
+    if (!Number.isFinite(entry) || !Number.isFinite(price) || entry === 0) return 0;
+    return direction === 'SHORT' ? (entry / price - 1) * 100 : (price / entry - 1) * 100;
+  }
+
+  function currentTimelineRow() {
+    const q = state.question;
+    if (!q) return null;
+    return q.modelByDay.get(Number(q.rows[currentIndex()].time)) || null;
+  }
+
+  function renderModelHud() {
+    const timeline = currentTimelineRow();
+    if (!state.question) return;
+    if (!state.activeModel) {
+      $('modelState').textContent = 'R2 Active 模型無法讀取';
+      $('modelLevel').textContent = '—';
+      setModelStat('modelFail', null);
+      setModelStat('modelSurvival', null);
+      $('modelSamples').textContent = '—';
+      $('modelHint').textContent = state.modelError || '請確認 Worker / R2';
+      return;
+    }
+    if (!timeline) {
+      $('modelState').textContent = '非模型狀態｜無統計';
+      $('modelLevel').textContent = '—';
+      setModelStat('modelFail', null);
+      setModelStat('modelSurvival', null);
+      $('modelSamples').textContent = '—';
+      $('modelHint').textContent = '此日沒有可匹配的 S0.5 / S1 / S2 / S3；可繼續播放下一天';
+      return;
+    }
+
+    const pred = lookupProbability(state.activeModel, timeline.state, MODEL_HORIZON, timeline.features || {});
+    const stateText = `${timeline.state}｜${stateLabel(timeline.state)}`;
+    $('modelState').textContent = stateText;
+    if (!pred.available) {
+      $('modelLevel').textContent = '—';
+      setModelStat('modelFail', null);
+      setModelStat('modelSurvival', null);
+      $('modelSamples').textContent = '—';
+      $('modelHint').textContent = timeline.state === 'S0' || timeline.state === 'OTHER' || timeline.state === 'NON_MODEL'
+        ? '目前不是 S0.5 / S1 / S2 / S3 模型狀態'
+        : `目前模型無匹配：${pred.reason || 'unknown'}`;
+      return;
+    }
+
+    $('modelLevel').textContent = `L${pred.level}`;
+    setModelStat('modelFail', pred.trueFail);
+    setModelStat('modelSurvival', pred.survival);
+    $('modelSamples').textContent = Number(pred.samples || 0).toLocaleString();
+    $('modelHint').textContent = `3日成功 ${fmtModelPct(pred.success)}｜${featureSummary(timeline.features || {})}`;
+  }
+
+  function lookupProbability(model, marketState, horizon, features) {
+    const stateNode = (model.states || {})[marketState];
+    if (!stateNode) return { available:false, reason:'state_missing' };
+    const hnode = (stateNode.horizons || {})[String(horizon)];
+    if (!hnode) return { available:false, reason:'horizon_missing' };
+    const minSamples = Number(model.default_min_samples || 50);
+    const levels = (hnode.levels || []).filter(x => Number(x.level || 0) <= MAX_MODEL_LEVEL);
+    for (let li = levels.length - 1; li >= 0; li--) {
+      const level = levels[li];
+      const fields = Array.isArray(level.fields) ? level.fields : [];
+      const sig = signature(features, fields);
+      const rule = (level.rules || []).find(r => r.signature === sig && Number(r.samples || 0) >= minSamples);
+      if (rule) return normalizePrediction(rule, Number(level.level || 0), false);
+    }
+    if (!hnode.baseline) return { available:false, reason:'baseline_missing' };
+    return normalizePrediction(hnode.baseline, 0, true);
+  }
+
+  function normalizePrediction(node, level, fallback) {
+    const outcomes = node.outcomes || {};
+    const outcomeProb = (key) => {
+      const v = outcomes[key] && outcomes[key].probability;
+      return Number.isFinite(Number(v)) ? Number(v) : null;
+    };
+    const success = outcomeProb('SUCCESS_WITHIN_HORIZON') ?? Number(node.probability || 0);
+    const alive = outcomeProb('ALIVE_SLOW');
+    const trueFail = Number.isFinite(Number(node.true_fail_probability))
+      ? Number(node.true_fail_probability)
+      : (outcomeProb('TRUE_FAIL') ?? 0);
+    const survival = Number.isFinite(Number(node.structural_survival_probability))
+      ? Number(node.structural_survival_probability)
+      : success + (alive ?? 0);
+    return {
+      available: true,
+      samples: Number(node.samples || 0),
+      level,
+      fallback,
+      success,
+      trueFail,
+      survival,
+    };
+  }
+
+  function signature(features, fields) {
+    if (!fields.length) return 'BASELINE';
+    return fields.map(field => `${field}=${features[field]}`).join('|');
+  }
+
+  function setModelStat(id, value) {
+    $(id).textContent = value === null || !Number.isFinite(Number(value)) ? '—' : fmtModelPct(Number(value));
+  }
+
+  function stateLabel(s) {
+    return ({
+      'S0.5':'底部抬高',
+      'S1':'自然突破中軌',
+      'S2':'回踩觀察',
+      'S3':'黃勝紫2階',
+      'S0':'等待轉強',
+      'OTHER':'非模型狀態',
+      'NON_MODEL':'非模型狀態',
+    })[s] || '非模型狀態';
+  }
+
+  function featureSummary(f) {
+    const mid = ({rising:'中軌上斜', flat:'中軌平緩', flattening:'中軌走平', falling:'中軌下斜'})[f.midline_state] || '中軌未知';
+    const bw = ({EXPANDING:'布林擴張', CONTRACTING:'布林收縮', FLAT:'布林平穩'})[f.bandwidth_trend] || '布林未知';
+    const age = ({'1':'第1根4H','2_3':'2-3根4H','4_6':'4-6根4H','7_PLUS':'7+根4H'})[f.state_age_bin] || '';
+    return `${mid}｜${f.trigger_stage || 'T0'}｜${bw}${age ? `｜${age}` : ''}`;
   }
 
   function resizeCanvas() {
@@ -398,6 +559,14 @@
     canvas._cssHeight = rect.height;
   }
 
+  function visibleRows() {
+    const q = state.question;
+    if (!q) return [];
+    const end = currentIndex();
+    const start = Math.max(0, end - CONTEXT_DAYS + 1);
+    return q.rows.slice(start, end + 1);
+  }
+
   function draw() {
     const w = canvas._cssWidth || canvas.clientWidth;
     const h = canvas._cssHeight || canvas.clientHeight;
@@ -407,11 +576,10 @@
     if (!state.question) return;
 
     const q = state.question;
-    const lastVisible = Math.min(q.end, q.cutoff + state.revealed);
-    const rows = q.rows.slice(q.contextStart, lastVisible + 1);
+    const rows = visibleRows();
     if (!rows.length) return;
 
-    const pad = { left:16, right:82, top:22, bottom:34 };
+    const pad = { left:16, right:82, top:18, bottom:30 };
     const plotW = w - pad.left - pad.right;
     const plotH = h - pad.top - pad.bottom;
     const values = [];
@@ -433,7 +601,6 @@
     drawLine(rows, xAt, yAt, r => r.bb && r.bb.basis, 'rgba(225,232,244,.52)', 1.15);
     drawLine(rows, xAt, yAt, r => r.bb && r.bb.lower, 'rgba(86,164,255,.72)', 1.25);
 
-    // Ordinary daily candlesticks.
     rows.forEach((r, i) => {
       const x = xAt(i);
       const up = r.close >= r.open;
@@ -447,7 +614,6 @@
       ctx.fillRect(x-barW/2, top, barW, bh);
     });
 
-    // HA yellow/purple staircase. Height is HA close; color comes from HA close vs HA open.
     ctx.lineWidth = 3.2;
     ctx.lineJoin = 'miter';
     for (let i = 0; i < rows.length; i++) {
@@ -465,15 +631,10 @@
       }
     }
 
-    const cutoffLocal = q.cutoff - q.contextStart;
-    if (cutoffLocal >= 0 && cutoffLocal < rows.length) {
-      const boundary = cutoffLocal === rows.length-1 ? pad.left + plotW - plotW/rows.length/2 : (xAt(cutoffLocal) + xAt(cutoffLocal+1))/2;
-      ctx.save();
-      ctx.setLineDash([5,5]); ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.moveTo(boundary,pad.top); ctx.lineTo(boundary,pad.top+plotH); ctx.stroke();
-      ctx.restore();
-      ctx.fillStyle='rgba(235,242,255,.78)'; ctx.font='11px sans-serif'; ctx.textAlign='right';
-      ctx.fillText('判斷點', boundary-6, pad.top+14);
+    drawMarkerForAbsoluteIndex(rows, q.cutoff, xAt, pad, plotH, 'rgba(255,255,255,.48)', '起始', true);
+    if (state.trade) {
+      const c = state.trade.direction === 'LONG' ? '#3cd6a0' : '#ff667f';
+      drawMarkerForAbsoluteIndex(rows, state.trade.entryIndex, xAt, pad, plotH, c, state.trade.direction === 'LONG' ? '做多' : '做空', false);
     }
 
     if (state.hoverIndex !== null && state.hoverIndex >= 0 && state.hoverIndex < rows.length) {
@@ -483,6 +644,19 @@
     }
 
     canvas._layout = { rows, pad, plotW, plotH, min, max, xAt, yAt };
+  }
+
+  function drawMarkerForAbsoluteIndex(rows, absoluteIndex, xAt, pad, plotH, color, label, dashed) {
+    const local = rows.findIndex(r => r.index === absoluteIndex);
+    if (local < 0) return;
+    const x = xAt(local);
+    ctx.save();
+    if (dashed) ctx.setLineDash([5,5]);
+    ctx.strokeStyle = color; ctx.lineWidth = dashed ? 1 : 1.6;
+    ctx.beginPath(); ctx.moveTo(x,pad.top); ctx.lineTo(x,pad.top+plotH); ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle = color; ctx.font='11px sans-serif'; ctx.textAlign='right';
+    ctx.fillText(label, x-5, pad.top+13);
   }
 
   function drawGrid(ctx, pad, plotW, plotH, min, max, rows) {
@@ -500,10 +674,9 @@
       ctx.beginPath(); ctx.moveTo(x,pad.top); ctx.lineTo(x,pad.top+plotH); ctx.stroke();
       ctx.textAlign='center'; ctx.textBaseline='top';
       const q=state.question;
-      const absoluteIndex=rows[i].index;
-      const blind=$('blindMode').checked && !state.choice;
-      const label=blind ? relativeDayLabel(absoluteIndex-q.cutoff) : formatShortDate(rows[i].time);
-      ctx.fillText(label,x,pad.top+plotH+8);
+      const blind=$('blindMode').checked && !state.trade && state.revealed < q.maxFutureDays;
+      const label=blind ? relativeDayLabel(rows[i].index-q.cutoff) : formatShortDate(rows[i].time);
+      ctx.fillText(label,x,pad.top+plotH+7);
     }
     ctx.restore();
   }
@@ -531,9 +704,9 @@
     state.hoverIndex=i;
     const r=layout.rows[i];
     const q=state.question;
-    const blind=$('blindMode').checked && !state.choice;
+    const blind=$('blindMode').checked && !state.trade && state.revealed < q.maxFutureDays;
     const date=blind ? relativeDayLabel(r.index-q.cutoff) : formatDate(r.time);
-    const haColor=r.ha.color==='yellow'?'黃':'紫';
+    const haColor=r.ha.color==='yellow'?'黃':r.ha.color==='purple'?'紫':'平';
     tooltip.innerHTML = `${date}<br>O ${formatPrice(r.open)}　H ${formatPrice(r.high)}<br>L ${formatPrice(r.low)}　C ${formatPrice(r.close)}<br>HA ${haColor} ${formatPrice(r.ha.close)}${r.bb?`<br>BB中軌 ${formatPrice(r.bb.basis)}`:''}`;
     tooltip.classList.remove('hidden');
     const tw=tooltip.offsetWidth, th=tooltip.offsetHeight;
@@ -555,7 +728,8 @@
     if (av>=0.01) return v.toFixed(5);
     return v.toPrecision(5);
   }
-  function fmtPct(v) { return v===null || !Number.isFinite(v) ? '—' : `${v>=0?'+':''}${v.toFixed(2)}%`; }
+  function fmtPct(v) { return !Number.isFinite(v) ? '—' : `${v>=0?'+':''}${v.toFixed(2)}%`; }
+  function fmtModelPct(v) { return !Number.isFinite(v) ? '—' : `${(v*100).toFixed(1)}%`; }
 
   init();
 })();
