@@ -21,7 +21,8 @@
     activeModel: null,
     modelError: '',
     timelineCache: new Map(),
-    stats: loadStats(),
+    stats: { total: 0, hit: 0, pnl: 0 },
+    history: [],
   };
 
   const $ = (id) => document.getElementById(id);
@@ -29,28 +30,44 @@
   const ctx = canvas.getContext('2d');
   const tooltip = $('chartTooltip');
 
-  function loadStats() {
-    try {
-      const raw = JSON.parse(localStorage.getItem('sstate_quiz_trade_stats_v2') || '{}');
-      return { total: Number(raw.total) || 0, hit: Number(raw.hit) || 0 };
-    } catch (_) {
-      return { total: 0, hit: 0 };
-    }
-  }
-
-  function saveStats() {
-    localStorage.setItem('sstate_quiz_trade_stats_v2', JSON.stringify(state.stats));
-    renderStats();
-  }
-
   function renderStats() {
     $('statTotal').textContent = state.stats.total;
     $('statHit').textContent = state.stats.hit;
     $('statRate').textContent = state.stats.total ? `${(state.stats.hit / state.stats.total * 100).toFixed(1)}%` : '—';
+    $('statPnl').textContent = fmtPct(state.stats.pnl);
+    $('statPnl').className = state.stats.pnl > 0 ? 'positive-text' : state.stats.pnl < 0 ? 'negative-text' : '';
+  }
+
+  function renderHistory() {
+    const panel = $('sessionHistory');
+    const body = $('historyBody');
+    if (!panel || !body) return;
+    if (!state.history.length) {
+      panel.classList.add('hidden');
+      body.innerHTML = '';
+      return;
+    }
+    panel.classList.remove('hidden');
+    body.innerHTML = state.history.map((r, i) => {
+      const directionClass = r.direction === 'LONG' ? 'positive-text' : 'negative-text';
+      const pnlClass = r.pnl > 0 ? 'positive-text' : r.pnl < 0 ? 'negative-text' : '';
+      return `<tr>
+        <td>${state.history.length - i}</td>
+        <td><b>${escapeHtml(r.symbol)} / USDT</b></td>
+        <td class="${directionClass}">${r.direction === 'LONG' ? '做多' : '做空'}</td>
+        <td>${escapeHtml(r.entryDate)} → ${escapeHtml(r.exitDate)}</td>
+        <td>${r.held} 天</td>
+        <td class="${pnlClass}"><b>${fmtPct(r.pnl)}</b></td>
+        <td>${escapeHtml(formatModelSnapshot(r.modelAtEntry))}</td>
+      </tr>`;
+    }).join('');
   }
 
   async function init() {
+    // v3 session score is intentionally memory-only. Clear the legacy persisted score once.
+    try { localStorage.removeItem('sstate_quiz_trade_stats_v2'); } catch (_) {}
     renderStats();
+    renderHistory();
     bindEvents();
     resizeCanvas();
     window.addEventListener('resize', () => { resizeCanvas(); draw(); });
@@ -74,6 +91,7 @@
   function bindEvents() {
     $('newQuestionBtn').addEventListener('click', newQuestion);
     $('playBtn').addEventListener('click', revealOneDay);
+    $('closeBtn').addEventListener('click', closeTrade);
     $('resetRevealBtn').addEventListener('click', resetSameQuestion);
     $('blindMode').addEventListener('change', () => { renderQuestionMeta(); draw(); });
     document.querySelectorAll('.decision').forEach(btn => {
@@ -121,6 +139,7 @@
   }
 
   async function newQuestion() {
+    if (state.trade && !state.trade.closed) return;
     state.trade = null;
     state.revealed = 0;
     state.hoverIndex = null;
@@ -273,7 +292,6 @@
     if (!state.question) return;
     if (state.revealed >= state.question.maxFutureDays) return;
     state.revealed += 1;
-    scoreTradeIfReady();
     renderAll();
     if (state.revealed >= state.question.maxFutureDays) {
       $('playBtn').disabled = true;
@@ -284,27 +302,72 @@
   function enterTrade(direction) {
     if (!state.question || state.trade) return;
     const idx = currentIndex();
-    if (idx + 3 > state.question.end) {
-      $('tradeBadge').textContent = '剩餘歷史不足 3 天';
-      return;
-    }
     const row = state.question.rows[idx];
     state.trade = {
       direction,
       entryIndex: idx,
       entryPrice: row.close,
-      scored: false,
+      modelAtEntry: modelSnapshotForIndex(idx),
+      closed: false,
+      exitIndex: null,
+      exitPrice: null,
+      realizedPnl: null,
     };
     document.querySelectorAll('.decision').forEach(btn => {
       btn.disabled = true;
       btn.classList.toggle('selected', btn.dataset.choice === direction);
     });
+    $('closeBtn').disabled = false;
+    $('newQuestionBtn').disabled = true;
+    $('resetRevealBtn').disabled = true;
     $('tradePanel').classList.remove('hidden');
     renderAll();
   }
 
+  function closeTrade() {
+    const q = state.question;
+    const t = state.trade;
+    if (!q || !t || t.closed) return;
+
+    const exitIndex = currentIndex();
+    const exitPrice = q.rows[exitIndex].close;
+    const pnl = directionalReturn(t.direction, t.entryPrice, exitPrice);
+    const held = Math.max(0, exitIndex - t.entryIndex);
+    const excursion = calculateTradeExcursion(q.rows, t.direction, t.entryPrice, t.entryIndex, exitIndex);
+
+    t.closed = true;
+    t.exitIndex = exitIndex;
+    t.exitPrice = exitPrice;
+    t.realizedPnl = pnl;
+    t.exitDate = formatDate(q.rows[exitIndex].time);
+
+    state.stats.total += 1;
+    if (pnl > 0) state.stats.hit += 1;
+    state.stats.pnl += pnl;
+    state.history.unshift({
+      symbol: q.symbol,
+      direction: t.direction,
+      entryDate: formatDate(q.rows[t.entryIndex].time),
+      exitDate: t.exitDate,
+      entryPrice: t.entryPrice,
+      exitPrice,
+      held,
+      pnl,
+      mfe: excursion.mfe,
+      mae: excursion.mae,
+      modelAtEntry: t.modelAtEntry,
+    });
+
+    $('closeBtn').disabled = true;
+    $('newQuestionBtn').disabled = false;
+    $('resetRevealBtn').disabled = false;
+    renderStats();
+    renderHistory();
+    renderAll();
+  }
+
   function resetSameQuestion() {
-    if (!state.question) return;
+    if (!state.question || (state.trade && !state.trade.closed)) return;
     state.revealed = 0;
     state.trade = null;
     state.hoverIndex = null;
@@ -315,6 +378,9 @@
   function resetActionState() {
     if (!$('playBtn')) return;
     $('playBtn').disabled = !state.question;
+    $('closeBtn').disabled = true;
+    $('newQuestionBtn').disabled = false;
+    $('resetRevealBtn').disabled = !state.question;
     document.querySelectorAll('.decision').forEach(btn => {
       btn.disabled = !state.question;
       btn.classList.remove('selected');
@@ -324,26 +390,11 @@
     $('tradeBadge').style.color = '';
   }
 
-  function scoreTradeIfReady() {
-    const q = state.question;
-    const t = state.trade;
-    if (!q || !t || t.scored || q.scored) return;
-    if (currentIndex() < t.entryIndex + 3) return;
-    const entry = t.entryPrice;
-    const close3 = q.rows[t.entryIndex + 3].close;
-    const raw = (close3 / entry - 1) * 100;
-    const hit = t.direction === 'LONG' ? raw > 0 : raw < 0;
-    t.scored = true;
-    q.scored = true;
-    state.stats.total += 1;
-    if (hit) state.stats.hit += 1;
-    saveStats();
-  }
-
   function renderAll() {
     renderQuestionMeta();
     updateProgress();
     renderTradePanel();
+    renderHistory();
     renderModelHud();
     draw();
   }
@@ -383,45 +434,50 @@
       return;
     }
 
-    const nowIdx = currentIndex();
-    const now = q.rows[nowIdx].close;
-    const held = Math.max(0, nowIdx - t.entryIndex);
-    const pnl = directionalReturn(t.direction, t.entryPrice, now);
-    const slice = q.rows.slice(t.entryIndex, nowIdx + 1);
-    const maxHigh = Math.max(...slice.map(x => x.high));
-    const minLow = Math.min(...slice.map(x => x.low));
-    let mfe, mae;
-    if (t.direction === 'LONG') {
-      mfe = (maxHigh / t.entryPrice - 1) * 100;
-      mae = (minLow / t.entryPrice - 1) * 100;
-    } else {
-      mfe = (t.entryPrice / minLow - 1) * 100;
-      mae = (t.entryPrice / maxHigh - 1) * 100;
-    }
+    const displayIdx = t.closed ? t.exitIndex : currentIndex();
+    const displayPrice = t.closed ? t.exitPrice : q.rows[displayIdx].close;
+    const held = Math.max(0, displayIdx - t.entryIndex);
+    const pnl = t.closed ? t.realizedPnl : directionalReturn(t.direction, t.entryPrice, displayPrice);
+    const excursion = calculateTradeExcursion(q.rows, t.direction, t.entryPrice, t.entryIndex, displayIdx);
 
     $('tradePanel').classList.remove('hidden');
     $('tradeDirection').textContent = t.direction === 'LONG' ? '做多' : '做空';
     $('tradeDirection').className = t.direction === 'LONG' ? 'positive-text' : 'negative-text';
     $('tradeEntry').textContent = formatPrice(t.entryPrice);
-    $('tradeCurrent').textContent = formatPrice(now);
+    $('tradeCurrent').textContent = formatPrice(displayPrice);
     $('tradePnl').textContent = fmtPct(pnl);
-    $('tradePnl').className = pnl >= 0 ? 'positive-text' : 'negative-text';
-    $('tradeExcursion').textContent = `${fmtPct(mfe)} / ${fmtPct(mae)}`;
+    $('tradePnl').className = pnl > 0 ? 'positive-text' : pnl < 0 ? 'negative-text' : '';
+    $('tradeExcursion').textContent = `${fmtPct(excursion.mfe)} / ${fmtPct(excursion.mae)}`;
     $('tradeHeld').textContent = `${held} 天`;
-    $('tradeBadge').textContent = t.direction === 'LONG' ? '已做多' : '已做空';
-    $('tradeBadge').style.color = t.direction === 'LONG' ? 'var(--green)' : 'var(--red)';
 
-    const verdict = $('tradeVerdict');
-    if (held < 3) {
-      verdict.textContent = `等待 ${3-held} 天`;
-      verdict.className = '';
+    if (t.closed) {
+      $('tradeBadge').textContent = `已平倉 ${fmtPct(t.realizedPnl)}`;
+      $('tradeBadge').style.color = t.realizedPnl > 0 ? 'var(--green)' : t.realizedPnl < 0 ? 'var(--red)' : 'var(--yellow)';
+      $('tradeVerdict').textContent = t.realizedPnl > 0 ? '獲利平倉' : t.realizedPnl < 0 ? '虧損平倉' : '損益兩平';
+      $('tradeVerdict').className = t.realizedPnl > 0 ? 'positive-text' : t.realizedPnl < 0 ? 'negative-text' : '';
     } else {
-      const close3 = q.rows[t.entryIndex + 3].close;
-      const r3 = directionalReturn(t.direction, t.entryPrice, close3);
-      const hit = r3 > 0;
-      verdict.textContent = `${hit ? '命中' : '錯誤'} ${fmtPct(r3)}`;
-      verdict.className = hit ? 'positive-text' : 'negative-text';
+      $('tradeBadge').textContent = t.direction === 'LONG' ? '已做多' : '已做空';
+      $('tradeBadge').style.color = t.direction === 'LONG' ? 'var(--green)' : 'var(--red)';
+      $('tradeVerdict').textContent = '持倉中';
+      $('tradeVerdict').className = '';
     }
+  }
+
+  function calculateTradeExcursion(rows, direction, entryPrice, entryIndex, endIndex) {
+    const slice = rows.slice(entryIndex, endIndex + 1);
+    if (!slice.length) return { mfe: 0, mae: 0 };
+    const maxHigh = Math.max(...slice.map(x => x.high));
+    const minLow = Math.min(...slice.map(x => x.low));
+    if (direction === 'LONG') {
+      return {
+        mfe: (maxHigh / entryPrice - 1) * 100,
+        mae: (minLow / entryPrice - 1) * 100,
+      };
+    }
+    return {
+      mfe: (entryPrice / minLow - 1) * 100,
+      mae: (entryPrice / maxHigh - 1) * 100,
+    };
   }
 
   function directionalReturn(direction, entry, price) {
@@ -433,6 +489,28 @@
     const q = state.question;
     if (!q) return null;
     return q.modelByDay.get(Number(q.rows[currentIndex()].time)) || null;
+  }
+
+  function modelSnapshotForIndex(index) {
+    const q = state.question;
+    if (!q || !state.activeModel || !q.rows[index]) return { available:false, state:'NON_MODEL' };
+    const timeline = q.modelByDay.get(Number(q.rows[index].time)) || null;
+    if (!timeline) return { available:false, state:'NON_MODEL' };
+    const pred = lookupProbability(state.activeModel, timeline.state, MODEL_HORIZON, timeline.features || {});
+    if (!pred.available) return { available:false, state:timeline.state || 'NON_MODEL' };
+    return {
+      available: true,
+      state: timeline.state,
+      level: pred.level,
+      fail: pred.trueFail,
+      survival: pred.survival,
+      samples: pred.samples,
+    };
+  }
+
+  function formatModelSnapshot(s) {
+    if (!s || !s.available) return `${s && s.state ? s.state : 'NON_MODEL'}｜無統計`;
+    return `${s.state} L${s.level}｜失敗 ${fmtModelPct(s.fail)}｜存活 ${fmtModelPct(s.survival)}｜樣本 ${Number(s.samples || 0).toLocaleString()}`;
   }
 
   function renderModelHud() {
@@ -635,6 +713,9 @@
     if (state.trade) {
       const c = state.trade.direction === 'LONG' ? '#3cd6a0' : '#ff667f';
       drawMarkerForAbsoluteIndex(rows, state.trade.entryIndex, xAt, pad, plotH, c, state.trade.direction === 'LONG' ? '做多' : '做空', false);
+      if (state.trade.closed && Number.isInteger(state.trade.exitIndex)) {
+        drawMarkerForAbsoluteIndex(rows, state.trade.exitIndex, xAt, pad, plotH, '#ffd84b', '平倉', false);
+      }
     }
 
     if (state.hoverIndex !== null && state.hoverIndex >= 0 && state.hoverIndex < rows.length) {
@@ -730,6 +811,7 @@
   }
   function fmtPct(v) { return !Number.isFinite(v) ? '—' : `${v>=0?'+':''}${v.toFixed(2)}%`; }
   function fmtModelPct(v) { return !Number.isFinite(v) ? '—' : `${(v*100).toFixed(1)}%`; }
+  function escapeHtml(v) { return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
   init();
 })();

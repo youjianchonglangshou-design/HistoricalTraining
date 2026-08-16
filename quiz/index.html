@@ -16,9 +16,10 @@
         <p class="subtitle">真實歷史 K 線 · BB20 · 平均K黃紫階梯 · R2 Active 模型 · 每次只前進 1 天</p>
       </div>
       <div class="session-box">
-        <div><span>已進場</span><b id="statTotal">0</b></div>
-        <div><span>3日命中</span><b id="statHit">0</b></div>
-        <div><span>命中率</span><b id="statRate">—</b></div>
+        <div><span>已平倉</span><b id="statTotal">0</b></div>
+        <div><span>獲利</span><b id="statHit">0</b></div>
+        <div><span>勝率</span><b id="statRate">—</b></div>
+        <div><span>累積損益</span><b id="statPnl">0.00%</b></div>
       </div>
     </header>
 
@@ -71,6 +72,7 @@
           <button id="playBtn" class="next-day">▶ 播放下一天</button>
           <button class="decision long" data-choice="LONG">做多</button>
           <button class="decision short" data-choice="SHORT">做空</button>
+          <button id="closeBtn" class="close-position" disabled>平倉</button>
         </div>
       </div>
 
@@ -84,11 +86,26 @@
       <div id="tradePanel" class="trade-strip hidden">
         <div><span>方向</span><b id="tradeDirection">—</b></div>
         <div><span>入場價</span><b id="tradeEntry">—</b></div>
-        <div><span>目前價</span><b id="tradeCurrent">—</b></div>
-        <div><span>目前損益</span><b id="tradePnl">—</b></div>
+        <div><span>目前／平倉價</span><b id="tradeCurrent">—</b></div>
+        <div><span>浮動／已實現</span><b id="tradePnl">—</b></div>
         <div><span>MFE / MAE</span><b id="tradeExcursion">—</b></div>
         <div><span>持有</span><b id="tradeHeld">0 天</b></div>
-        <div class="trade-verdict"><span>3日判定</span><b id="tradeVerdict">等待</b></div>
+        <div class="trade-verdict"><span>狀態</span><b id="tradeVerdict">持倉中</b></div>
+      </div>
+
+      <div id="sessionHistory" class="history-panel hidden">
+        <div class="history-head">
+          <strong>本次頁面戰績</strong>
+          <span>只有按「平倉」才結算；重新整理或重開網頁後歸 0</span>
+        </div>
+        <div class="history-table-wrap">
+          <table class="history-table">
+            <thead>
+              <tr><th>#</th><th>市場</th><th>方向</th><th>進場 → 平倉</th><th>持有</th><th>損益</th><th>進場時模型</th></tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -96,9 +113,10 @@
       <details>
         <summary>這張考題圖與模型怎麼算？</summary>
         <div class="explain-grid">
-          <p><b>逐日播放：</b>畫面永遠維持最近 30 根日 K；每按一次只新增 1 天，像 TradingView 回放。</p>
+          <p><b>逐日播放：</b>畫面永遠維持最近 30 根日 K；每按一次只新增 1 天，像 TradingView 回放。進場後由你決定何時按「平倉」。</p>
           <p><b>模型：</b>每一天使用該日最後一根 4H 的正式 S-state replay 特徵，再套目前 R2 Active probability model；非模型狀態明確顯示「無統計」。</p>
           <p><b>失敗：</b>72H `TRUE_FAIL`；<b>存活：</b>72H 結構存活率；<b>樣本：</b>目前條件實際匹配到的歷史樣本數。</p>
+          <p><b>戰績：</b>只有平倉才計入勝負與累積損益；同時保存進場當下的失敗率、存活率與樣本數。本次戰績只存在記憶體，重新整理即歸零。</p>
           <p><b>黃紫階梯：</b>沿用正式 Heikin-Ashi；BB20 使用普通日 K close 的 20 日母體標準差。</p>
         </div>
       </details>
