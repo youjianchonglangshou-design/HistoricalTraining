@@ -101,3 +101,100 @@ summary { color:#dbe6f7; cursor:pointer; font-weight:700; }
   .result-grid { grid-template-columns:repeat(2,1fr); }
   .explain-grid { grid-template-columns:1fr; }
 }
+
+/* v1.1 — desktop single-screen compact layout */
+@media (min-width: 1001px) {
+  .app-shell {
+    width: min(1600px, calc(100% - 20px));
+    margin: 10px auto 24px;
+  }
+
+  .topbar {
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 16px;
+  }
+
+  .eyebrow { font-size: 10px; }
+  h1 {
+    font-size: clamp(22px, 2.2vw, 30px);
+    margin: 2px 0;
+    line-height: 1.1;
+  }
+  .subtitle { font-size: 13px; }
+
+  .session-box { gap: 7px; }
+  .session-box > div {
+    min-width: 78px;
+    border-radius: 10px;
+    padding: 6px 10px;
+  }
+  .session-box span { font-size: 10px; }
+  .session-box b { font-size: 17px; margin-top: 0; }
+
+  .toolbar {
+    gap: 10px;
+    padding: 7px 10px;
+    margin-bottom: 8px;
+    min-height: 46px;
+  }
+  button { padding: 7px 11px; border-radius: 8px; }
+  select { padding: 5px 7px; }
+  .select-wrap, .check-wrap { font-size: 12px; }
+
+  .question-head {
+    padding: 8px 14px 7px;
+    align-items: center;
+  }
+  .market-title { font-size: 18px; }
+  .market-meta { font-size: 11px; margin-top: 1px; }
+  .state-chips { gap: 5px; }
+  .chip { padding: 3px 7px; font-size: 10px; }
+
+  .chart-wrap {
+    height: clamp(250px, calc(100vh - 385px), 410px);
+  }
+
+  .decision-panel {
+    gap: 12px;
+    padding: 8px 14px 9px;
+  }
+  .prompt { font-size: 13px; }
+  .prompt-note { font-size: 10px; margin-top: 2px; }
+  .decision-buttons { gap: 7px; }
+  .decision {
+    min-width: 78px;
+    padding: 7px 12px;
+  }
+
+  .reveal {
+    margin-top: 8px;
+    padding: 7px 10px;
+    gap: 10px;
+  }
+  .reveal-left { gap: 7px; }
+  .progress-track { height: 6px; }
+  .choice-badge { padding: 5px 9px; font-size: 11px; }
+
+  .result-grid { gap: 7px; margin-top: 8px; }
+  .metric { padding: 8px 10px; }
+  .metric strong { font-size: 17px; margin-top: 2px; }
+  .metric small, .metric span { font-size: 10px; }
+
+  .explain {
+    margin-top: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 1001px) and (max-height: 720px) {
+  .app-shell { margin-top: 6px; }
+  .subtitle { display: none; }
+  .topbar { margin-bottom: 6px; }
+  .toolbar { margin-bottom: 6px; padding-top: 5px; padding-bottom: 5px; min-height: 40px; }
+  .question-head { padding-top: 6px; padding-bottom: 5px; }
+  .chart-wrap { height: clamp(230px, calc(100vh - 345px), 330px); }
+  .decision-panel { padding-top: 6px; padding-bottom: 7px; }
+  .reveal { margin-top: 6px; padding-top: 5px; padding-bottom: 5px; }
+}
