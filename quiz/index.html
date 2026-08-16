@@ -61,6 +61,29 @@
           </div>
           <div id="modelHint" class="model-hud-hint">以目前這一天的 S-state 條件匹配 R2 Active</div>
         </div>
+
+        <button id="historyFab" class="history-fab" type="button" aria-label="開啟本次頁面戰績">
+          <span class="history-fab-label">戰績</span>
+          <span id="historyCount" class="history-fab-count">0</span>
+        </button>
+
+        <div id="sessionHistory" class="history-floating hidden" role="dialog" aria-modal="false" aria-labelledby="historyPanelTitle">
+          <div id="historyDragHandle" class="history-floating-head">
+            <div>
+              <strong id="historyPanelTitle">本次頁面戰績</strong>
+              <span>拖曳這個標題列可移動；只記錄本次頁面已平倉戰績</span>
+            </div>
+            <button id="closeHistoryBtn" class="history-close" type="button" aria-label="關閉戰績面板">✕</button>
+          </div>
+          <div class="history-table-wrap">
+            <table class="history-table">
+              <thead>
+                <tr><th>#</th><th>市場</th><th>方向</th><th>進場 → 平倉</th><th>持有</th><th>損益</th><th>進場時模型</th></tr>
+              </thead>
+              <tbody id="historyBody"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <div class="action-panel">
@@ -93,29 +116,6 @@
         <div class="trade-verdict"><span>狀態</span><b id="tradeVerdict">持倉中</b></div>
       </div>
 
-      <button id="historyFab" class="history-fab" type="button" aria-label="開啟本次頁面戰績">
-        <span class="history-fab-label">戰績</span>
-        <span id="historyCount" class="history-fab-count">0</span>
-      </button>
-
-      <div id="historyBackdrop" class="history-backdrop hidden"></div>
-      <div id="sessionHistory" class="history-floating hidden" role="dialog" aria-modal="false" aria-labelledby="historyPanelTitle">
-        <div class="history-floating-head">
-          <div>
-            <strong id="historyPanelTitle">本次頁面戰績</strong>
-            <span>只有按「平倉」才結算；重新整理或重開網頁後歸 0</span>
-          </div>
-          <button id="closeHistoryBtn" class="history-close" type="button" aria-label="關閉戰績面板">✕</button>
-        </div>
-        <div class="history-table-wrap">
-          <table class="history-table">
-            <thead>
-              <tr><th>#</th><th>市場</th><th>方向</th><th>進場 → 平倉</th><th>持有</th><th>損益</th><th>進場時模型</th></tr>
-            </thead>
-            <tbody id="historyBody"></tbody>
-          </table>
-        </div>
-      </div>
     </section>
 
     <section class="explain card">

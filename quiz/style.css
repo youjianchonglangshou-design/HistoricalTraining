@@ -267,3 +267,70 @@ summary{color:#dbe6f7;cursor:pointer;font-weight:750}
   .history-floating-head{padding:8px 9px 6px}
   .history-table{min-width:820px}
 }
+
+
+/* ===== 圖表內懸浮戰績 + 可拖曳 ===== */
+.history-fab{
+  position:absolute;
+  left:12px;
+  top:50px;
+  z-index:16;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  min-width:76px;
+  padding:6px 9px;
+  border-radius:999px;
+  border:1px solid rgba(85,167,255,.46);
+  background:rgba(10,17,28,.92);
+  box-shadow:0 8px 20px rgba(0,0,0,.26);
+  backdrop-filter:blur(8px);
+}
+.history-fab-label{font-size:10px;font-weight:900}
+.history-fab-count{
+  min-width:20px;height:20px;padding:0 6px;
+  display:grid;place-items:center;
+  border-radius:999px;
+  background:linear-gradient(180deg,#237fdc,#1764b4);
+  border:1px solid #4097ec;
+  font-size:10px;font-weight:900;
+}
+.history-floating{
+  position:absolute;
+  left:12px;
+  top:84px;
+  z-index:18;
+  width:min(660px,calc(100% - 24px));
+  max-width:calc(100% - 24px);
+  max-height:calc(100% - 96px);
+  display:flex;
+  flex-direction:column;
+  border:1px solid rgba(65,84,114,.95);
+  border-radius:12px;
+  background:linear-gradient(180deg,rgba(14,21,33,.98),rgba(8,13,22,.98));
+  box-shadow:0 16px 46px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+.history-floating.dragging{box-shadow:0 20px 56px rgba(0,0,0,.56)}
+.history-floating-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding:9px 10px 7px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  background:rgba(11,17,27,.95);
+  cursor:grab;
+  user-select:none;
+  touch-action:none;
+}
+.history-floating.dragging .history-floating-head{cursor:grabbing}
+.history-floating-head strong{display:block;font-size:11px;line-height:1.1}
+.history-floating-head span{display:block;margin-top:2px;color:var(--muted);font-size:8px;line-height:1.2}
+.history-close{min-width:30px;padding:5px 8px;border-radius:8px;font-size:12px;color:#cfd8ea;background:#131d2c;border-color:#30425d;cursor:pointer}
+.history-table-wrap{max-height:none;overflow:auto;flex:1}
+.history-empty-row td{padding:14px 10px;text-align:center;color:var(--muted);font-size:9px}
+@media(max-width:760px){
+  .history-fab{top:54px;left:8px;padding:6px 8px}
+  .history-floating{left:8px;top:86px;width:calc(100% - 16px);max-width:calc(100% - 16px);max-height:calc(100% - 94px)}
+}

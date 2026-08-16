@@ -24,6 +24,7 @@
     stats: { total: 0, hit: 0, pnl: 0 },
     history: [],
     closedTrades: [],
+    historyUi: { open: false, x: 12, y: 84, dragging: false, pointerId: null, startX: 0, startY: 0, originX: 12, originY: 84 },
   };
 
   const $ = (id) => document.getElementById(id);
@@ -65,13 +66,76 @@
   }
 
   function openHistoryPanel() {
-    $('sessionHistory')?.classList.remove('hidden');
-    $('historyBackdrop')?.classList.remove('hidden');
+    state.historyUi.open = true;
+    const panel = $('sessionHistory');
+    if (panel) panel.classList.remove('hidden');
+    applyHistoryPanelPosition();
   }
 
   function closeHistoryPanel() {
+    state.historyUi.open = false;
     $('sessionHistory')?.classList.add('hidden');
-    $('historyBackdrop')?.classList.add('hidden');
+  }
+
+  function initHistoryDrag() {
+    const handle = $('historyDragHandle');
+    const panel = $('sessionHistory');
+    if (!handle || !panel) return;
+    handle.addEventListener('pointerdown', onHistoryDragStart);
+    window.addEventListener('pointermove', onHistoryDragMove);
+    window.addEventListener('pointerup', onHistoryDragEnd);
+    window.addEventListener('pointercancel', onHistoryDragEnd);
+  }
+
+  function onHistoryDragStart(ev) {
+    if (ev.target && ev.target.closest('#closeHistoryBtn')) return;
+    const panel = $('sessionHistory');
+    if (!panel || panel.classList.contains('hidden')) return;
+    state.historyUi.dragging = true;
+    state.historyUi.pointerId = ev.pointerId;
+    state.historyUi.startX = ev.clientX;
+    state.historyUi.startY = ev.clientY;
+    state.historyUi.originX = state.historyUi.x;
+    state.historyUi.originY = state.historyUi.y;
+    panel.classList.add('dragging');
+    if (panel.setPointerCapture) { try { panel.setPointerCapture(ev.pointerId); } catch (_) {} }
+    ev.preventDefault();
+  }
+
+  function onHistoryDragMove(ev) {
+    if (!state.historyUi.dragging || ev.pointerId !== state.historyUi.pointerId) return;
+    const dx = ev.clientX - state.historyUi.startX;
+    const dy = ev.clientY - state.historyUi.startY;
+    state.historyUi.x = state.historyUi.originX + dx;
+    state.historyUi.y = state.historyUi.originY + dy;
+    clampHistoryPanelPosition();
+    applyHistoryPanelPosition();
+  }
+
+  function onHistoryDragEnd(ev) {
+    if (!state.historyUi.dragging || (ev && ev.pointerId !== state.historyUi.pointerId)) return;
+    state.historyUi.dragging = false;
+    state.historyUi.pointerId = null;
+    $('sessionHistory')?.classList.remove('dragging');
+  }
+
+  function clampHistoryPanelPosition() {
+    const wrap = document.querySelector('.chart-wrap');
+    const panel = $('sessionHistory');
+    if (!wrap || !panel) return;
+    const wrapRect = wrap.getBoundingClientRect();
+    const maxX = Math.max(8, wrapRect.width - panel.offsetWidth - 8);
+    const maxY = Math.max(46, wrapRect.height - panel.offsetHeight - 8);
+    state.historyUi.x = Math.max(8, Math.min(maxX, state.historyUi.x));
+    state.historyUi.y = Math.max(46, Math.min(maxY, state.historyUi.y));
+  }
+
+  function applyHistoryPanelPosition() {
+    const panel = $('sessionHistory');
+    if (!panel) return;
+    clampHistoryPanelPosition();
+    panel.style.left = `${Math.round(state.historyUi.x)}px`;
+    panel.style.top = `${Math.round(state.historyUi.y)}px`;
   }
 
   async function init() {
@@ -81,7 +145,7 @@
     renderHistory();
     bindEvents();
     resizeCanvas();
-    window.addEventListener('resize', () => { resizeCanvas(); draw(); });
+    window.addEventListener('resize', () => { resizeCanvas(); applyHistoryPanelPosition(); draw(); });
 
     const modelPromise = loadActiveModel();
     try {
@@ -105,7 +169,7 @@
     $('closeBtn').addEventListener('click', closeTrade);
     $('historyFab')?.addEventListener('click', openHistoryPanel);
     $('closeHistoryBtn')?.addEventListener('click', closeHistoryPanel);
-    $('historyBackdrop')?.addEventListener('click', closeHistoryPanel);
+    initHistoryDrag();
     $('resetRevealBtn').addEventListener('click', resetSameQuestion);
     $('blindMode').addEventListener('change', () => { renderQuestionMeta(); draw(); });
     document.querySelectorAll('.decision').forEach(btn => {
@@ -158,6 +222,8 @@
     state.closedTrades = [];
     state.revealed = 0;
     closeHistoryPanel();
+    state.historyUi.x = 12;
+    state.historyUi.y = 84;
     state.hoverIndex = null;
     $('tradePanel').classList.add('hidden');
     $('chartEmpty').classList.remove('hidden');
@@ -426,6 +492,7 @@
     renderTradePanel();
     renderHistory();
     renderModelHud();
+    if (state.historyUi.open) applyHistoryPanelPosition();
     draw();
   }
 
