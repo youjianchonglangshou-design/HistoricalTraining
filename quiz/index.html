@@ -9,12 +9,19 @@
 </head>
 <body>
   <main class="app-shell">
-    <header class="topbar">
-      <div>
+    <header class="topbar card">
+      <div class="brand-block">
         <div class="eyebrow">HISTORICAL TRAINING</div>
         <h1>S-State 歷史行情考題</h1>
-        <p class="subtitle">真實歷史 K 線 · BB20 · 平均K黃紫階梯 · R2 Active 模型 · 每次只前進 1 天</p>
       </div>
+
+      <div class="toolbar-inline">
+        <button id="newQuestionBtn" class="primary">🎲 隨機新題</button>
+        <label class="check-wrap"><input id="blindMode" type="checkbox" checked /> 盲測：進場前隱藏幣種與日期</label>
+        <div id="modelStatus" class="model-status">R2 Active 模型讀取中…</div>
+        <div id="loadState" class="load-state">準備中</div>
+      </div>
+
       <div class="session-box">
         <div><span>已平倉</span><b id="statTotal">0</b></div>
         <div><span>獲利</span><b id="statHit">0</b></div>
@@ -23,28 +30,21 @@
       </div>
     </header>
 
-    <section class="toolbar card">
-      <button id="newQuestionBtn" class="primary">🎲 隨機新題</button>
-      <label class="check-wrap"><input id="blindMode" type="checkbox" checked /> 盲測：進場前隱藏幣種與日期</label>
-      <div id="modelStatus" class="model-status">R2 Active 模型讀取中…</div>
-      <div id="loadState" class="load-state">準備中</div>
-    </section>
-
     <section class="question card">
-      <div class="question-head">
-        <div>
-          <div id="marketTitle" class="market-title">隨機市場</div>
-          <div id="marketMeta" class="market-meta">沒有進場點就播放下一天</div>
-        </div>
-        <div class="state-chips">
-          <span class="chip">普通 K</span>
-          <span class="chip bb">BB20</span>
-          <span class="chip yellow">黃階梯 = HA 多</span>
-          <span class="chip purple">紫階梯 = HA 空</span>
-        </div>
-      </div>
-
       <div class="chart-wrap">
+        <div class="chart-top-hud">
+          <div class="chart-market-block">
+            <div id="marketTitle" class="market-title">隨機市場</div>
+            <div id="marketMeta" class="market-meta">沒有進場點就播放下一天</div>
+          </div>
+          <div class="state-chips">
+            <span class="chip">普通 K</span>
+            <span class="chip bb">BB20</span>
+            <span class="chip yellow">黃階梯 = HA 多</span>
+            <span class="chip purple">紫階梯 = HA 空</span>
+          </div>
+        </div>
+
         <canvas id="chartCanvas"></canvas>
         <div id="chartTooltip" class="chart-tooltip hidden"></div>
         <div id="chartEmpty" class="chart-empty">讀取歷史資料中…</div>
@@ -66,7 +66,7 @@
       <div class="action-panel">
         <div class="action-copy">
           <div class="prompt">沒行情就繼續播放；看到真正的進場點才按做多或做空。</div>
-          <div class="prompt-note">模型數字會隨每一天重新匹配。考的是「何時進場」，不是一開始就被迫猜方向。</div>
+          <div class="prompt-note">模型數字會隨每一天重新匹配；考的是何時進場。</div>
         </div>
         <div class="main-actions">
           <button id="playBtn" class="next-day">▶ 播放下一天</button>
