@@ -339,3 +339,185 @@ summary{color:#dbe6f7;cursor:pointer;font-weight:750}
   .history-fab{top:54px;left:8px;padding:6px 8px}
   .history-floating{left:8px;top:86px;width:calc(100% - 16px);max-width:calc(100% - 16px);max-height:calc(100% - 94px)}
 }
+
+
+/* =========================================================
+   v2.7 Desktop Wide Layout
+   1920px 桌面：主體擴大到接近畫面黃框，整體元件按比例放大
+   ========================================================= */
+
+@media (min-width:1101px) {
+  .app-shell{
+    width:min(1860px,calc(100% - 64px));
+    max-width:none;
+    margin:8px auto 16px;
+  }
+
+  .topbar{
+    min-height:54px;
+    grid-template-columns:auto minmax(430px,1fr) auto;
+    gap:14px;
+    padding:6px 10px;
+    margin-bottom:7px;
+    border-radius:12px;
+  }
+
+  .brand-block{min-width:250px}
+  .eyebrow{font-size:8px;margin-bottom:3px}
+  h1{font-size:22px}
+
+  button{
+    font-size:11px;
+    padding:6px 11px;
+    border-radius:8px;
+  }
+
+  .toolbar-inline{gap:8px}
+  .toolbar-inline .primary{padding:7px 12px}
+  .check-wrap{font-size:10px;gap:5px}
+  .check-wrap input{width:14px;height:14px}
+  .model-status{
+    font-size:9.5px;
+    padding:4px 9px;
+    max-width:250px;
+  }
+  .load-state{font-size:9.5px}
+
+  .session-box{gap:6px}
+  .session-box>div{
+    min-width:68px;
+    padding:5px 8px;
+    border-radius:8px;
+  }
+  .session-box>div:last-child{min-width:92px}
+  .session-box span{font-size:8px}
+  .session-box b{font-size:14px;margin-top:2px}
+
+  .question{border-radius:12px}
+
+  .chart-wrap{
+    height:clamp(520px,calc(100vh - 330px),610px);
+  }
+
+  .chart-top-hud{
+    height:44px;
+    padding:5px 13px 4px;
+  }
+  .market-title{font-size:16px}
+  .market-meta{font-size:9px;margin-top:2px}
+  .state-chips{gap:5px}
+  .chip{
+    padding:3px 7px;
+    font-size:8.5px;
+  }
+
+  #chartCanvas{
+    height:calc(100% - 44px);
+    margin-top:44px;
+  }
+  .chart-empty{top:44px}
+
+  .model-hud{
+    left:22px;
+    bottom:14px;
+    min-width:340px;
+    max-width:560px;
+    padding:8px 11px;
+    border-radius:11px;
+  }
+  .model-hud-head{margin-bottom:5px}
+  .model-hud-head strong{font-size:11.5px}
+  .model-hud-head span{font-size:9.5px;padding:2px 6px}
+  .model-hud-stats{gap:10px;font-size:10.5px}
+  .model-hud-stats i{width:7px;height:7px}
+  .model-hud-hint{margin-top:4px;font-size:9px}
+
+  .action-panel{
+    gap:12px;
+    padding:6px 11px;
+  }
+  .prompt{font-size:10.5px}
+  .prompt-note{font-size:8.5px;margin-top:2px}
+  .main-actions{gap:7px}
+  .next-day{min-width:138px}
+  .decision{min-width:70px}
+  .close-position{min-width:70px}
+
+  .timeline-strip{
+    gap:8px;
+    padding:5px 10px;
+  }
+  .timeline-strip button{
+    padding:5px 9px;
+    font-size:9.5px;
+  }
+  .progress-track{
+    height:5px;
+    max-width:620px;
+  }
+  #progressText{
+    font-size:9.5px;
+    min-width:72px;
+  }
+  .choice-badge{
+    padding:4px 9px;
+    font-size:9.5px;
+  }
+
+  .trade-strip{
+    gap:6px;
+    padding:6px 10px;
+  }
+  .trade-strip>div{padding:0 6px}
+  .trade-strip span{font-size:8px}
+  .trade-strip b{font-size:10.5px}
+
+  .explain{
+    margin-top:7px;
+    padding:7px 11px;
+    font-size:10px;
+    border-radius:10px;
+  }
+  .explain-grid{
+    gap:4px 14px;
+    font-size:10px;
+  }
+
+  /* 戰績按鈕維持小巧，不跟著整體變成大型按鈕 */
+  .history-fab{
+    width:auto;
+    height:28px;
+    min-height:0;
+    min-width:0;
+    padding:3px 7px;
+  }
+  .history-fab-label{font-size:9px}
+  .history-fab-count{
+    min-width:18px;
+    height:18px;
+    font-size:9px;
+  }
+
+  .history-floating{
+    width:min(760px,calc(100% - 24px));
+  }
+  .history-floating-head{padding:10px 12px 8px}
+  .history-floating-head strong{font-size:12px}
+  .history-floating-head span{font-size:9px}
+  .history-table{font-size:10px}
+  .history-table th{font-size:9px}
+  .history-table th,
+  .history-table td{padding:5px 9px}
+}
+
+/* 中等高度桌面仍保持單畫面，不讓圖表過度撐高 */
+@media (min-width:1101px) and (max-height:800px) {
+  .chart-wrap{height:430px}
+}
+
+@media (min-width:1101px) and (max-height:720px) {
+  .chart-wrap{height:390px}
+  .topbar{min-height:48px;padding-top:4px;padding-bottom:4px}
+  h1{font-size:20px}
+  .prompt-note{display:none}
+}
