@@ -23,6 +23,7 @@
     timelineCache: new Map(),
     stats: { total: 0, hit: 0, pnl: 0 },
     history: [],
+    closedTrades: [],
   };
 
   const $ = (id) => document.getElementById(id);
@@ -141,6 +142,7 @@
   async function newQuestion() {
     if (state.trade && !state.trade.closed) return;
     state.trade = null;
+    state.closedTrades = [];
     state.revealed = 0;
     state.hoverIndex = null;
     $('tradePanel').classList.add('hidden');
@@ -179,6 +181,7 @@
           scored: false,
         };
         state.trade = null;
+        state.closedTrades = [];
         state.revealed = 0;
         state.hoverIndex = null;
 
@@ -358,9 +361,21 @@
       modelAtEntry: t.modelAtEntry,
     });
 
+    // Closed trades are kept in the session history, while the active slot is
+    // immediately released so the user can enter again on the same replay.
+    state.closedTrades.push({ ...t });
+    state.trade = null;
+
     $('closeBtn').disabled = true;
     $('newQuestionBtn').disabled = false;
     $('resetRevealBtn').disabled = false;
+    const atEnd = state.revealed >= q.maxFutureDays;
+    document.querySelectorAll('.decision').forEach(btn => {
+      btn.disabled = atEnd;
+      btn.classList.remove('selected');
+    });
+    $('tradePanel').classList.add('hidden');
+
     renderStats();
     renderHistory();
     renderAll();
@@ -370,6 +385,7 @@
     if (!state.question || (state.trade && !state.trade.closed)) return;
     state.revealed = 0;
     state.trade = null;
+    state.closedTrades = [];
     state.hoverIndex = null;
     resetActionState();
     renderAll();
@@ -414,7 +430,7 @@
     const q = state.question;
     const idx = currentIndex();
     const atEnd = state.revealed >= q.maxFutureDays;
-    const blind = $('blindMode').checked && !state.trade && !atEnd;
+    const blind = $('blindMode').checked && !state.trade && state.closedTrades.length === 0 && !atEnd;
     const currentDate = formatDate(q.rows[idx].time);
     $('marketTitle').textContent = blind ? '隨機市場 · 盲測中' : `${q.symbol} / USDT`;
     $('marketMeta').textContent = blind
@@ -666,6 +682,9 @@
       if (r.bb) values.push(r.bb.upper, r.bb.lower);
       if (r.ha) values.push(r.ha.close);
     });
+    if (state.trade && !state.trade.closed && Number.isFinite(state.trade.entryPrice)) {
+      values.push(state.trade.entryPrice);
+    }
     let min = Math.min(...values), max = Math.max(...values);
     const extra = (max - min || Math.abs(max) || 1) * .08;
     min -= extra; max += extra;
@@ -709,6 +728,12 @@
       }
     }
 
+    if (state.trade && !state.trade.closed && Number.isFinite(state.trade.entryPrice)) {
+      const entryColor = state.trade.direction === 'LONG' ? '#3cd6a0' : '#ff667f';
+      drawEntryPriceLine(yAt(state.trade.entryPrice), pad, plotW, entryColor,
+        `${state.trade.direction === 'LONG' ? '做多' : '做空'}進場 ${formatPrice(state.trade.entryPrice)}`);
+    }
+
     drawMarkerForAbsoluteIndex(rows, q.cutoff, xAt, pad, plotH, 'rgba(255,255,255,.48)', '起始', true);
     if (state.trade) {
       const c = state.trade.direction === 'LONG' ? '#3cd6a0' : '#ff667f';
@@ -725,6 +750,24 @@
     }
 
     canvas._layout = { rows, pad, plotW, plotH, min, max, xAt, yAt };
+  }
+
+  function drawEntryPriceLine(y, pad, plotW, color, label) {
+    ctx.save();
+    ctx.setLineDash([8, 6]);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, y);
+    ctx.lineTo(pad.left + plotW, y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = color;
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(label, pad.left + plotW - 6, y - 4);
+    ctx.restore();
   }
 
   function drawMarkerForAbsoluteIndex(rows, absoluteIndex, xAt, pad, plotH, color, label, dashed) {
@@ -755,7 +798,7 @@
       ctx.beginPath(); ctx.moveTo(x,pad.top); ctx.lineTo(x,pad.top+plotH); ctx.stroke();
       ctx.textAlign='center'; ctx.textBaseline='top';
       const q=state.question;
-      const blind=$('blindMode').checked && !state.trade && state.revealed < q.maxFutureDays;
+      const blind=$('blindMode').checked && !state.trade && state.closedTrades.length === 0 && state.revealed < q.maxFutureDays;
       const label=blind ? relativeDayLabel(rows[i].index-q.cutoff) : formatShortDate(rows[i].time);
       ctx.fillText(label,x,pad.top+plotH+7);
     }
@@ -785,7 +828,7 @@
     state.hoverIndex=i;
     const r=layout.rows[i];
     const q=state.question;
-    const blind=$('blindMode').checked && !state.trade && state.revealed < q.maxFutureDays;
+    const blind=$('blindMode').checked && !state.trade && state.closedTrades.length === 0 && state.revealed < q.maxFutureDays;
     const date=blind ? relativeDayLabel(r.index-q.cutoff) : formatDate(r.time);
     const haColor=r.ha.color==='yellow'?'黃':r.ha.color==='purple'?'紫':'平';
     tooltip.innerHTML = `${date}<br>O ${formatPrice(r.open)}　H ${formatPrice(r.high)}<br>L ${formatPrice(r.low)}　C ${formatPrice(r.close)}<br>HA ${haColor} ${formatPrice(r.ha.close)}${r.bb?`<br>BB中軌 ${formatPrice(r.bb.basis)}`:''}`;
