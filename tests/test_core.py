@@ -62,8 +62,12 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(len(record["_ha_pct_series"]), 30)
         opportunity = build_long_opportunity(record, None)
         self.assertIn(opportunity["market_state_id"], {"S0", "S0.5", "S1", "S2", "S3", "OTHER"})
-        cases = replay_symbol("TEST", rows)
+        timeline = []
+        cases = replay_symbol("TEST", rows, daily_timeline=timeline)
         self.assertGreater(len(cases), 0)
+        self.assertGreater(len(timeline), 0)
+        self.assertIn("state", timeline[-1])
+        self.assertIn("state_age_bin", timeline[-1]["features"])
         primary = cases[0]["labels"]["18"]
         self.assertIn(primary["outcome"], OUTCOME_KEYS)
 

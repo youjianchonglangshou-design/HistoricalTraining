@@ -57,6 +57,7 @@ def replay_symbol(
     rows_4h: list[dict[str, Any]],
     horizons: tuple[int, ...] = DEFAULT_HORIZONS,
     step_bars: int = 1,
+    daily_timeline: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     """Replay the real S-state engine at each historical 4H cutoff without look-ahead.
 
@@ -106,6 +107,36 @@ def replay_symbol(
             "bandpos": bandpos,
             "price": float(record["_price"]),
         }
+
+        # Quiz timeline: capture the last available 4H engine snapshot of each
+        # UTC day.  This is produced inside the same replay pass, so the quiz
+        # sees the exact S-state/features (including 4H state age) that the
+        # probability model was trained against without running a second engine.
+        if daily_timeline is not None:
+            next_day_key = (
+                utc_day_start_ms(int(rows[idx + 1]["time"]))
+                if idx + 1 < len(rows)
+                else None
+            )
+            if next_day_key != day_key:
+                daily_timeline.append(
+                    {
+                        "day_time": int(day_key),
+                        "cutoff_time": int(row["time"]),
+                        "state": state,
+                        "features": {
+                            "midline_state": features.get("midline_state"),
+                            "bandpos": features.get("bandpos"),
+                            "bandpos_bin": features.get("bandpos_bin"),
+                            "trigger_stage": features.get("trigger_stage"),
+                            "bandwidth_trend": features.get("bandwidth_trend"),
+                            "bandwidth_delta_3d": features.get("bandwidth_delta_3d"),
+                            "state_age_bars": features.get("state_age_bars"),
+                            "state_age_bin": features.get("state_age_bin"),
+                        },
+                    }
+                )
+
         previous_state = state
 
     cases: list[dict[str, Any]] = []
