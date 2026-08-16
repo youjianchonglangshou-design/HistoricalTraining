@@ -20,6 +20,7 @@ CASES_PATH = ROOT / "data" / "cases" / "history_cases.jsonl.gz"
 MODEL_PATH = ROOT / "models" / "probability_model.json"
 REPORT_PATH = ROOT / "reports" / "training_report.json"
 META_PATH = ROOT / "data" / "learning_meta.json"
+QUIZ_TIMELINE_DIR = ROOT / "quiz" / "model_timeline"
 
 
 def parse_symbols(text: str) -> list[str]:
@@ -54,7 +55,23 @@ def main() -> int:
         try:
             rows = update_symbol_cache(symbol, CACHE_DIR, max_records=max_records, full_refresh=args.full_refresh)
             print(f"[{pos}/{len(symbols)}] {symbol}: {len(rows)} bars; replay ...", flush=True)
-            cases = replay_symbol(symbol, rows, horizons=DEFAULT_HORIZONS, step_bars=max(1, args.step_bars))
+            quiz_timeline: list[dict] = []
+            cases = replay_symbol(
+                symbol,
+                rows,
+                horizons=DEFAULT_HORIZONS,
+                step_bars=max(1, args.step_bars),
+                daily_timeline=quiz_timeline,
+            )
+            save_json(
+                QUIZ_TIMELINE_DIR / f"{symbol}.json",
+                {
+                    "schema_version": 1,
+                    "symbol": symbol,
+                    "source": "same S-state replay; last 4H snapshot of each UTC day",
+                    "rows": quiz_timeline,
+                },
+            )
             all_cases.extend(cases)
             state_counts = {}
             for case in cases:
