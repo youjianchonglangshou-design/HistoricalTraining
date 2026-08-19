@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-08-18T00:39:53.947128+00:00",
-  "model_id": "847825ff9cbca0b1",
+  "generated_at": "2026-08-19T00:45:14.179052+00:00",
+  "model_id": "14c71e54ea0b3b41",
   "schema_version": 2,
-  "total_cases": 200278,
+  "total_cases": 200375,
   "historical_case_count": 199213,
-  "live_case_count": 1065,
+  "live_case_count": 1162,
   "live_since_ms": 1786147200000,
   "live_since_tw": "2026-08-08T08:00:00+08:00",
   "engine_api_version": "opportunity-state-v4.8-30d-structure",
   "symbols": [
     {
       "symbol": "BTC",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2959,
       "states": {
         "S1": 664,
@@ -23,7 +23,7 @@
     },
     {
       "symbol": "1INCH",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2681,
       "states": {
         "S0.5": 810,
@@ -35,19 +35,19 @@
     },
     {
       "symbol": "RAY",
-      "bars": 10041,
-      "cases": 2790,
+      "bars": 10047,
+      "cases": 2796,
       "states": {
         "S0.5": 653,
         "S1": 624,
-        "S2": 1165,
+        "S2": 1171,
         "S3": 348
       },
       "ok": true
     },
     {
       "symbol": "RSR",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2547,
       "states": {
         "S0.5": 609,
@@ -59,7 +59,7 @@
     },
     {
       "symbol": "SUI",
-      "bars": 7216,
+      "bars": 7222,
       "cases": 2065,
       "states": {
         "S1": 382,
@@ -71,11 +71,11 @@
     },
     {
       "symbol": "KAVA",
-      "bars": 10041,
-      "cases": 2531,
+      "bars": 10047,
+      "cases": 2532,
       "states": {
         "S1": 725,
-        "S0.5": 863,
+        "S0.5": 864,
         "S2": 790,
         "S3": 153
       },
@@ -83,7 +83,7 @@
     },
     {
       "symbol": "INJ",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2630,
       "states": {
         "S0.5": 651,
@@ -95,7 +95,7 @@
     },
     {
       "symbol": "LTC",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 3270,
       "states": {
         "S0.5": 920,
@@ -107,7 +107,7 @@
     },
     {
       "symbol": "SNX",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2591,
       "states": {
         "S1": 566,
@@ -119,23 +119,23 @@
     },
     {
       "symbol": "SUSHI",
-      "bars": 10041,
-      "cases": 2697,
+      "bars": 10047,
+      "cases": 2702,
       "states": {
         "S0.5": 871,
         "S1": 696,
-        "S2": 901,
+        "S2": 906,
         "S3": 229
       },
       "ok": true
     },
     {
       "symbol": "TRX",
-      "bars": 10041,
-      "cases": 3257,
+      "bars": 10047,
+      "cases": 3263,
       "states": {
         "S1": 776,
-        "S2": 1521,
+        "S2": 1527,
         "S0.5": 510,
         "S3": 450
       },
@@ -143,7 +143,7 @@
     },
     {
       "symbol": "ASTER",
-      "bars": 1989,
+      "bars": 1995,
       "cases": 535,
       "states": {
         "S1": 172,
@@ -155,7 +155,7 @@
     },
     {
       "symbol": "BOME",
-      "bars": 5316,
+      "bars": 5322,
       "cases": 1386,
       "states": {
         "S0.5": 411,
@@ -167,7 +167,7 @@
     },
     {
       "symbol": "JTO",
-      "bars": 5907,
+      "bars": 5913,
       "cases": 1680,
       "states": {
         "S0.5": 473,
@@ -179,7 +179,7 @@
     },
     {
       "symbol": "KAS",
-      "bars": 5719,
+      "bars": 5725,
       "cases": 1594,
       "states": {
         "S3": 135,
@@ -191,19 +191,19 @@
     },
     {
       "symbol": "NEAR",
-      "bars": 10041,
-      "cases": 2630,
+      "bars": 10047,
+      "cases": 2635,
       "states": {
         "S2": 1055,
         "S3": 296,
-        "S0.5": 711,
+        "S0.5": 716,
         "S1": 568
       },
       "ok": true
     },
     {
       "symbol": "PENGU",
-      "bars": 3652,
+      "bars": 3658,
       "cases": 811,
       "states": {
         "S1": 291,
@@ -215,10 +215,10 @@
     },
     {
       "symbol": "SHIB",
-      "bars": 10041,
-      "cases": 2807,
+      "bars": 10047,
+      "cases": 2812,
       "states": {
-        "S0.5": 678,
+        "S0.5": 683,
         "S1": 644,
         "S2": 1147,
         "S3": 338
@@ -227,19 +227,19 @@
     },
     {
       "symbol": "SOL",
-      "bars": 10041,
-      "cases": 2926,
+      "bars": 10047,
+      "cases": 2932,
       "states": {
         "S0.5": 719,
         "S1": 719,
-        "S2": 1229,
+        "S2": 1235,
         "S3": 259
       },
       "ok": true
     },
     {
       "symbol": "XLM",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2729,
       "states": {
         "S1": 631,
@@ -251,7 +251,7 @@
     },
     {
       "symbol": "XRP",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 3114,
       "states": {
         "S0.5": 958,
@@ -263,7 +263,7 @@
     },
     {
       "symbol": "GMX",
-      "bars": 8422,
+      "bars": 8428,
       "cases": 2295,
       "states": {
         "S2": 893,
@@ -275,7 +275,7 @@
     },
     {
       "symbol": "RPL",
-      "bars": 7847,
+      "bars": 7853,
       "cases": 1996,
       "states": {
         "S1": 444,
@@ -287,7 +287,7 @@
     },
     {
       "symbol": "RUNE",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2688,
       "states": {
         "S2": 1048,
@@ -299,7 +299,7 @@
     },
     {
       "symbol": "LINK",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2802,
       "states": {
         "S0.5": 755,
@@ -311,7 +311,7 @@
     },
     {
       "symbol": "ETH",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2877,
       "states": {
         "S0.5": 938,
@@ -323,7 +323,7 @@
     },
     {
       "symbol": "PEPE",
-      "bars": 7216,
+      "bars": 7222,
       "cases": 1956,
       "states": {
         "S0.5": 473,
@@ -335,7 +335,7 @@
     },
     {
       "symbol": "JUP",
-      "bars": 5575,
+      "bars": 5581,
       "cases": 1597,
       "states": {
         "S2": 689,
@@ -347,7 +347,7 @@
     },
     {
       "symbol": "PENDLE",
-      "bars": 6851,
+      "bars": 6857,
       "cases": 1973,
       "states": {
         "S1": 398,
@@ -359,19 +359,19 @@
     },
     {
       "symbol": "TAO",
-      "bars": 5579,
-      "cases": 1440,
+      "bars": 5585,
+      "cases": 1446,
       "states": {
         "S1": 373,
         "S3": 135,
         "S0.5": 343,
-        "S2": 589
+        "S2": 595
       },
       "ok": true
     },
     {
       "symbol": "KAITO",
-      "bars": 3262,
+      "bars": 3268,
       "cases": 701,
       "states": {
         "S1": 106,
@@ -383,23 +383,23 @@
     },
     {
       "symbol": "BNB",
-      "bars": 10041,
-      "cases": 3099,
+      "bars": 10047,
+      "cases": 3101,
       "states": {
         "S0.5": 898,
         "S1": 724,
-        "S2": 1212,
+        "S2": 1214,
         "S3": 265
       },
       "ok": true
     },
     {
       "symbol": "CAKE",
-      "bars": 10041,
-      "cases": 2835,
+      "bars": 10047,
+      "cases": 2841,
       "states": {
         "S1": 678,
-        "S2": 1129,
+        "S2": 1135,
         "S3": 266,
         "S0.5": 762
       },
@@ -407,7 +407,7 @@
     },
     {
       "symbol": "COMP",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2794,
       "states": {
         "S0.5": 800,
@@ -419,7 +419,7 @@
     },
     {
       "symbol": "ORDI",
-      "bars": 7114,
+      "bars": 7120,
       "cases": 2058,
       "states": {
         "S1": 480,
@@ -431,7 +431,7 @@
     },
     {
       "symbol": "ADA",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2641,
       "states": {
         "S0.5": 807,
@@ -443,7 +443,7 @@
     },
     {
       "symbol": "ALGO",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2612,
       "states": {
         "S0.5": 865,
@@ -455,7 +455,7 @@
     },
     {
       "symbol": "ARB",
-      "bars": 7462,
+      "bars": 7468,
       "cases": 1791,
       "states": {
         "S0.5": 583,
@@ -467,7 +467,7 @@
     },
     {
       "symbol": "UNI",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 3001,
       "states": {
         "S0.5": 846,
@@ -479,19 +479,19 @@
     },
     {
       "symbol": "CRV",
-      "bars": 10041,
-      "cases": 2522,
+      "bars": 10047,
+      "cases": 2528,
       "states": {
         "S0.5": 739,
         "S1": 671,
-        "S2": 946,
+        "S2": 952,
         "S3": 166
       },
       "ok": true
     },
     {
       "symbol": "ENA",
-      "bars": 5207,
+      "bars": 5213,
       "cases": 1297,
       "states": {
         "S1": 322,
@@ -503,7 +503,7 @@
     },
     {
       "symbol": "MANA",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2597,
       "states": {
         "S0.5": 895,
@@ -515,7 +515,7 @@
     },
     {
       "symbol": "OKB",
-      "bars": 6499,
+      "bars": 6505,
       "cases": 2085,
       "states": {
         "S2": 825,
@@ -527,7 +527,7 @@
     },
     {
       "symbol": "APT",
-      "bars": 8395,
+      "bars": 8401,
       "cases": 2225,
       "states": {
         "S2": 882,
@@ -539,7 +539,7 @@
     },
     {
       "symbol": "DOT",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2503,
       "states": {
         "S1": 603,
@@ -551,11 +551,11 @@
     },
     {
       "symbol": "FLOKI",
-      "bars": 7140,
-      "cases": 1898,
+      "bars": 7146,
+      "cases": 1900,
       "states": {
         "S2": 725,
-        "S0.5": 551,
+        "S0.5": 553,
         "S1": 471,
         "S3": 151
       },
@@ -563,7 +563,7 @@
     },
     {
       "symbol": "HBAR",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2588,
       "states": {
         "S0.5": 803,
@@ -575,7 +575,7 @@
     },
     {
       "symbol": "SEI",
-      "bars": 6592,
+      "bars": 6598,
       "cases": 1558,
       "states": {
         "S1": 331,
@@ -587,7 +587,7 @@
     },
     {
       "symbol": "STRK",
-      "bars": 5454,
+      "bars": 5460,
       "cases": 1179,
       "states": {
         "S0.5": 412,
@@ -599,7 +599,7 @@
     },
     {
       "symbol": "TRUMP",
-      "bars": 3431,
+      "bars": 3437,
       "cases": 644,
       "states": {
         "S0.5": 244,
@@ -611,7 +611,7 @@
     },
     {
       "symbol": "BCH",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2997,
       "states": {
         "S0.5": 880,
@@ -623,7 +623,7 @@
     },
     {
       "symbol": "FIL",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2639,
       "states": {
         "S0.5": 869,
@@ -635,7 +635,7 @@
     },
     {
       "symbol": "LPT",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2614,
       "states": {
         "S0.5": 672,
@@ -647,7 +647,7 @@
     },
     {
       "symbol": "AAVE",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2981,
       "states": {
         "S0.5": 826,
@@ -659,11 +659,11 @@
     },
     {
       "symbol": "AVAX",
-      "bars": 10041,
-      "cases": 2613,
+      "bars": 10047,
+      "cases": 2614,
       "states": {
         "S0.5": 674,
-        "S1": 640,
+        "S1": 641,
         "S2": 1023,
         "S3": 276
       },
@@ -671,19 +671,19 @@
     },
     {
       "symbol": "DOGE",
-      "bars": 10041,
-      "cases": 2667,
+      "bars": 10047,
+      "cases": 2670,
       "states": {
         "S0.5": 791,
         "S1": 558,
-        "S2": 1045,
-        "S3": 273
+        "S2": 1046,
+        "S3": 275
       },
       "ok": true
     },
     {
       "symbol": "ENJ",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2414,
       "states": {
         "S0.5": 925,
@@ -695,7 +695,7 @@
     },
     {
       "symbol": "ICP",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2713,
       "states": {
         "S0.5": 963,
@@ -707,7 +707,7 @@
     },
     {
       "symbol": "LRC",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2278,
       "states": {
         "S0.5": 728,
@@ -719,7 +719,7 @@
     },
     {
       "symbol": "SAND",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2495,
       "states": {
         "S0.5": 786,
@@ -731,7 +731,7 @@
     },
     {
       "symbol": "STX",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2632,
       "states": {
         "S0.5": 790,
@@ -743,7 +743,7 @@
     },
     {
       "symbol": "VET",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2639,
       "states": {
         "S0.5": 783,
@@ -755,7 +755,7 @@
     },
     {
       "symbol": "ONDO",
-      "bars": 5255,
+      "bars": 5261,
       "cases": 1397,
       "states": {
         "S0.5": 407,
@@ -767,7 +767,7 @@
     },
     {
       "symbol": "YFI",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2549,
       "states": {
         "S0.5": 895,
@@ -779,7 +779,7 @@
     },
     {
       "symbol": "ATOM",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2554,
       "states": {
         "S2": 838,
@@ -791,10 +791,10 @@
     },
     {
       "symbol": "DYDX",
-      "bars": 10041,
-      "cases": 2604,
+      "bars": 10047,
+      "cases": 2606,
       "states": {
-        "S0.5": 693,
+        "S0.5": 695,
         "S1": 670,
         "S2": 992,
         "S3": 249
@@ -803,7 +803,7 @@
     },
     {
       "symbol": "IMX",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2650,
       "states": {
         "S1": 590,
@@ -815,10 +815,10 @@
     },
     {
       "symbol": "ROSE",
-      "bars": 10041,
-      "cases": 2401,
+      "bars": 10047,
+      "cases": 2405,
       "states": {
-        "S0.5": 642,
+        "S0.5": 646,
         "S1": 600,
         "S2": 969,
         "S3": 190
@@ -827,7 +827,7 @@
     },
     {
       "symbol": "CHZ",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2557,
       "states": {
         "S2": 1097,
@@ -839,7 +839,7 @@
     },
     {
       "symbol": "GALA",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2316,
       "states": {
         "S0.5": 711,
@@ -851,7 +851,7 @@
     },
     {
       "symbol": "GRT",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2412,
       "states": {
         "S1": 490,
@@ -863,19 +863,19 @@
     },
     {
       "symbol": "HYPE",
-      "bars": 3485,
-      "cases": 1054,
+      "bars": 3491,
+      "cases": 1056,
       "states": {
         "S0.5": 301,
         "S1": 188,
-        "S2": 449,
+        "S2": 451,
         "S3": 116
       },
       "ok": true
     },
     {
       "symbol": "MEME",
-      "bars": 6113,
+      "bars": 6119,
       "cases": 1350,
       "states": {
         "S0.5": 394,
@@ -887,7 +887,7 @@
     },
     {
       "symbol": "TIA",
-      "bars": 6127,
+      "bars": 6133,
       "cases": 1513,
       "states": {
         "S2": 575,
@@ -899,19 +899,19 @@
     },
     {
       "symbol": "W",
-      "bars": 5159,
-      "cases": 984,
+      "bars": 5165,
+      "cases": 990,
       "states": {
         "S2": 393,
-        "S1": 211,
-        "S0.5": 284,
+        "S1": 216,
+        "S0.5": 285,
         "S3": 96
       },
       "ok": true
     },
     {
       "symbol": "WLD",
-      "bars": 6725,
+      "bars": 6731,
       "cases": 1579,
       "states": {
         "S0.5": 478,
@@ -923,7 +923,7 @@
     },
     {
       "symbol": "ETC",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 2753,
       "states": {
         "S0.5": 915,
@@ -947,7 +947,7 @@
     },
     {
       "symbol": "GLM",
-      "bars": 8707,
+      "bars": 8713,
       "cases": 2204,
       "states": {
         "S2": 918,
@@ -959,19 +959,19 @@
     },
     {
       "symbol": "POL",
-      "bars": 4218,
-      "cases": 939,
+      "bars": 4224,
+      "cases": 945,
       "states": {
         "S1": 267,
         "S2": 324,
-        "S3": 50,
+        "S3": 56,
         "S0.5": 298
       },
       "ok": true
     },
     {
       "symbol": "PYTH",
-      "bars": 5861,
+      "bars": 5867,
       "cases": 1508,
       "states": {
         "S2": 621,
@@ -983,7 +983,7 @@
     },
     {
       "symbol": "WIF",
-      "bars": 5652,
+      "bars": 5658,
       "cases": 1581,
       "states": {
         "S2": 623,
@@ -995,7 +995,7 @@
     },
     {
       "symbol": "BONK",
-      "bars": 5861,
+      "bars": 5867,
       "cases": 1432,
       "states": {
         "S1": 276,
@@ -1007,7 +1007,7 @@
     },
     {
       "symbol": "OP",
-      "bars": 9235,
+      "bars": 9241,
       "cases": 2380,
       "states": {
         "S2": 903,
@@ -1019,19 +1019,19 @@
     },
     {
       "symbol": "S",
-      "bars": 3467,
-      "cases": 671,
+      "bars": 3473,
+      "cases": 672,
       "states": {
         "S0.5": 204,
         "S1": 215,
-        "S2": 215,
+        "S2": 216,
         "S3": 37
       },
       "ok": true
     },
     {
       "symbol": "PAXG",
-      "bars": 10041,
+      "bars": 10047,
       "cases": 3183,
       "states": {
         "S2": 1392,
@@ -1043,31 +1043,31 @@
     },
     {
       "symbol": "AXS",
-      "bars": 10041,
-      "cases": 2624,
+      "bars": 10047,
+      "cases": 2630,
       "states": {
         "S0.5": 769,
         "S1": 697,
-        "S2": 932,
-        "S3": 226
+        "S2": 934,
+        "S3": 230
       },
       "ok": true
     },
     {
       "symbol": "EGLD",
-      "bars": 10041,
-      "cases": 2407,
+      "bars": 10047,
+      "cases": 2412,
       "states": {
         "S1": 627,
         "S2": 925,
         "S3": 213,
-        "S0.5": 642
+        "S0.5": 647
       },
       "ok": true
     },
     {
       "symbol": "LDO",
-      "bars": 9358,
+      "bars": 9364,
       "cases": 2526,
       "states": {
         "S1": 650,
@@ -1079,10 +1079,10 @@
     },
     {
       "symbol": "ZEC",
-      "bars": 10041,
-      "cases": 2797,
+      "bars": 10047,
+      "cases": 2802,
       "states": {
-        "S2": 1142,
+        "S2": 1147,
         "S3": 284,
         "S0.5": 707,
         "S1": 664
@@ -1093,32 +1093,32 @@
   "state_horizon_baselines": {
     "S0.5": {
       "3": {
-        "samples": 56870,
-        "wins": 9743,
-        "raw_probability": 0.171321,
-        "probability": 0.171321,
+        "samples": 56895,
+        "wins": 9744,
+        "raw_probability": 0.171263,
+        "probability": 0.171263,
         "wilson95": [
-          0.168246,
-          0.17444
+          0.168189,
+          0.174381
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 9743,
-            "raw_probability": 0.171321,
-            "probability": 0.171321
+            "count": 9744,
+            "raw_probability": 0.171263,
+            "probability": 0.171263
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 46458,
-            "raw_probability": 0.816916,
-            "probability": 0.816916
+            "count": 46481,
+            "raw_probability": 0.816961,
+            "probability": 0.816961
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 664,
-            "raw_probability": 0.011676,
-            "probability": 0.011676
+            "count": 665,
+            "raw_probability": 0.011688,
+            "probability": 0.011688
           },
           "OTHER": {
             "label_zh": "其他",
@@ -1127,38 +1127,38 @@
             "probability": 8.8e-05
           }
         },
-        "raw_structural_survival_probability": 0.988236,
-        "structural_survival_probability": 0.988236,
-        "true_fail_probability": 0.011676,
+        "raw_structural_survival_probability": 0.988224,
+        "structural_survival_probability": 0.988224,
+        "true_fail_probability": 0.011688,
         "other_probability": 8.8e-05
       },
       "6": {
-        "samples": 56870,
-        "wins": 15708,
-        "raw_probability": 0.276209,
-        "probability": 0.276209,
+        "samples": 56895,
+        "wins": 15709,
+        "raw_probability": 0.276105,
+        "probability": 0.276105,
         "wilson95": [
-          0.272549,
-          0.279899
+          0.272447,
+          0.279794
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 15708,
-            "raw_probability": 0.276209,
-            "probability": 0.276209
+            "count": 15709,
+            "raw_probability": 0.276105,
+            "probability": 0.276105
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 39129,
-            "raw_probability": 0.688043,
-            "probability": 0.688043
+            "count": 39151,
+            "raw_probability": 0.688127,
+            "probability": 0.688127
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 2032,
-            "raw_probability": 0.035731,
-            "probability": 0.035731
+            "count": 2034,
+            "raw_probability": 0.03575,
+            "probability": 0.03575
           },
           "OTHER": {
             "label_zh": "其他",
@@ -1167,78 +1167,78 @@
             "probability": 1.8e-05
           }
         },
-        "raw_structural_survival_probability": 0.964252,
-        "structural_survival_probability": 0.964252,
-        "true_fail_probability": 0.035731,
+        "raw_structural_survival_probability": 0.964232,
+        "structural_survival_probability": 0.964232,
+        "true_fail_probability": 0.03575,
         "other_probability": 1.8e-05
       },
       "12": {
-        "samples": 56870,
-        "wins": 22929,
-        "raw_probability": 0.403183,
-        "probability": 0.403183,
+        "samples": 56895,
+        "wins": 22930,
+        "raw_probability": 0.403023,
+        "probability": 0.403023,
         "wilson95": [
-          0.399158,
-          0.407221
+          0.398999,
+          0.40706
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 22929,
-            "raw_probability": 0.403183,
-            "probability": 0.403183
+            "count": 22930,
+            "raw_probability": 0.403023,
+            "probability": 0.403023
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 28478,
-            "raw_probability": 0.500756,
-            "probability": 0.500756
+            "count": 28500,
+            "raw_probability": 0.500923,
+            "probability": 0.500923
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 5457,
-            "raw_probability": 0.095956,
-            "probability": 0.095956
+            "count": 5459,
+            "raw_probability": 0.095949,
+            "probability": 0.095949
           },
           "OTHER": {
             "label_zh": "其他",
             "count": 6,
-            "raw_probability": 0.000106,
-            "probability": 0.000106
+            "raw_probability": 0.000105,
+            "probability": 0.000105
           }
         },
-        "raw_structural_survival_probability": 0.903939,
-        "structural_survival_probability": 0.903939,
-        "true_fail_probability": 0.095956,
-        "other_probability": 0.000106
+        "raw_structural_survival_probability": 0.903946,
+        "structural_survival_probability": 0.903946,
+        "true_fail_probability": 0.095949,
+        "other_probability": 0.000105
       },
       "18": {
-        "samples": 56870,
-        "wins": 27444,
-        "raw_probability": 0.482574,
-        "probability": 0.482574,
+        "samples": 56895,
+        "wins": 27451,
+        "raw_probability": 0.482485,
+        "probability": 0.482485,
         "wilson95": [
-          0.478469,
-          0.486682
+          0.478381,
+          0.486592
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 27444,
-            "raw_probability": 0.482574,
-            "probability": 0.482574
+            "count": 27451,
+            "raw_probability": 0.482485,
+            "probability": 0.482485
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 21211,
-            "raw_probability": 0.372973,
-            "probability": 0.372973
+            "count": 21225,
+            "raw_probability": 0.373056,
+            "probability": 0.373056
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 8207,
-            "raw_probability": 0.144312,
-            "probability": 0.144312
+            "count": 8211,
+            "raw_probability": 0.144318,
+            "probability": 0.144318
           },
           "OTHER": {
             "label_zh": "其他",
@@ -1247,40 +1247,40 @@
             "probability": 0.000141
           }
         },
-        "raw_structural_survival_probability": 0.855548,
-        "structural_survival_probability": 0.855548,
-        "true_fail_probability": 0.144312,
+        "raw_structural_survival_probability": 0.855541,
+        "structural_survival_probability": 0.855541,
+        "true_fail_probability": 0.144318,
         "other_probability": 0.000141,
         "late_success_4_7d": {
-          "eligible_samples": 29399,
-          "count": 11209,
-          "probability": 0.381271,
+          "eligible_samples": 29404,
+          "count": 11212,
+          "probability": 0.381309,
           "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
         }
       }
     },
     "S1": {
       "3": {
-        "samples": 47119,
+        "samples": 47125,
         "wins": 8285,
-        "raw_probability": 0.175831,
-        "probability": 0.175831,
+        "raw_probability": 0.175809,
+        "probability": 0.175809,
         "wilson95": [
-          0.172421,
-          0.179295
+          0.172399,
+          0.179272
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
             "count": 8285,
-            "raw_probability": 0.175831,
-            "probability": 0.175831
+            "raw_probability": 0.175809,
+            "probability": 0.175809
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 32493,
-            "raw_probability": 0.689594,
-            "probability": 0.689594
+            "count": 32498,
+            "raw_probability": 0.689613,
+            "probability": 0.689613
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
@@ -1290,475 +1290,475 @@
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 6265,
-            "raw_probability": 0.132961,
-            "probability": 0.132961
+            "count": 6266,
+            "raw_probability": 0.132966,
+            "probability": 0.132966
           }
         },
-        "raw_structural_survival_probability": 0.865426,
-        "structural_survival_probability": 0.865426,
+        "raw_structural_survival_probability": 0.865422,
+        "structural_survival_probability": 0.865422,
         "true_fail_probability": 0.001613,
-        "other_probability": 0.132961
+        "other_probability": 0.132966
       },
       "6": {
-        "samples": 47119,
-        "wins": 13734,
-        "raw_probability": 0.291475,
-        "probability": 0.291475,
+        "samples": 47125,
+        "wins": 13735,
+        "raw_probability": 0.291459,
+        "probability": 0.291459,
         "wilson95": [
-          0.287389,
-          0.295595
+          0.287373,
+          0.295579
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 13734,
-            "raw_probability": 0.291475,
-            "probability": 0.291475
+            "count": 13735,
+            "raw_probability": 0.291459,
+            "probability": 0.291459
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 22906,
-            "raw_probability": 0.486131,
-            "probability": 0.486131
+            "count": 22910,
+            "raw_probability": 0.486154,
+            "probability": 0.486154
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
             "count": 398,
-            "raw_probability": 0.008447,
-            "probability": 0.008447
+            "raw_probability": 0.008446,
+            "probability": 0.008446
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 10081,
-            "raw_probability": 0.213948,
-            "probability": 0.213948
+            "count": 10082,
+            "raw_probability": 0.213942,
+            "probability": 0.213942
           }
         },
-        "raw_structural_survival_probability": 0.777606,
-        "structural_survival_probability": 0.777606,
-        "true_fail_probability": 0.008447,
-        "other_probability": 0.213948
+        "raw_structural_survival_probability": 0.777613,
+        "structural_survival_probability": 0.777613,
+        "true_fail_probability": 0.008446,
+        "other_probability": 0.213942
       },
       "12": {
-        "samples": 47119,
-        "wins": 20198,
-        "raw_probability": 0.428659,
-        "probability": 0.428659,
+        "samples": 47125,
+        "wins": 20203,
+        "raw_probability": 0.428711,
+        "probability": 0.428711,
         "wilson95": [
-          0.424197,
-          0.433133
+          0.424249,
+          0.433185
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 20198,
-            "raw_probability": 0.428659,
-            "probability": 0.428659
+            "count": 20203,
+            "raw_probability": 0.428711,
+            "probability": 0.428711
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
             "count": 13266,
-            "raw_probability": 0.281542,
-            "probability": 0.281542
+            "raw_probability": 0.281507,
+            "probability": 0.281507
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
             "count": 1948,
-            "raw_probability": 0.041342,
-            "probability": 0.041342
+            "raw_probability": 0.041337,
+            "probability": 0.041337
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 11707,
-            "raw_probability": 0.248456,
-            "probability": 0.248456
+            "count": 11708,
+            "raw_probability": 0.248446,
+            "probability": 0.248446
           }
         },
-        "raw_structural_survival_probability": 0.710202,
-        "structural_survival_probability": 0.710202,
-        "true_fail_probability": 0.041342,
-        "other_probability": 0.248456
+        "raw_structural_survival_probability": 0.710218,
+        "structural_survival_probability": 0.710218,
+        "true_fail_probability": 0.041337,
+        "other_probability": 0.248446
       },
       "18": {
-        "samples": 47119,
-        "wins": 24168,
-        "raw_probability": 0.512914,
-        "probability": 0.512914,
+        "samples": 47125,
+        "wins": 24173,
+        "raw_probability": 0.512955,
+        "probability": 0.512955,
         "wilson95": [
-          0.5084,
-          0.517426
+          0.508441,
+          0.517467
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 24168,
-            "raw_probability": 0.512914,
-            "probability": 0.512914
+            "count": 24173,
+            "raw_probability": 0.512955,
+            "probability": 0.512955
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
             "count": 8637,
-            "raw_probability": 0.183302,
-            "probability": 0.183302
+            "raw_probability": 0.183279,
+            "probability": 0.183279
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
             "count": 3722,
-            "raw_probability": 0.078991,
-            "probability": 0.078991
+            "raw_probability": 0.078981,
+            "probability": 0.078981
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 10592,
-            "raw_probability": 0.224793,
-            "probability": 0.224793
+            "count": 10593,
+            "raw_probability": 0.224785,
+            "probability": 0.224785
           }
         },
-        "raw_structural_survival_probability": 0.696216,
-        "structural_survival_probability": 0.696216,
-        "true_fail_probability": 0.078991,
-        "other_probability": 0.224793,
+        "raw_structural_survival_probability": 0.696233,
+        "structural_survival_probability": 0.696233,
+        "true_fail_probability": 0.078981,
+        "other_probability": 0.224785,
         "late_success_4_7d": {
-          "eligible_samples": 22915,
-          "count": 7360,
-          "probability": 0.321187,
+          "eligible_samples": 22934,
+          "count": 7363,
+          "probability": 0.321052,
           "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
         }
       }
     },
     "S2": {
       "3": {
-        "samples": 78031,
-        "wins": 6191,
-        "raw_probability": 0.07934,
-        "probability": 0.07934,
+        "samples": 78085,
+        "wins": 6195,
+        "raw_probability": 0.079337,
+        "probability": 0.079337,
         "wilson95": [
-          0.077465,
-          0.081257
+          0.077462,
+          0.081253
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 6191,
-            "raw_probability": 0.07934,
-            "probability": 0.07934
+            "count": 6195,
+            "raw_probability": 0.079337,
+            "probability": 0.079337
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 64348,
-            "raw_probability": 0.824647,
-            "probability": 0.824647
+            "count": 64397,
+            "raw_probability": 0.824704,
+            "probability": 0.824704
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
             "count": 2745,
-            "raw_probability": 0.035178,
-            "probability": 0.035178
+            "raw_probability": 0.035154,
+            "probability": 0.035154
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 4747,
-            "raw_probability": 0.060835,
-            "probability": 0.060835
+            "count": 4748,
+            "raw_probability": 0.060806,
+            "probability": 0.060806
           }
         },
-        "raw_structural_survival_probability": 0.903987,
-        "structural_survival_probability": 0.903987,
-        "true_fail_probability": 0.035178,
-        "other_probability": 0.060835
+        "raw_structural_survival_probability": 0.90404,
+        "structural_survival_probability": 0.90404,
+        "true_fail_probability": 0.035154,
+        "other_probability": 0.060806
       },
       "6": {
-        "samples": 78031,
-        "wins": 10823,
-        "raw_probability": 0.138701,
-        "probability": 0.138701,
+        "samples": 78085,
+        "wins": 10831,
+        "raw_probability": 0.138708,
+        "probability": 0.138708,
         "wilson95": [
-          0.136294,
-          0.141144
+          0.136301,
+          0.14115
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 10823,
-            "raw_probability": 0.138701,
-            "probability": 0.138701
+            "count": 10831,
+            "raw_probability": 0.138708,
+            "probability": 0.138708
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 52694,
-            "raw_probability": 0.675296,
-            "probability": 0.675296
+            "count": 52738,
+            "raw_probability": 0.675392,
+            "probability": 0.675392
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
             "count": 7036,
-            "raw_probability": 0.090169,
-            "probability": 0.090169
+            "raw_probability": 0.090107,
+            "probability": 0.090107
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 7478,
-            "raw_probability": 0.095834,
-            "probability": 0.095834
+            "count": 7480,
+            "raw_probability": 0.095793,
+            "probability": 0.095793
           }
         },
-        "raw_structural_survival_probability": 0.813997,
-        "structural_survival_probability": 0.813997,
-        "true_fail_probability": 0.090169,
-        "other_probability": 0.095834
+        "raw_structural_survival_probability": 0.8141,
+        "structural_survival_probability": 0.8141,
+        "true_fail_probability": 0.090107,
+        "other_probability": 0.095793
       },
       "12": {
-        "samples": 78031,
-        "wins": 20847,
-        "raw_probability": 0.267163,
-        "probability": 0.267163,
+        "samples": 78085,
+        "wins": 20862,
+        "raw_probability": 0.26717,
+        "probability": 0.26717,
         "wilson95": [
-          0.26407,
-          0.270279
+          0.264078,
+          0.270285
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 20847,
-            "raw_probability": 0.267163,
-            "probability": 0.267163
+            "count": 20862,
+            "raw_probability": 0.26717,
+            "probability": 0.26717
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 33500,
-            "raw_probability": 0.429317,
-            "probability": 0.429317
+            "count": 33534,
+            "raw_probability": 0.429455,
+            "probability": 0.429455
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 14582,
-            "raw_probability": 0.186874,
-            "probability": 0.186874
+            "count": 14585,
+            "raw_probability": 0.186784,
+            "probability": 0.186784
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 9102,
-            "raw_probability": 0.116646,
-            "probability": 0.116646
+            "count": 9104,
+            "raw_probability": 0.116591,
+            "probability": 0.116591
           }
         },
-        "raw_structural_survival_probability": 0.69648,
-        "structural_survival_probability": 0.69648,
-        "true_fail_probability": 0.186874,
-        "other_probability": 0.116646
+        "raw_structural_survival_probability": 0.696625,
+        "structural_survival_probability": 0.696625,
+        "true_fail_probability": 0.186784,
+        "other_probability": 0.116591
       },
       "18": {
-        "samples": 78031,
-        "wins": 29033,
-        "raw_probability": 0.37207,
-        "probability": 0.37207,
+        "samples": 78085,
+        "wins": 29060,
+        "raw_probability": 0.372159,
+        "probability": 0.372159,
         "wilson95": [
-          0.368685,
-          0.375468
+          0.368774,
+          0.375555
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 29033,
-            "raw_probability": 0.37207,
-            "probability": 0.37207
+            "count": 29060,
+            "raw_probability": 0.372159,
+            "probability": 0.372159
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 20711,
-            "raw_probability": 0.26542,
-            "probability": 0.26542
+            "count": 20719,
+            "raw_probability": 0.265339,
+            "probability": 0.265339
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 19633,
-            "raw_probability": 0.251605,
-            "probability": 0.251605
+            "count": 19649,
+            "raw_probability": 0.251636,
+            "probability": 0.251636
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 8654,
-            "raw_probability": 0.110905,
-            "probability": 0.110905
+            "count": 8657,
+            "raw_probability": 0.110866,
+            "probability": 0.110866
           }
         },
-        "raw_structural_survival_probability": 0.63749,
-        "structural_survival_probability": 0.63749,
-        "true_fail_probability": 0.251605,
-        "other_probability": 0.110905,
+        "raw_structural_survival_probability": 0.637498,
+        "structural_survival_probability": 0.637498,
+        "true_fail_probability": 0.251636,
+        "other_probability": 0.110866,
         "late_success_4_7d": {
-          "eligible_samples": 48811,
-          "count": 11475,
-          "probability": 0.23509,
+          "eligible_samples": 48860,
+          "count": 11486,
+          "probability": 0.23508,
           "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
         }
       }
     },
     "S3": {
       "3": {
-        "samples": 18258,
+        "samples": 18270,
         "wins": 3425,
-        "raw_probability": 0.187589,
-        "probability": 0.187589,
+        "raw_probability": 0.187466,
+        "probability": 0.187466,
         "wilson95": [
-          0.181992,
-          0.193317
+          0.181872,
+          0.193191
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
             "count": 3425,
-            "raw_probability": 0.187589,
-            "probability": 0.187589
+            "raw_probability": 0.187466,
+            "probability": 0.187466
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 14428,
-            "raw_probability": 0.790229,
-            "probability": 0.790229
+            "count": 14439,
+            "raw_probability": 0.790312,
+            "probability": 0.790312
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 240,
-            "raw_probability": 0.013145,
-            "probability": 0.013145
+            "count": 241,
+            "raw_probability": 0.013191,
+            "probability": 0.013191
           },
           "OTHER": {
             "label_zh": "其他",
             "count": 165,
-            "raw_probability": 0.009037,
-            "probability": 0.009037
+            "raw_probability": 0.009031,
+            "probability": 0.009031
           }
         },
-        "raw_structural_survival_probability": 0.977818,
-        "structural_survival_probability": 0.977818,
-        "true_fail_probability": 0.013145,
-        "other_probability": 0.009037
+        "raw_structural_survival_probability": 0.977778,
+        "structural_survival_probability": 0.977778,
+        "true_fail_probability": 0.013191,
+        "other_probability": 0.009031
       },
       "6": {
-        "samples": 18258,
+        "samples": 18270,
         "wins": 5185,
-        "raw_probability": 0.283985,
-        "probability": 0.283985,
+        "raw_probability": 0.283799,
+        "probability": 0.283799,
         "wilson95": [
-          0.27749,
-          0.290571
+          0.277307,
+          0.290381
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
             "count": 5185,
-            "raw_probability": 0.283985,
-            "probability": 0.283985
+            "raw_probability": 0.283799,
+            "probability": 0.283799
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 11897,
-            "raw_probability": 0.651605,
-            "probability": 0.651605
+            "count": 11907,
+            "raw_probability": 0.651724,
+            "probability": 0.651724
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 1040,
-            "raw_probability": 0.056961,
-            "probability": 0.056961
+            "count": 1042,
+            "raw_probability": 0.057033,
+            "probability": 0.057033
           },
           "OTHER": {
             "label_zh": "其他",
             "count": 136,
-            "raw_probability": 0.007449,
-            "probability": 0.007449
+            "raw_probability": 0.007444,
+            "probability": 0.007444
           }
         },
-        "raw_structural_survival_probability": 0.93559,
-        "structural_survival_probability": 0.93559,
-        "true_fail_probability": 0.056961,
-        "other_probability": 0.007449
+        "raw_structural_survival_probability": 0.935523,
+        "structural_survival_probability": 0.935523,
+        "true_fail_probability": 0.057033,
+        "other_probability": 0.007444
       },
       "12": {
-        "samples": 18258,
-        "wins": 7075,
-        "raw_probability": 0.387501,
-        "probability": 0.387501,
+        "samples": 18270,
+        "wins": 7079,
+        "raw_probability": 0.387466,
+        "probability": 0.387466,
         "wilson95": [
-          0.380459,
-          0.394591
+          0.380426,
+          0.394553
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 7075,
-            "raw_probability": 0.387501,
-            "probability": 0.387501
+            "count": 7079,
+            "raw_probability": 0.387466,
+            "probability": 0.387466
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 7826,
-            "raw_probability": 0.428634,
-            "probability": 0.428634
+            "count": 7832,
+            "raw_probability": 0.428681,
+            "probability": 0.428681
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 3191,
-            "raw_probability": 0.174773,
-            "probability": 0.174773
+            "count": 3193,
+            "raw_probability": 0.174767,
+            "probability": 0.174767
           },
           "OTHER": {
             "label_zh": "其他",
             "count": 166,
-            "raw_probability": 0.009092,
-            "probability": 0.009092
+            "raw_probability": 0.009086,
+            "probability": 0.009086
           }
         },
-        "raw_structural_survival_probability": 0.816135,
-        "structural_survival_probability": 0.816135,
-        "true_fail_probability": 0.174773,
-        "other_probability": 0.009092
+        "raw_structural_survival_probability": 0.816147,
+        "structural_survival_probability": 0.816147,
+        "true_fail_probability": 0.174767,
+        "other_probability": 0.009086
       },
       "18": {
-        "samples": 18258,
-        "wins": 8219,
-        "raw_probability": 0.450159,
-        "probability": 0.450159,
+        "samples": 18270,
+        "wins": 8225,
+        "raw_probability": 0.450192,
+        "probability": 0.450192,
         "wilson95": [
-          0.442953,
-          0.457385
+          0.442989,
+          0.457416
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 8219,
-            "raw_probability": 0.450159,
-            "probability": 0.450159
+            "count": 8225,
+            "raw_probability": 0.450192,
+            "probability": 0.450192
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 4929,
-            "raw_probability": 0.269964,
-            "probability": 0.269964
+            "count": 4928,
+            "raw_probability": 0.269732,
+            "probability": 0.269732
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 4893,
-            "raw_probability": 0.267992,
-            "probability": 0.267992
+            "count": 4900,
+            "raw_probability": 0.268199,
+            "probability": 0.268199
           },
           "OTHER": {
             "label_zh": "其他",
             "count": 217,
-            "raw_probability": 0.011885,
-            "probability": 0.011885
+            "raw_probability": 0.011877,
+            "probability": 0.011877
           }
         },
-        "raw_structural_survival_probability": 0.720123,
-        "structural_survival_probability": 0.720123,
-        "true_fail_probability": 0.267992,
-        "other_probability": 0.011885,
+        "raw_structural_survival_probability": 0.719923,
+        "structural_survival_probability": 0.719923,
+        "true_fail_probability": 0.268199,
+        "other_probability": 0.011877,
         "late_success_4_7d": {
-          "eligible_samples": 10028,
+          "eligible_samples": 10033,
           "count": 2306,
-          "probability": 0.229956,
+          "probability": 0.229842,
           "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
         }
       }
@@ -1768,21 +1768,21 @@
     "S0.5": {
       "SUCCESS_WITHIN_HORIZON": {
         "label_zh": "期限內成功",
-        "count": 27444,
-        "raw_probability": 0.482574,
-        "probability": 0.482574
+        "count": 27451,
+        "raw_probability": 0.482485,
+        "probability": 0.482485
       },
       "ALIVE_SLOW": {
         "label_zh": "還活著只是慢",
-        "count": 21211,
-        "raw_probability": 0.372973,
-        "probability": 0.372973
+        "count": 21225,
+        "raw_probability": 0.373056,
+        "probability": 0.373056
       },
       "TRUE_FAIL": {
         "label_zh": "真失敗",
-        "count": 8207,
-        "raw_probability": 0.144312,
-        "probability": 0.144312
+        "count": 8211,
+        "raw_probability": 0.144318,
+        "probability": 0.144318
       },
       "OTHER": {
         "label_zh": "其他",
@@ -1794,87 +1794,87 @@
     "S1": {
       "SUCCESS_WITHIN_HORIZON": {
         "label_zh": "期限內成功",
-        "count": 24168,
-        "raw_probability": 0.512914,
-        "probability": 0.512914
+        "count": 24173,
+        "raw_probability": 0.512955,
+        "probability": 0.512955
       },
       "ALIVE_SLOW": {
         "label_zh": "還活著只是慢",
         "count": 8637,
-        "raw_probability": 0.183302,
-        "probability": 0.183302
+        "raw_probability": 0.183279,
+        "probability": 0.183279
       },
       "TRUE_FAIL": {
         "label_zh": "真失敗",
         "count": 3722,
-        "raw_probability": 0.078991,
-        "probability": 0.078991
+        "raw_probability": 0.078981,
+        "probability": 0.078981
       },
       "OTHER": {
         "label_zh": "其他",
-        "count": 10592,
-        "raw_probability": 0.224793,
-        "probability": 0.224793
+        "count": 10593,
+        "raw_probability": 0.224785,
+        "probability": 0.224785
       }
     },
     "S2": {
       "SUCCESS_WITHIN_HORIZON": {
         "label_zh": "期限內成功",
-        "count": 29033,
-        "raw_probability": 0.37207,
-        "probability": 0.37207
+        "count": 29060,
+        "raw_probability": 0.372159,
+        "probability": 0.372159
       },
       "ALIVE_SLOW": {
         "label_zh": "還活著只是慢",
-        "count": 20711,
-        "raw_probability": 0.26542,
-        "probability": 0.26542
+        "count": 20719,
+        "raw_probability": 0.265339,
+        "probability": 0.265339
       },
       "TRUE_FAIL": {
         "label_zh": "真失敗",
-        "count": 19633,
-        "raw_probability": 0.251605,
-        "probability": 0.251605
+        "count": 19649,
+        "raw_probability": 0.251636,
+        "probability": 0.251636
       },
       "OTHER": {
         "label_zh": "其他",
-        "count": 8654,
-        "raw_probability": 0.110905,
-        "probability": 0.110905
+        "count": 8657,
+        "raw_probability": 0.110866,
+        "probability": 0.110866
       }
     },
     "S3": {
       "SUCCESS_WITHIN_HORIZON": {
         "label_zh": "期限內成功",
-        "count": 8219,
-        "raw_probability": 0.450159,
-        "probability": 0.450159
+        "count": 8225,
+        "raw_probability": 0.450192,
+        "probability": 0.450192
       },
       "ALIVE_SLOW": {
         "label_zh": "還活著只是慢",
-        "count": 4929,
-        "raw_probability": 0.269964,
-        "probability": 0.269964
+        "count": 4928,
+        "raw_probability": 0.269732,
+        "probability": 0.269732
       },
       "TRUE_FAIL": {
         "label_zh": "真失敗",
-        "count": 4893,
-        "raw_probability": 0.267992,
-        "probability": 0.267992
+        "count": 4900,
+        "raw_probability": 0.268199,
+        "probability": 0.268199
       },
       "OTHER": {
         "label_zh": "其他",
         "count": 217,
-        "raw_probability": 0.011885,
-        "probability": 0.011885
+        "raw_probability": 0.011877,
+        "probability": 0.011877
       }
     }
   },
   "primary_72h_structural_survival": {
-    "S0.5": 0.855548,
-    "S1": 0.696216,
-    "S2": 0.63749,
-    "S3": 0.720123
+    "S0.5": 0.855541,
+    "S1": 0.696233,
+    "S2": 0.637498,
+    "S3": 0.719923
   },
   "outcome_note": "72H main view: success + alive_slow + true_fail + other = 100%. Existing probability remains success-within-horizon for UI compatibility."
 }
