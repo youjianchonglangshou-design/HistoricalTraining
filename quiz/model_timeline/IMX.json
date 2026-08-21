@@ -24425,17 +24425,32 @@
     },
     {
       "day_time": 1787184000000,
-      "cutoff_time": 1787184000000,
-      "state": "OTHER",
+      "cutoff_time": 1787256000000,
+      "state": "S0.5",
       "features": {
         "midline_state": "flattening",
-        "bandpos": 0.053587,
-        "bandpos_bin": "LT_025",
-        "trigger_stage": "T0",
+        "bandpos": 0.266713,
+        "bandpos_bin": "025_050",
+        "trigger_stage": "T2",
         "bandwidth_trend": "EXPANDING",
-        "bandwidth_delta_3d": 5.84256465,
-        "state_age_bars": 44,
-        "state_age_bin": "7_PLUS"
+        "bandwidth_delta_3d": 4.69292696,
+        "state_age_bars": 6,
+        "state_age_bin": "4_6"
+      }
+    },
+    {
+      "day_time": 1787270400000,
+      "cutoff_time": 1787270400000,
+      "state": "S1",
+      "features": {
+        "midline_state": "flat",
+        "bandpos": 0.535928,
+        "bandpos_bin": "050_060",
+        "trigger_stage": "T2",
+        "bandwidth_trend": "EXPANDING",
+        "bandwidth_delta_3d": 1.07491964,
+        "state_age_bars": 1,
+        "state_age_bin": "1"
       }
     }
   ]

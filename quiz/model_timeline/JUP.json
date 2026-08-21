@@ -13250,15 +13250,30 @@
     },
     {
       "day_time": 1787184000000,
-      "cutoff_time": 1787184000000,
+      "cutoff_time": 1787256000000,
       "state": "S1",
       "features": {
         "midline_state": "falling",
-        "bandpos": 0.568832,
-        "bandpos_bin": "050_060",
+        "bandpos": 0.666377,
+        "bandpos_bin": "060_075",
         "trigger_stage": "T2",
         "bandwidth_trend": "CONTRACTING",
-        "bandwidth_delta_3d": -2.30396044,
+        "bandwidth_delta_3d": -1.55914211,
+        "state_age_bars": 6,
+        "state_age_bin": "4_6"
+      }
+    },
+    {
+      "day_time": 1787270400000,
+      "cutoff_time": 1787270400000,
+      "state": "OTHER",
+      "features": {
+        "midline_state": "flattening",
+        "bandpos": 0.817355,
+        "bandpos_bin": "GE_075",
+        "trigger_stage": "T1",
+        "bandwidth_trend": "CONTRACTING",
+        "bandwidth_delta_3d": -1.49276078,
         "state_age_bars": 1,
         "state_age_bin": "1"
       }
