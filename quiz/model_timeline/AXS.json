@@ -24455,16 +24455,31 @@
     },
     {
       "day_time": 1787356800000,
-      "cutoff_time": 1787356800000,
+      "cutoff_time": 1787428800000,
       "state": "OTHER",
       "features": {
         "midline_state": "rising",
-        "bandpos": 1.162392,
+        "bandpos": 1.125327,
         "bandpos_bin": "GE_075",
         "trigger_stage": "T1",
         "bandwidth_trend": "EXPANDING",
-        "bandwidth_delta_3d": 15.6131684,
-        "state_age_bars": 13,
+        "bandwidth_delta_3d": 11.6802397,
+        "state_age_bars": 18,
+        "state_age_bin": "7_PLUS"
+      }
+    },
+    {
+      "day_time": 1787443200000,
+      "cutoff_time": 1787443200000,
+      "state": "OTHER",
+      "features": {
+        "midline_state": "rising",
+        "bandpos": 0.896503,
+        "bandpos_bin": "GE_075",
+        "trigger_stage": "T1",
+        "bandwidth_trend": "EXPANDING",
+        "bandwidth_delta_3d": 10.08131914,
+        "state_age_bars": 19,
         "state_age_bin": "7_PLUS"
       }
     }
