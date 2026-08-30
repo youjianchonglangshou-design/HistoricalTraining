@@ -11,7 +11,7 @@
   <main class="app-shell">
     <header class="topbar card">
       <div class="brand-block">
-        <div class="eyebrow">HISTORICAL TRAINING</div>
+        <div class="eyebrow">HISTORICAL TRAINING · QUIZ v2.8 ADX REPLAY</div>
         <h1>S-State 歷史行情考題</h1>
       </div>
 
@@ -42,11 +42,23 @@
             <span class="chip bb">BB20</span>
             <span class="chip yellow">黃階梯 = HA 多</span>
             <span class="chip purple">紫階梯 = HA 空</span>
+            <span class="chip adx">ADX 紅綠階梯</span>
           </div>
         </div>
 
         <canvas id="chartCanvas"></canvas>
         <div id="chartTooltip" class="chart-tooltip hidden"></div>
+
+        <div id="adxHud" class="quiz-adx-hud hidden" aria-live="polite">
+          <span class="adx-title">ADX / DMI 14</span>
+          <div class="adx-head-right">
+            <span id="adxStatePill" class="adx-state-pill adx-controller-neutral adx-trend-neutral">
+              <span class="adx-state-dot"></span><strong id="adxStateText">方向膠著｜ADX待確認</strong>
+            </span>
+            <span id="adxPlusPill" class="adx-live-pill adx-pill-plus adx-pill-neutral">DI+ <strong id="adxPlusValue">—</strong></span>
+            <span id="adxMinusPill" class="adx-live-pill adx-pill-minus adx-pill-neutral">DI− <strong id="adxMinusValue">—</strong></span>
+          </div>
+        </div>
         <div id="chartEmpty" class="chart-empty">讀取歷史資料中…</div>
 
         <div id="modelHud" class="model-hud">
@@ -123,10 +135,11 @@
         <summary>這張考題圖與模型怎麼算？</summary>
         <div class="explain-grid">
           <p><b>逐日播放：</b>畫面永遠維持最近 30 根日 K；每按一次只新增 1 天，像 TradingView 回放。進場後由你決定何時按「平倉」。</p>
-          <p><b>模型：</b>每一天使用該日最後一根 4H 的正式 S-state replay 特徵，再套目前 R2 Active probability model；非模型狀態明確顯示「無統計」。</p>
+          <p><b>模型：</b>每一天使用該日最後一根 4H 的正式 S-state replay 特徵，再套目前 R2 Active probability model；Schema v3 會先匹配 BB/HA Level 1～5，再套 DMI Expert facets combiner 修正成功／存活／真失敗率；非模型狀態明確顯示「無統計」。</p>
           <p><b>失敗：</b>72H `TRUE_FAIL`；<b>存活：</b>72H 結構存活率；<b>樣本：</b>目前條件實際匹配到的歷史樣本數。</p>
           <p><b>戰績：</b>只有平倉才計入勝負與累積損益；同時保存進場當下的失敗率、存活率與樣本數。本次戰績只存在記憶體，重新整理即歸零。</p>
           <p><b>黃紫階梯：</b>沿用正式 Heikin-Ashi；BB20 使用普通日 K close 的 20 日母體標準差。</p>
+          <p><b>ADX / DMI：</b>直接讀取正式 replay 的每日 DI+、DI−、ADX 特徵；DI+ 黃、DI− 紫、ADX 上升為綠階梯、下降為紅階梯，20 僅作參考軸。膠囊顯示主導方與力道增減。</p>
         </div>
       </details>
     </section>

@@ -8,6 +8,21 @@
   const DAY_MS = 24 * 60 * 60 * 1000;
   const MODEL_HORIZON = 18; // 72H = 18 x 4H
   const MAX_MODEL_LEVEL = 5;
+  const DMI_AXIS = 20;
+  const OUTCOME_SUCCESS = 'SUCCESS_WITHIN_HORIZON';
+  const OUTCOME_ALIVE = 'ALIVE_SLOW';
+  const OUTCOME_FAIL = 'TRUE_FAIL';
+  const OUTCOME_OTHER = 'OTHER';
+  const OUTCOME_KEYS = [OUTCOME_SUCCESS, OUTCOME_ALIVE, OUTCOME_FAIL, OUTCOME_OTHER];
+  const DMI_QUANTILE_FIELDS = {
+    di_abs_gap: 'di_abs_gap_q',
+    di_axis_distance: 'di_axis_distance_q',
+    di_plus_slope_3d: 'di_plus_slope_q',
+    di_minus_slope_3d: 'di_minus_slope_q',
+    di_gap_slope_3d: 'di_gap_slope_q',
+    adx: 'adx_q',
+    adx_slope_3d: 'adx_slope_q',
+  };
   const cfg = window.SSTATE_QUIZ_CONFIG || {};
   const workerUrl = String(cfg.workerUrl || '').replace(/\/$/, '');
   const activeModelPath = String(cfg.activeModelPath || '/api/model/active');
@@ -602,12 +617,15 @@
       fail: pred.trueFail,
       survival: pred.survival,
       samples: pred.samples,
+      dmiFacets: pred.dmiExpert ? Number(pred.dmiExpert.matchedFacetCount || 0) : 0,
+      dmiVersion: pred.dmiExpert ? String(pred.dmiExpert.version || '') : '',
     };
   }
 
   function formatModelSnapshot(s) {
     if (!s || !s.available) return `${s && s.state ? s.state : 'NON_MODEL'}｜無統計`;
-    return `${s.state} L${s.level}｜失敗 ${fmtModelPct(s.fail)}｜存活 ${fmtModelPct(s.survival)}｜樣本 ${Number(s.samples || 0).toLocaleString()}`;
+    const dmi = Number(s.dmiFacets || 0) > 0 ? `｜DMI×${Number(s.dmiFacets)}` : '';
+    return `${s.state} L${s.level}${dmi}｜失敗 ${fmtModelPct(s.fail)}｜存活 ${fmtModelPct(s.survival)}｜樣本 ${Number(s.samples || 0).toLocaleString()}`;
   }
 
   function renderModelHud() {
@@ -650,7 +668,10 @@
     setModelStat('modelFail', pred.trueFail);
     setModelStat('modelSurvival', pred.survival);
     $('modelSamples').textContent = Number(pred.samples || 0).toLocaleString();
-    $('modelHint').textContent = `3日成功 ${fmtModelPct(pred.success)}｜${featureSummary(timeline.features || {})}`;
+    const dmiText = pred.dmiExpert && pred.dmiExpert.available
+      ? `DMI×${pred.dmiExpert.matchedFacetCount}｜Blend ${(Number(pred.dmiExpert.blendStrength || 0) * 100).toFixed(0)}%`
+      : 'DMI未匹配';
+    $('modelHint').textContent = `3日成功 ${fmtModelPct(pred.success)}｜${dmiText}｜${featureSummary(timeline.features || {})}`;
   }
 
   function lookupProbability(model, marketState, horizon, features) {
@@ -659,41 +680,206 @@
     const hnode = (stateNode.horizons || {})[String(horizon)];
     if (!hnode) return { available:false, reason:'horizon_missing' };
     const minSamples = Number(model.default_min_samples || 50);
-    const levels = (hnode.levels || []).filter(x => Number(x.level || 0) <= MAX_MODEL_LEVEL);
+
+    const base = lookupBaseRule(hnode, features, minSamples, MAX_MODEL_LEVEL);
+    if (!base || !base.node) return { available:false, reason:'baseline_missing' };
+    const basePred = normalizePrediction(base.node, base.level, base.fallback);
+
+    // Schema v1/v2 remains backward compatible. Schema v3 DMI Expert is an
+    // independent correction layer on top of the legacy BB/HA Level 1-5 rule.
+    const dmi = lookupDmiFacets(stateNode, hnode, features, minSamples);
+    const dmiVersion = String(((model.dmi_expert_contract || {}).version) || '');
+    if (!dmi.matches.length || !hnode.baseline) {
+      return {
+        ...basePred,
+        dmiExpert: {
+          available: false,
+          version: dmiVersion,
+          matchedFacetCount: 0,
+          blendStrength: 0,
+          matchedFacets: [],
+          bins: dmi.enriched,
+        },
+      };
+    }
+
+    const combined = combineWithDmi(
+      base.node,
+      hnode.baseline,
+      dmi.matches,
+      Number(model.prior_strength || 20),
+    );
+    return {
+      ...basePred,
+      success: combined.probabilities[OUTCOME_SUCCESS],
+      survival: combined.probabilities[OUTCOME_SUCCESS] + combined.probabilities[OUTCOME_ALIVE],
+      trueFail: combined.probabilities[OUTCOME_FAIL],
+      other: combined.probabilities[OUTCOME_OTHER],
+      dmiExpert: {
+        available: true,
+        version: dmiVersion,
+        matchedFacetCount: combined.audit.length,
+        blendStrength: combined.blendStrength,
+        matchedFacets: combined.audit,
+        bins: dmi.enriched,
+      },
+    };
+  }
+
+  function lookupBaseRule(hnode, features, minSamples, maxLevel) {
+    const levels = (hnode.levels || []).filter(x => Number(x.level || 0) <= Number(maxLevel));
     for (let li = levels.length - 1; li >= 0; li--) {
       const level = levels[li];
       const fields = Array.isArray(level.fields) ? level.fields : [];
       const sig = signature(features, fields);
-      const rule = (level.rules || []).find(r => r.signature === sig && Number(r.samples || 0) >= minSamples);
-      if (rule) return normalizePrediction(rule, Number(level.level || 0), false);
+      const rule = findRule(level.rules || [], sig, minSamples);
+      if (rule) return { node:rule, level:Number(level.level || 0), fields, signature:sig, fallback:false };
     }
-    if (!hnode.baseline) return { available:false, reason:'baseline_missing' };
-    return normalizePrediction(hnode.baseline, 0, true);
+    return hnode.baseline
+      ? { node:hnode.baseline, level:0, fields:[], signature:'BASELINE', fallback:true }
+      : null;
   }
 
   function normalizePrediction(node, level, fallback) {
-    const outcomes = node.outcomes || {};
-    const outcomeProb = (key) => {
-      const v = outcomes[key] && outcomes[key].probability;
-      return Number.isFinite(Number(v)) ? Number(v) : null;
-    };
-    const success = outcomeProb('SUCCESS_WITHIN_HORIZON') ?? Number(node.probability || 0);
-    const alive = outcomeProb('ALIVE_SLOW');
-    const trueFail = Number.isFinite(Number(node.true_fail_probability))
-      ? Number(node.true_fail_probability)
-      : (outcomeProb('TRUE_FAIL') ?? 0);
-    const survival = Number.isFinite(Number(node.structural_survival_probability))
-      ? Number(node.structural_survival_probability)
-      : success + (alive ?? 0);
+    const probs = outcomeProbs(node);
     return {
       available: true,
       samples: Number(node.samples || 0),
       level,
       fallback,
-      success,
-      trueFail,
-      survival,
+      success: probs[OUTCOME_SUCCESS],
+      trueFail: probs[OUTCOME_FAIL],
+      survival: probs[OUTCOME_SUCCESS] + probs[OUTCOME_ALIVE],
+      other: probs[OUTCOME_OTHER],
     };
+  }
+
+  function enrichDmiRawFeatures(features) {
+    const out = { ...(features || {}) };
+    const plus = finiteNumber(out.di_plus);
+    const minus = finiteNumber(out.di_minus);
+    const gap = finiteNumber(out.di_gap);
+    if (finiteNumber(out.di_abs_gap) === null) {
+      const rawGap = gap !== null ? gap : (plus !== null && minus !== null ? plus - minus : null);
+      out.di_abs_gap = rawGap === null ? null : Math.abs(rawGap);
+    }
+    if (finiteNumber(out.di_axis_distance) === null) {
+      out.di_axis_distance = plus !== null && minus !== null
+        ? (Math.abs(plus - DMI_AXIS) + Math.abs(minus - DMI_AXIS)) / 2
+        : null;
+    }
+    return out;
+  }
+
+  function applyDmiBinning(features, binning) {
+    const out = enrichDmiRawFeatures(features);
+    Object.entries(DMI_QUANTILE_FIELDS).forEach(([rawField, qField]) => {
+      const value = finiteNumber(out[rawField]);
+      const node = (binning || {})[rawField] || {};
+      const q33 = finiteNumber(node.q33);
+      const q67 = finiteNumber(node.q67);
+      if (value === null || q33 === null || q67 === null) out[qField] = 'UNKNOWN';
+      else if (value <= q33) out[qField] = 'LOW';
+      else if (value <= q67) out[qField] = 'MID';
+      else out[qField] = 'HIGH';
+    });
+    return out;
+  }
+
+  function lookupDmiFacets(stateNode, hnode, features, minSamples) {
+    const expert = hnode.dmi_expert || null;
+    const enriched = applyDmiBinning(features, stateNode.dmi_binning || {});
+    if (!expert) return { matches:[], enriched };
+    const matches = [];
+    for (const facet of (expert.facets || [])) {
+      const name = String(facet.name || 'facet');
+      const fields = Array.isArray(facet.fields) ? facet.fields : [];
+      // Quiz model_timeline comes directly from HistoricalTraining replay, so
+      // dmi_cross_age_bin is the exact 4H relation-age feature. If an older
+      // timeline lacks it, skip cross-age facets rather than fabricate data.
+      if ((name === 'cross_momentum' || name === 'adx_turn_handover') && !enriched.dmi_cross_age_bin) continue;
+      const sig = signature(enriched, fields);
+      const rule = findRule(facet.rules || [], sig, minSamples);
+      if (!rule) continue;
+      matches.push({ name, fields, signature:sig, rule });
+    }
+    return { matches, enriched };
+  }
+
+  function combineWithDmi(baseNode, baselineNode, matches, priorStrength) {
+    const base = outcomeProbs(baseNode);
+    if (!matches.length) return { probabilities:base, blendStrength:0, audit:[] };
+    const baseline = outcomeProbs(baselineNode);
+    const eps = 1e-9;
+    const weightedLogs = Object.fromEntries(OUTCOME_KEYS.map(k => [k, 0]));
+    const weights = [];
+    const audit = [];
+
+    for (const match of matches) {
+      const n = Number(match.rule.samples || 0);
+      const reliability = n / (n + Math.max(1, Number(priorStrength || 20)));
+      weights.push(reliability);
+      const facet = outcomeProbs(match.rule);
+      OUTCOME_KEYS.forEach(key => {
+        const ratio = Math.max(eps, facet[key]) / Math.max(eps, baseline[key]);
+        weightedLogs[key] += reliability * Math.log(ratio);
+      });
+      audit.push({
+        name: match.name,
+        fields: match.fields,
+        signature: match.signature,
+        samples: n,
+        reliability,
+        success: facet[OUTCOME_SUCCESS],
+        survival: facet[OUTCOME_SUCCESS] + facet[OUTCOME_ALIVE],
+        trueFail: facet[OUTCOME_FAIL],
+      });
+    }
+
+    const weightSum = weights.reduce((a,b) => a + b, 0);
+    if (!(weightSum > 0)) return { probabilities:base, blendStrength:0, audit };
+    const blendStrength = Math.min(1, weightSum / weights.length);
+    const logs = {};
+    OUTCOME_KEYS.forEach(key => {
+      const avgLogRatio = weightedLogs[key] / weightSum;
+      logs[key] = Math.log(Math.max(eps, base[key])) + blendStrength * avgLogRatio;
+    });
+    const peak = Math.max(...OUTCOME_KEYS.map(k => logs[k]));
+    const expValues = Object.fromEntries(OUTCOME_KEYS.map(k => [k, Math.exp(logs[k] - peak)]));
+    const total = OUTCOME_KEYS.reduce((sum,k) => sum + expValues[k], 0);
+    const probabilities = Object.fromEntries(OUTCOME_KEYS.map(k => [k, expValues[k] / total]));
+    return { probabilities, blendStrength, audit };
+  }
+
+  function outcomeProbs(node) {
+    const outcomes = (node && node.outcomes) || {};
+    const values = {};
+    OUTCOME_KEYS.forEach(key => {
+      const item = outcomes[key] || {};
+      const v = finiteNumber(item.probability);
+      values[key] = Math.max(0, v === null ? 0 : v);
+    });
+    const total = OUTCOME_KEYS.reduce((sum,key) => sum + values[key], 0);
+    if (!(total > 0)) {
+      const p = Math.max(0, Math.min(1, Number((node && node.probability) || 0)));
+      return {
+        [OUTCOME_SUCCESS]: p,
+        [OUTCOME_ALIVE]: 0,
+        [OUTCOME_FAIL]: 0,
+        [OUTCOME_OTHER]: 1 - p,
+      };
+    }
+    return Object.fromEntries(OUTCOME_KEYS.map(key => [key, values[key] / total]));
+  }
+
+  function findRule(rules, sig, minSamples) {
+    return (rules || []).find(r => r.signature === sig && Number(r.samples || 0) >= Number(minSamples || 0)) || null;
+  }
+
+  function finiteNumber(value) {
+    if (value === null || value === undefined || value === '') return null;
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
   }
 
   function signature(features, fields) {
@@ -722,6 +908,76 @@
     const bw = ({EXPANDING:'布林擴張', CONTRACTING:'布林收縮', FLAT:'布林平穩'})[f.bandwidth_trend] || '布林未知';
     const age = ({'1':'第1根4H','2_3':'2-3根4H','4_6':'4-6根4H','7_PLUS':'7+根4H'})[f.state_age_bin] || '';
     return `${mid}｜${f.trigger_stage || 'T0'}｜${bw}${age ? `｜${age}` : ''}`;
+  }
+
+
+  function timelineFeaturesForRow(row) {
+    const q = state.question;
+    if (!q || !row) return null;
+    const timeline = q.modelByDay.get(Number(row.time)) || null;
+    return timeline && timeline.features ? timeline.features : null;
+  }
+
+  function dmiPointForRow(row) {
+    const f = timelineFeaturesForRow(row);
+    if (!f) return null;
+    const diPlus = Number(f.di_plus);
+    const diMinus = Number(f.di_minus);
+    const adx = Number(f.adx);
+    return {
+      diPlus: Number.isFinite(diPlus) ? diPlus : NaN,
+      diMinus: Number.isFinite(diMinus) ? diMinus : NaN,
+      adx: Number.isFinite(adx) ? adx : NaN,
+      relation: String(f.dmi_relation || ''),
+      stepDirection: String(f.adx_step_direction || ''),
+      regime: String(f.dmi_adx_regime || ''),
+      axisZone: String(f.adx_axis_zone || ''),
+      turnEvent: String(f.adx_turn_event || ''),
+      stepAgeBin: String(f.adx_step_age_bin || ''),
+    };
+  }
+
+  function adxDominanceStateFromPoint(point) {
+    if (!point || !Number.isFinite(point.diPlus) || !Number.isFinite(point.diMinus) || point.diPlus === point.diMinus) {
+      return { text:'方向膠著｜ADX待確認', controllerClass:'adx-controller-neutral', trendClass:'adx-trend-neutral' };
+    }
+    const plus = point.diPlus > point.diMinus;
+    const controllerClass = plus ? 'adx-controller-plus' : 'adx-controller-minus';
+    const rising = point.stepDirection === 'RISING';
+    const falling = point.stepDirection === 'FALLING';
+    if (!rising && !falling) {
+      return { text:`${plus?'多方':'空方'}控制｜力道持平 ←→`, controllerClass, trendClass:'adx-trend-neutral' };
+    }
+    if (plus && rising) return { text:'多方控制｜趨勢強度增強 ↗↗', controllerClass, trendClass:'adx-trend-rising' };
+    if (plus && falling) return { text:'多方仍控制｜力量衰退 ↘↘', controllerClass, trendClass:'adx-trend-falling' };
+    if (!plus && rising) return { text:'空方控制｜趨勢強度增強 ↗↗', controllerClass, trendClass:'adx-trend-rising' };
+    return { text:'空方仍控制｜力量衰退 ↘↘', controllerClass, trendClass:'adx-trend-falling' };
+  }
+
+  function updateAdxHud(rows) {
+    const hud = $('adxHud');
+    if (!hud || !Array.isArray(rows) || !rows.length) return;
+    const index = state.hoverIndex !== null && state.hoverIndex >= 0 && state.hoverIndex < rows.length ? state.hoverIndex : rows.length - 1;
+    const point = dmiPointForRow(rows[index]);
+    if (!point || (!Number.isFinite(point.diPlus) && !Number.isFinite(point.diMinus) && !Number.isFinite(point.adx))) {
+      hud.classList.add('hidden');
+      return;
+    }
+    hud.classList.remove('hidden');
+    const dominance = adxDominanceStateFromPoint(point);
+    const statePill = $('adxStatePill');
+    statePill.className = `adx-state-pill ${dominance.controllerClass} ${dominance.trendClass}`;
+    $('adxStateText').textContent = dominance.text;
+    $('adxPlusValue').textContent = Number.isFinite(point.diPlus) ? point.diPlus.toFixed(1) : '—';
+    $('adxMinusValue').textContent = Number.isFinite(point.diMinus) ? point.diMinus.toFixed(1) : '—';
+    const plusPill = $('adxPlusPill');
+    const minusPill = $('adxMinusPill');
+    plusPill.className = 'adx-live-pill adx-pill-plus adx-pill-neutral';
+    minusPill.className = 'adx-live-pill adx-pill-minus adx-pill-neutral';
+    if (Number.isFinite(point.diPlus) && Number.isFinite(point.diMinus) && point.diPlus !== point.diMinus) {
+      if (point.diPlus > point.diMinus) plusPill.className = 'adx-live-pill adx-pill-plus adx-pill-strong-plus';
+      else minusPill.className = 'adx-live-pill adx-pill-minus adx-pill-strong-minus';
+    }
   }
 
   function resizeCanvas() {
@@ -754,18 +1010,25 @@
     const rows = visibleRows();
     if (!rows.length) return;
 
-    const pad = { left:16, right:82, top:18, bottom:30 };
+    const dmiHeight = Math.max(124, Math.min(158, h * 0.29));
+    const gap = 26;
+    const pad = { left:16, right:82, top:18, bottom:28 };
+    const dmi = {
+      left: pad.left,
+      right: pad.right,
+      top: Math.max(170, h - pad.bottom - dmiHeight),
+      bottom: pad.bottom,
+    };
+    const priceBottom = dmi.top - gap;
     const plotW = w - pad.left - pad.right;
-    const plotH = h - pad.top - pad.bottom;
+    const plotH = Math.max(120, priceBottom - pad.top);
     const values = [];
     rows.forEach(r => {
       values.push(r.high, r.low);
       if (r.bb) values.push(r.bb.upper, r.bb.lower);
       if (r.ha) values.push(r.ha.close);
     });
-    if (state.trade && !state.trade.closed && Number.isFinite(state.trade.entryPrice)) {
-      values.push(state.trade.entryPrice);
-    }
+    if (state.trade && !state.trade.closed && Number.isFinite(state.trade.entryPrice)) values.push(state.trade.entryPrice);
     let min = Math.min(...values), max = Math.max(...values);
     const extra = (max - min || Math.abs(max) || 1) * .08;
     min -= extra; max += extra;
@@ -774,7 +1037,7 @@
     const yAt = (v) => pad.top + (max - v) / (max - min) * plotH;
     const barW = Math.max(3, Math.min(14, plotW / rows.length * .58));
 
-    drawGrid(ctx, pad, plotW, plotH, min, max, rows);
+    drawPriceGrid(ctx, pad, plotW, plotH, min, max);
     drawLine(rows, xAt, yAt, r => r.bb && r.bb.upper, 'rgba(86,164,255,.72)', 1.25);
     drawLine(rows, xAt, yAt, r => r.bb && r.bb.basis, 'rgba(225,232,244,.52)', 1.15);
     drawLine(rows, xAt, yAt, r => r.bb && r.bb.lower, 'rgba(86,164,255,.72)', 1.25);
@@ -783,17 +1046,14 @@
       const x = xAt(i);
       const up = r.close >= r.open;
       const c = up ? '#3cd6a0' : '#ff667f';
-      ctx.strokeStyle = c;
-      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = c; ctx.lineWidth = 1.2;
       ctx.beginPath(); ctx.moveTo(x, yAt(r.high)); ctx.lineTo(x, yAt(r.low)); ctx.stroke();
       const yO = yAt(r.open), yC = yAt(r.close);
       const top = Math.min(yO,yC), bh = Math.max(1.5, Math.abs(yO-yC));
-      ctx.fillStyle = c;
-      ctx.fillRect(x-barW/2, top, barW, bh);
+      ctx.fillStyle = c; ctx.fillRect(x-barW/2, top, barW, bh);
     });
 
-    ctx.lineWidth = 3.2;
-    ctx.lineJoin = 'miter';
+    ctx.lineWidth = 3.2; ctx.lineJoin = 'miter';
     for (let i = 0; i < rows.length; i++) {
       const r = rows[i];
       if (!r.ha) continue;
@@ -811,26 +1071,30 @@
 
     if (state.trade && !state.trade.closed && Number.isFinite(state.trade.entryPrice)) {
       const entryColor = state.trade.direction === 'LONG' ? '#3cd6a0' : '#ff667f';
-      drawEntryPriceLine(yAt(state.trade.entryPrice), pad, plotW, entryColor,
-        `${state.trade.direction === 'LONG' ? '做多' : '做空'}進場 ${formatPrice(state.trade.entryPrice)}`);
+      drawEntryPriceLine(yAt(state.trade.entryPrice), pad, plotW, entryColor, `${state.trade.direction === 'LONG' ? '做多' : '做空'}進場 ${formatPrice(state.trade.entryPrice)}`);
     }
 
     drawMarkerForAbsoluteIndex(rows, q.cutoff, xAt, pad, plotH, 'rgba(255,255,255,.48)', '起始', true);
     if (state.trade) {
       const c = state.trade.direction === 'LONG' ? '#3cd6a0' : '#ff667f';
       drawMarkerForAbsoluteIndex(rows, state.trade.entryIndex, xAt, pad, plotH, c, state.trade.direction === 'LONG' ? '做多' : '做空', false);
-      if (state.trade.closed && Number.isInteger(state.trade.exitIndex)) {
-        drawMarkerForAbsoluteIndex(rows, state.trade.exitIndex, xAt, pad, plotH, '#ffd84b', '平倉', false);
-      }
+      if (state.trade.closed && Number.isInteger(state.trade.exitIndex)) drawMarkerForAbsoluteIndex(rows, state.trade.exitIndex, xAt, pad, plotH, '#ffd84b', '平倉', false);
     }
+
+    const dmiLayout = drawDmiPanel(rows, xAt, dmi, plotW);
 
     if (state.hoverIndex !== null && state.hoverIndex >= 0 && state.hoverIndex < rows.length) {
       const x = xAt(state.hoverIndex);
-      ctx.strokeStyle='rgba(221,232,247,.35)'; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.moveTo(x,pad.top); ctx.lineTo(x,pad.top+plotH); ctx.stroke();
+      ctx.strokeStyle='rgba(221,232,247,.38)'; ctx.lineWidth=1; ctx.setLineDash([5,5]);
+      ctx.beginPath(); ctx.moveTo(x,pad.top); ctx.lineTo(x,dmiLayout.bottomY); ctx.stroke(); ctx.setLineDash([]);
     }
 
-    canvas._layout = { rows, pad, plotW, plotH, min, max, xAt, yAt };
+    canvas._layout = { rows, pad, plotW, plotH, min, max, xAt, yAt, dmiLayout, hoverTop:pad.top, hoverBottom:dmiLayout.bottomY };
+    updateAdxHud(rows);
+    const hud = $('adxHud');
+    if (hud && !hud.classList.contains('hidden')) hud.style.top = `${Math.round(canvas.offsetTop + dmi.top - 2)}px`;
+    const modelHud = $('modelHud');
+    if (modelHud) modelHud.style.bottom = `${Math.round(h - priceBottom + 10)}px`;
   }
 
   function drawEntryPriceLine(y, pad, plotW, color, label) {
@@ -864,7 +1128,7 @@
     ctx.fillText(label, x-5, pad.top+13);
   }
 
-  function drawGrid(ctx, pad, plotW, plotH, min, max, rows) {
+  function drawPriceGrid(ctx, pad, plotW, plotH, min, max) {
     ctx.save();
     ctx.strokeStyle='rgba(139,158,188,.12)'; ctx.fillStyle='#77859b'; ctx.font='11px sans-serif'; ctx.lineWidth=1;
     for (let i=0; i<=5; i++) {
@@ -873,17 +1137,75 @@
       const v=max - i*(max-min)/5;
       ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(formatPrice(v), pad.left+plotW+8,y);
     }
-    const step = Math.max(1, Math.ceil(rows.length/7));
-    for (let i=0; i<rows.length; i+=step) {
-      const x=pad.left+(i+.5)*plotW/rows.length;
-      ctx.beginPath(); ctx.moveTo(x,pad.top); ctx.lineTo(x,pad.top+plotH); ctx.stroke();
-      ctx.textAlign='center'; ctx.textBaseline='top';
+    ctx.restore();
+  }
+
+  function drawDmiPanel(rows, xAt, dmi, plotW) {
+    const points = rows.map(r => dmiPointForRow(r));
+    const vals = [20, 40];
+    points.forEach(p => {
+      if (!p) return;
+      if (Number.isFinite(p.diPlus)) vals.push(p.diPlus);
+      if (Number.isFinite(p.diMinus)) vals.push(p.diMinus);
+      if (Number.isFinite(p.adx)) vals.push(p.adx);
+    });
+    const maxVal = Math.max(40, Math.ceil(Math.max(...vals) / 10) * 10);
+    const topY = dmi.top + 22;
+    const bottomY = (canvas._cssHeight || canvas.clientHeight) - dmi.bottom;
+    const innerH = Math.max(76, bottomY - topY);
+    const y = v => topY + (maxVal - Number(v)) / maxVal * innerH;
+
+    ctx.save();
+    ctx.strokeStyle='rgba(139,158,188,.14)'; ctx.fillStyle='#77859b'; ctx.font='9px sans-serif'; ctx.lineWidth=1;
+    [0, maxVal/2, maxVal].forEach(v => {
+      const yy=y(v); ctx.beginPath(); ctx.moveTo(dmi.left,yy); ctx.lineTo(dmi.left+plotW,yy); ctx.stroke();
+      ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(String(Math.round(v)), dmi.left+plotW+8, yy);
+    });
+    const y20=y(20);
+    ctx.setLineDash([7,7]); ctx.strokeStyle='rgba(248,250,252,.82)'; ctx.lineWidth=1.15;
+    ctx.beginPath(); ctx.moveTo(dmi.left,y20); ctx.lineTo(dmi.left+plotW,y20); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='#e2e8f0'; ctx.font='bold 9px sans-serif'; ctx.textAlign='right'; ctx.fillText('20', dmi.left-5, y20+3);
+
+    // ADX stepline: color comes from the same replay feature used by HistoricalTraining.
+    for (let i=1;i<points.length;i++) {
+      const prev=points[i-1], curr=points[i];
+      if (!prev || !curr || !Number.isFinite(prev.adx) || !Number.isFinite(curr.adx)) continue;
+      const step = curr.stepDirection || (curr.adx>prev.adx?'RISING':curr.adx<prev.adx?'FALLING':'FLAT');
+      ctx.strokeStyle = step==='RISING' ? '#26A69A' : step==='FALLING' ? '#EF5350' : '#64748b';
+      ctx.lineWidth=2; ctx.lineJoin='miter';
+      ctx.beginPath(); ctx.moveTo(xAt(i-1),y(prev.adx)); ctx.lineTo(xAt(i),y(prev.adx)); ctx.lineTo(xAt(i),y(curr.adx)); ctx.stroke();
+    }
+
+    const drawIndicatorLine = (key,color) => {
+      ctx.strokeStyle=color; ctx.lineWidth=1.35; ctx.beginPath(); let started=false;
+      points.forEach((p,i) => {
+        const v=p && p[key];
+        if (!Number.isFinite(v)) { started=false; return; }
+        const xx=xAt(i), yy=y(v);
+        if (!started) { ctx.moveTo(xx,yy); started=true; } else ctx.lineTo(xx,yy);
+      });
+      ctx.stroke();
+    };
+    drawIndicatorLine('diPlus','#fde047');
+    drawIndicatorLine('diMinus','#bba4e8');
+
+    const last=points[points.length-1];
+    if (last) {
+      if (Number.isFinite(last.diPlus)) { ctx.fillStyle='#fde047';ctx.strokeStyle='#f8fafc';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(xAt(points.length-1),y(last.diPlus),3.5,0,Math.PI*2);ctx.fill();ctx.stroke(); }
+      if (Number.isFinite(last.diMinus)) { ctx.fillStyle='#bba4e8';ctx.strokeStyle='#f8fafc';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(xAt(points.length-1),y(last.diMinus),3.5,0,Math.PI*2);ctx.fill();ctx.stroke(); }
+    }
+
+    // Dates belong to the lowest panel, matching Terminal/TradingView reading order.
+    const step=Math.max(1,Math.ceil(rows.length/7));
+    for(let i=0;i<rows.length;i+=step){
+      const xx=xAt(i);
       const q=state.question;
-      const blind=$('blindMode').checked && !state.trade && state.closedTrades.length === 0 && state.revealed < q.maxFutureDays;
-      const label=blind ? relativeDayLabel(rows[i].index-q.cutoff) : formatShortDate(rows[i].time);
-      ctx.fillText(label,x,pad.top+plotH+7);
+      const blind=$('blindMode').checked && !state.trade && state.closedTrades.length===0 && state.revealed<q.maxFutureDays;
+      const label=blind?relativeDayLabel(rows[i].index-q.cutoff):formatShortDate(rows[i].time);
+      ctx.save();ctx.translate(xx,bottomY+7);ctx.rotate(-Math.PI/5);ctx.fillStyle='#77859b';ctx.font='9px sans-serif';ctx.textAlign='right';ctx.textBaseline='top';ctx.fillText(label,0,0);ctx.restore();
     }
     ctx.restore();
+    return { topY, bottomY, y, maxVal, points };
   }
 
   function drawLine(rows, xAt, yAt, getter, color, width) {
@@ -902,7 +1224,7 @@
     if (!layout || !layout.rows.length) return;
     const rect=canvas.getBoundingClientRect();
     const mx=ev.clientX-rect.left, my=ev.clientY-rect.top;
-    if (mx<layout.pad.left || mx>layout.pad.left+layout.plotW || my<layout.pad.top || my>layout.pad.top+layout.plotH) {
+    if (mx<layout.pad.left || mx>layout.pad.left+layout.plotW || my<layout.hoverTop || my>layout.hoverBottom) {
       tooltip.classList.add('hidden'); state.hoverIndex=null; draw(); return;
     }
     const i=Math.max(0,Math.min(layout.rows.length-1,Math.floor((mx-layout.pad.left)/layout.plotW*layout.rows.length)));
@@ -912,7 +1234,10 @@
     const blind=$('blindMode').checked && !state.trade && state.closedTrades.length === 0 && state.revealed < q.maxFutureDays;
     const date=blind ? relativeDayLabel(r.index-q.cutoff) : formatDate(r.time);
     const haColor=r.ha.color==='yellow'?'黃':r.ha.color==='purple'?'紫':'平';
-    tooltip.innerHTML = `${date}<br>O ${formatPrice(r.open)}　H ${formatPrice(r.high)}<br>L ${formatPrice(r.low)}　C ${formatPrice(r.close)}<br>HA ${haColor} ${formatPrice(r.ha.close)}${r.bb?`<br>BB中軌 ${formatPrice(r.bb.basis)}`:''}`;
+    const point=dmiPointForRow(r);
+    const dominance=adxDominanceStateFromPoint(point);
+    const dmiText=point ? `<br>DI+ ${Number.isFinite(point.diPlus)?point.diPlus.toFixed(1):'—'}　DI− ${Number.isFinite(point.diMinus)?point.diMinus.toFixed(1):'—'}　ADX ${Number.isFinite(point.adx)?point.adx.toFixed(1):'—'}<br>${escapeHtml(dominance.text)}` : '';
+    tooltip.innerHTML = `${date}<br>O ${formatPrice(r.open)}　H ${formatPrice(r.high)}<br>L ${formatPrice(r.low)}　C ${formatPrice(r.close)}<br>HA ${haColor} ${formatPrice(r.ha.close)}${r.bb?`<br>BB中軌 ${formatPrice(r.bb.basis)}`:''}${dmiText}`;
     tooltip.classList.remove('hidden');
     const tw=tooltip.offsetWidth, th=tooltip.offsetHeight;
     tooltip.style.left=`${Math.min(rect.width-tw-8,mx+14)}px`;
