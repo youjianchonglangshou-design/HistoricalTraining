@@ -1,4 +1,4 @@
-# Crypto S-state Learning Engine v3 — DMI Expert
+# Crypto S-state Learning Engine v3 — DMI Expert v2 / ADX Step Regime
 
 這個儲存庫用 Pionex 歷史 4H K 線逐根重播正式 S-state 引擎，然後把每個歷史決策點的未來結果結算成 JSON 參數，供 Crypto Monitor / HTML 使用。
 
@@ -9,6 +9,50 @@
 - Replay 與即時系統必須使用同版 S-state 引擎。
 - LLM 不發明機率；機率來自已結算歷史樣本。
 
+
+## DMI Expert v2：ADX 紅綠階梯正式進入歷史學習
+
+Terminal 的 ADX 階梯定義直接照 Pine / 前端顯示：
+
+```text
+ADX > 前一個日 ADX  → RISING / 綠色階梯
+ADX < 前一個日 ADX  → FALLING / 紅色階梯
+ADX = 前一個日 ADX  → FLAT
+```
+
+**綠色不等於多方、紅色不等於空方。** 多空方向仍由 `DI+ / DI-` 誰主導決定。因此歷史案例會形成：
+
+```text
+PLUS_RISING    DI+ 主導 + ADX 增強
+PLUS_FALLING   DI+ 主導 + ADX 衰退
+MINUS_RISING   DI- 主導 + ADX 增強
+MINUS_FALLING  DI- 主導 + ADX 衰退
+```
+
+每個 S-state 自己學這四種狀態的成功 / 存活 / 真失敗率，不寫死「PLUS_RISING 一定好」或「MINUS_RISING 一定壞」。這一點對 S2 特別重要：`DI-` 暫時接管可能只是正常回檔，也可能正在形成真正空方趨勢，必須交給歷史樣本判斷。
+
+新增的歷史特徵包括：
+
+```text
+adx_step_direction    RISING / FALLING / FLAT
+adx_step_age_days     目前紅/綠階梯連續幾個日階
+adx_step_age_bin      1 / 2_3 / 4_6 / 7_PLUS
+adx_turn_event        RED_TO_GREEN / GREEN_TO_RED / OTHER_TURN / NONE
+adx_axis_zone         BELOW_20 / ABOVE_20 / TOUCHING_20
+dmi_adx_regime        PLUS_RISING / PLUS_FALLING / MINUS_RISING / MINUS_FALLING
+```
+
+模型新增三個獨立 facets，避免硬疊成 Level 6+ 導致樣本碎裂：
+
+1. `adx_step_regime`：DI 主導 + ADX 紅綠階梯 + ADX 是否在 20 以下/以上
+2. `adx_step_persistence`：誰主導 + 紅綠階梯已持續多久
+3. `adx_turn_handover`：DI 主導/交叉年齡 + ADX 是否剛紅轉綠或綠轉紅
+
+訓練後 `reports/training_report.json` 除了原本 `dmi_expert_72h`，還會新增 **`adx_step_regime_72h`**，專門列出 S0.5 / S1 / S2 / S3 各自最有利、最不利的紅綠階梯組合與樣本數。
+
+### 時間語意
+
+HistoricalTraining 每 4H 建立 decision case，但 ADX 階梯顏色仍比較「當時可見的當日日 ADX」與「前一日日 ADX」，因此與 Terminal 30 日 ADX 圖的紅綠 stepline 語意一致。當日日 K 在歷史 cutoff 仍是 partial candle，不會偷看當天未來尚未發生的 4H。
 
 ## v3：DMI Expert 不改 S-state，只修正「這個 S-state 能不能真的走上去」
 
@@ -28,7 +72,7 @@ DI+ / DI- / Gap 最近 3 日斜率
 ADX / ADX 最近 3 日斜率
 ```
 
-為避免把樣本切得過碎，DMI **不硬疊成 Level 6、7、8**。模型使用四個獨立 Expert facets：
+為避免把樣本切得過碎，DMI **不硬疊成 Level 6、7、8**。模型保留原本四個 DMI facets，並由 v2 再加入三個 ADX Step facets：
 
 1. `lead_axis`：誰領先 + 20 軸結構 + 距離 20 軸
 2. `cross_momentum`：誰領先 + 剛交叉/維持多久 + Gap 變化
@@ -37,7 +81,7 @@ ADX / ADX 最近 3 日斜率
 
 數值大小不是手寫「多少算強」。每個 S-state 都從自己的歷史分布學習 tercile（LOW / MID / HIGH）。最後 DMI Expert 以 state baseline 為基準，對既有 Level 1～5 的四分類機率做保守修正。
 
-訓練後 `reports/training_report.json` 會新增 `dmi_expert_72h`，直接列出每個 S-state 各 facet 歷史上最有利與最不利的 DMI 組合、樣本數、成功率、存活率與真失敗率。
+訓練後 `reports/training_report.json` 會保留 `dmi_expert_72h`，並新增 `adx_step_regime_72h`，直接列出每個 S-state 各 facet 歷史上最有利與最不利的 DMI / ADX 階梯組合、樣本數、成功率、存活率與真失敗率。
 
 ## v2：不再把「沒在期限內達標」全部叫 LOSS
 
@@ -171,7 +215,8 @@ v2 起同時保留：
 
 - `models/probability_model.json` → `schema_version` 應為 `3`
 - `models/probability_model.json` → 應有 `dmi_expert_contract`
-- `reports/training_report.json` → 應有 `primary_72h_outcomes` 與 `dmi_expert_72h`
+- `models/probability_model.json` → `dmi_expert_contract.version` 應為 `DMI-EXPERT-v2-ADX-STEP`
+- `reports/training_report.json` → 應有 `primary_72h_outcomes`、`dmi_expert_72h` 與 `adx_step_regime_72h`
 
 ## Daily S-state Learning
 

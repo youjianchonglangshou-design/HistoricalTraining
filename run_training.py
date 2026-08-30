@@ -72,6 +72,26 @@ def build_dmi_expert_report(model: dict, horizon: str = "18", top_n: int = 6) ->
         }
     return output
 
+ADX_STEP_FACET_NAMES = {"adx_step_regime", "adx_step_persistence", "adx_turn_handover"}
+
+
+def build_adx_step_report(model: dict, horizon: str = "18", top_n: int = 6) -> dict:
+    """Focused audit for S-state x DI-controller x red/green ADX stepline evidence."""
+    full = build_dmi_expert_report(model, horizon=horizon, top_n=top_n)
+    output = {}
+    for state, node in full.items():
+        output[state] = {
+            key: value
+            for key, value in node.items()
+            if key != "facets"
+        }
+        output[state]["facets"] = [
+            facet for facet in (node.get("facets") or [])
+            if facet.get("name") in ADX_STEP_FACET_NAMES
+        ]
+    return output
+
+
 def parse_symbols(text: str) -> list[str]:
     if not text or text.upper() == "ALL":
         return list(EXAM_SYMBOLS)
@@ -204,6 +224,7 @@ def main() -> int:
         "outcome_note": "72H main view: success + alive_slow + true_fail + other = 100%. Existing probability remains success-within-horizon for UI compatibility.",
         "dmi_expert_contract": model.get("dmi_expert_contract") or {},
         "dmi_expert_72h": build_dmi_expert_report(model, primary_horizon),
+        "adx_step_regime_72h": build_adx_step_report(model, primary_horizon),
     }
     save_json(REPORT_PATH, report)
     print(f"MODEL={MODEL_PATH}")
