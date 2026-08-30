@@ -1,0 +1,170 @@
+name: Publish Current Model to R2
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-current-model-to-r2
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      WORKER_BASE_URL: ${{ secrets.WORKER_BASE_URL }}
+      WORKER_CALLBACK_TOKEN: ${{ secrets.WORKER_CALLBACK_TOKEN }}
+
+    steps:
+      - name: Checkout current trained model
+        uses: actions/checkout@v5
+
+      - name: Validate Cloudflare bridge secrets
+        shell: bash
+        run: |
+          test -n "$WORKER_BASE_URL" || (echo "WORKER_BASE_URL missing" && exit 1)
+          test -n "$WORKER_CALLBACK_TOKEN" || (echo "WORKER_CALLBACK_TOKEN missing" && exit 1)
+
+      - name: Validate current model is Schema v3 DMI Expert
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          model_path = Path("models/probability_model.json")
+          report_path = Path("reports/training_report.json")
+          if not model_path.exists():
+              raise SystemExit("models/probability_model.json missing")
+          if not report_path.exists():
+              raise SystemExit("reports/training_report.json missing")
+
+          model = json.loads(model_path.read_text(encoding="utf-8"))
+          report = json.loads(report_path.read_text(encoding="utf-8"))
+          model_id = str(model.get("model_id") or "").strip()
+          schema = int(model.get("schema_version") or 0)
+          dmi_version = str((model.get("dmi_expert_contract") or {}).get("version") or "").strip()
+
+          if not model_id:
+              raise SystemExit("model_id missing")
+          if schema != 3:
+              raise SystemExit(f"Refusing publish: expected schema_version=3, got {schema}")
+          if dmi_version != "DMI-EXPERT-v1":
+              raise SystemExit(f"Refusing publish: expected DMI-EXPERT-v1, got {dmi_version!r}")
+          if str(report.get("model_id") or "") != model_id:
+              raise SystemExit("training_report model_id does not match probability_model")
+          if int(report.get("schema_version") or 0) != schema:
+              raise SystemExit("training_report schema_version does not match probability_model")
+
+          print(f"Validated model_id={model_id}")
+          print(f"schema_version={schema}")
+          print(f"dmi_expert_version={dmi_version}")
+          with open("/tmp/model-meta.env", "w", encoding="utf-8") as f:
+              f.write(f"MODEL_ID={model_id}\n")
+              f.write(f"MODEL_SCHEMA={schema}\n")
+              f.write(f"DMI_EXPERT_VERSION={dmi_version}\n")
+          PY
+          cat /tmp/model-meta.env >> "$GITHUB_ENV"
+
+      - name: Publish current model as latest Candidate
+        shell: bash
+        run: |
+          BASE="${WORKER_BASE_URL%/}"
+          curl --fail --silent --show-error \
+            -X PUT \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary "@models/probability_model.json" \
+            "$BASE/api/internal/model/candidate" \
+            -o /tmp/publish-candidate.json
+          cat /tmp/publish-candidate.json
+
+      - name: Publish matching training report
+        shell: bash
+        run: |
+          BASE="${WORKER_BASE_URL%/}"
+          curl --fail --silent --show-error \
+            -X PUT \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary "@reports/training_report.json" \
+            "$BASE/api/internal/learning/report?model_id=$MODEL_ID" \
+            -o /tmp/publish-report.json
+          cat /tmp/publish-report.json
+
+      - name: Ensure latest Candidate owns Challenger slot
+        shell: bash
+        run: |
+          BASE="${WORKER_BASE_URL%/}"
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            "$BASE/api/internal/model/challenger/ensure" \
+            -o /tmp/challenger-ensure.json
+          cat /tmp/challenger-ensure.json
+
+      - name: Read back Candidate and Challenger from R2
+        shell: bash
+        run: |
+          BASE="${WORKER_BASE_URL%/}"
+          curl --fail --silent --show-error "$BASE/api/model/candidate/latest" -o /tmp/candidate-latest.json
+          curl --fail --silent --show-error "$BASE/api/model/challenger/current" -o /tmp/challenger-current.json
+          curl --fail --silent --show-error "$BASE/api/model/challenger/model" -o /tmp/challenger-model.json
+
+      - name: Verify Schema v3 DMI Expert is the current Challenger
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+
+          expected_id = os.environ["MODEL_ID"]
+          expected_schema = int(os.environ["MODEL_SCHEMA"])
+          expected_dmi = os.environ["DMI_EXPERT_VERSION"]
+
+          candidate = json.load(open("/tmp/candidate-latest.json", encoding="utf-8"))
+          current = json.load(open("/tmp/challenger-current.json", encoding="utf-8"))
+          model = json.load(open("/tmp/challenger-model.json", encoding="utf-8"))
+
+          checks = {
+              "candidate.model_id": candidate.get("model_id") == expected_id,
+              "candidate.schema_version": int(candidate.get("schema_version") or 0) == expected_schema,
+              "candidate.dmi_expert_version": candidate.get("dmi_expert_version") == expected_dmi,
+              "challenger.model_id": current.get("model_id") == expected_id,
+              "challenger.schema_version": int(current.get("schema_version") or 0) == expected_schema,
+              "challenger.dmi_expert_version": current.get("dmi_expert_version") == expected_dmi,
+              "challenger.status": current.get("status") == "SHADOW_EVALUATION",
+              "challenger_model.model_id": model.get("model_id") == expected_id,
+              "challenger_model.schema_version": int(model.get("schema_version") or 0) == expected_schema,
+              "challenger_model.dmi_expert_contract": (model.get("dmi_expert_contract") or {}).get("version") == expected_dmi,
+          }
+
+          failed = [name for name, ok in checks.items() if not ok]
+          for name, ok in checks.items():
+              print(("PASS" if ok else "FAIL"), name)
+          if failed:
+              raise SystemExit("Publish verification failed: " + ", ".join(failed))
+
+          print()
+          print("Verified current Challenger:")
+          print(" model_id           =", expected_id)
+          print(" schema_version     =", expected_schema)
+          print(" dmi_expert_version =", expected_dmi)
+          print(" status             =", current.get("status"))
+          PY
+
+      - name: Write publish summary
+        shell: bash
+        run: |
+          {
+            echo "## Schema v3 DMI Expert published"
+            echo ""
+            echo "- Model ID: \`$MODEL_ID\`"
+            echo "- Schema: \`$MODEL_SCHEMA\`"
+            echo "- DMI Expert: \`$DMI_EXPERT_VERSION\`"
+            echo "- Challenger status: \`SHADOW_EVALUATION\`"
+            echo "- Active Champion: unchanged"
+            echo "- Historical replay: not rerun"
+          } >> "$GITHUB_STEP_SUMMARY"
