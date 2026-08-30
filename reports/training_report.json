@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-08-29T00:43:27.342984+00:00",
-  "model_id": "cefaf34a83030aff",
+  "generated_at": "2026-08-30T00:37:27.714307+00:00",
+  "model_id": "1dd17cd35330bd35",
   "schema_version": 2,
-  "total_cases": 201165,
+  "total_cases": 201389,
   "historical_case_count": 199213,
-  "live_case_count": 1952,
+  "live_case_count": 2176,
   "live_since_ms": 1786147200000,
   "live_since_tw": "2026-08-08T08:00:00+08:00",
   "engine_api_version": "opportunity-state-v4.8-30d-structure",
   "symbols": [
     {
       "symbol": "BTC",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2974,
       "states": {
         "S1": 673,
@@ -23,19 +23,19 @@
     },
     {
       "symbol": "1INCH",
-      "bars": 10107,
-      "cases": 2694,
+      "bars": 10113,
+      "cases": 2700,
       "states": {
         "S0.5": 810,
         "S1": 685,
-        "S2": 1018,
+        "S2": 1024,
         "S3": 181
       },
       "ok": true
     },
     {
       "symbol": "RAY",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2802,
       "states": {
         "S0.5": 653,
@@ -47,7 +47,7 @@
     },
     {
       "symbol": "RSR",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2550,
       "states": {
         "S0.5": 609,
@@ -59,11 +59,11 @@
     },
     {
       "symbol": "SUI",
-      "bars": 7282,
-      "cases": 2069,
+      "bars": 7288,
+      "cases": 2075,
       "states": {
         "S1": 382,
-        "S2": 986,
+        "S2": 992,
         "S0.5": 486,
         "S3": 215
       },
@@ -71,7 +71,7 @@
     },
     {
       "symbol": "KAVA",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2546,
       "states": {
         "S1": 730,
@@ -83,7 +83,7 @@
     },
     {
       "symbol": "INJ",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2638,
       "states": {
         "S0.5": 651,
@@ -95,23 +95,23 @@
     },
     {
       "symbol": "LTC",
-      "bars": 10107,
-      "cases": 3285,
+      "bars": 10113,
+      "cases": 3291,
       "states": {
         "S0.5": 932,
         "S1": 757,
-        "S2": 1263,
+        "S2": 1269,
         "S3": 333
       },
       "ok": true
     },
     {
       "symbol": "SNX",
-      "bars": 10107,
-      "cases": 2598,
+      "bars": 10113,
+      "cases": 2599,
       "states": {
         "S1": 569,
-        "S2": 1084,
+        "S2": 1085,
         "S3": 209,
         "S0.5": 736
       },
@@ -119,7 +119,7 @@
     },
     {
       "symbol": "SUSHI",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2723,
       "states": {
         "S0.5": 871,
@@ -131,11 +131,11 @@
     },
     {
       "symbol": "TRX",
-      "bars": 10107,
-      "cases": 3288,
+      "bars": 10113,
+      "cases": 3293,
       "states": {
         "S1": 776,
-        "S2": 1540,
+        "S2": 1545,
         "S0.5": 510,
         "S3": 462
       },
@@ -143,7 +143,7 @@
     },
     {
       "symbol": "ASTER",
-      "bars": 2055,
+      "bars": 2061,
       "cases": 542,
       "states": {
         "S1": 173,
@@ -155,19 +155,19 @@
     },
     {
       "symbol": "BOME",
-      "bars": 5382,
-      "cases": 1401,
+      "bars": 5388,
+      "cases": 1407,
       "states": {
         "S0.5": 411,
         "S1": 307,
-        "S2": 556,
+        "S2": 562,
         "S3": 127
       },
       "ok": true
     },
     {
       "symbol": "JTO",
-      "bars": 5973,
+      "bars": 5979,
       "cases": 1704,
       "states": {
         "S0.5": 473,
@@ -179,11 +179,11 @@
     },
     {
       "symbol": "KAS",
-      "bars": 5785,
-      "cases": 1598,
+      "bars": 5791,
+      "cases": 1604,
       "states": {
         "S3": 135,
-        "S2": 679,
+        "S2": 685,
         "S0.5": 374,
         "S1": 410
       },
@@ -191,10 +191,10 @@
     },
     {
       "symbol": "NEAR",
-      "bars": 10107,
-      "cases": 2648,
+      "bars": 10113,
+      "cases": 2654,
       "states": {
-        "S2": 1056,
+        "S2": 1062,
         "S3": 296,
         "S0.5": 727,
         "S1": 569
@@ -203,7 +203,7 @@
     },
     {
       "symbol": "PENGU",
-      "bars": 3718,
+      "bars": 3724,
       "cases": 821,
       "states": {
         "S1": 294,
@@ -215,19 +215,19 @@
     },
     {
       "symbol": "SHIB",
-      "bars": 10107,
-      "cases": 2822,
+      "bars": 10113,
+      "cases": 2828,
       "states": {
         "S0.5": 686,
         "S1": 650,
-        "S2": 1148,
+        "S2": 1154,
         "S3": 338
       },
       "ok": true
     },
     {
       "symbol": "SOL",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2946,
       "states": {
         "S0.5": 719,
@@ -239,34 +239,34 @@
     },
     {
       "symbol": "XLM",
-      "bars": 10107,
-      "cases": 2733,
+      "bars": 10113,
+      "cases": 2739,
       "states": {
         "S1": 631,
         "S0.5": 874,
-        "S2": 1028,
+        "S2": 1034,
         "S3": 200
       },
       "ok": true
     },
     {
       "symbol": "XRP",
-      "bars": 10107,
-      "cases": 3118,
+      "bars": 10113,
+      "cases": 3119,
       "states": {
         "S0.5": 959,
         "S1": 699,
-        "S2": 1110,
+        "S2": 1111,
         "S3": 350
       },
       "ok": true
     },
     {
       "symbol": "GMX",
-      "bars": 8488,
-      "cases": 2311,
+      "bars": 8494,
+      "cases": 2316,
       "states": {
-        "S2": 907,
+        "S2": 912,
         "S0.5": 633,
         "S1": 548,
         "S3": 223
@@ -275,11 +275,11 @@
     },
     {
       "symbol": "RPL",
-      "bars": 7913,
-      "cases": 1998,
+      "bars": 7919,
+      "cases": 2004,
       "states": {
         "S1": 444,
-        "S2": 803,
+        "S2": 809,
         "S3": 150,
         "S0.5": 601
       },
@@ -287,7 +287,7 @@
     },
     {
       "symbol": "RUNE",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2694,
       "states": {
         "S2": 1048,
@@ -299,19 +299,19 @@
     },
     {
       "symbol": "LINK",
-      "bars": 10107,
-      "cases": 2802,
+      "bars": 10113,
+      "cases": 2804,
       "states": {
         "S0.5": 755,
         "S1": 655,
-        "S2": 1191,
+        "S2": 1193,
         "S3": 201
       },
       "ok": true
     },
     {
       "symbol": "ETH",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2883,
       "states": {
         "S0.5": 938,
@@ -323,19 +323,19 @@
     },
     {
       "symbol": "PEPE",
-      "bars": 7282,
-      "cases": 1957,
+      "bars": 7288,
+      "cases": 1960,
       "states": {
         "S0.5": 474,
         "S1": 406,
-        "S2": 840,
+        "S2": 843,
         "S3": 237
       },
       "ok": true
     },
     {
       "symbol": "JUP",
-      "bars": 5641,
+      "bars": 5647,
       "cases": 1603,
       "states": {
         "S2": 689,
@@ -347,7 +347,7 @@
     },
     {
       "symbol": "PENDLE",
-      "bars": 6917,
+      "bars": 6923,
       "cases": 1977,
       "states": {
         "S1": 399,
@@ -359,7 +359,7 @@
     },
     {
       "symbol": "TAO",
-      "bars": 5645,
+      "bars": 5651,
       "cases": 1451,
       "states": {
         "S1": 374,
@@ -371,7 +371,7 @@
     },
     {
       "symbol": "KAITO",
-      "bars": 3328,
+      "bars": 3334,
       "cases": 701,
       "states": {
         "S1": 106,
@@ -383,7 +383,7 @@
     },
     {
       "symbol": "BNB",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 3121,
       "states": {
         "S0.5": 898,
@@ -395,7 +395,7 @@
     },
     {
       "symbol": "CAKE",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2846,
       "states": {
         "S1": 678,
@@ -407,91 +407,91 @@
     },
     {
       "symbol": "COMP",
-      "bars": 10107,
-      "cases": 2798,
+      "bars": 10113,
+      "cases": 2803,
       "states": {
         "S0.5": 803,
         "S1": 740,
-        "S2": 1011,
+        "S2": 1016,
         "S3": 244
       },
       "ok": true
     },
     {
       "symbol": "ORDI",
-      "bars": 7180,
-      "cases": 2061,
+      "bars": 7186,
+      "cases": 2065,
       "states": {
         "S1": 481,
         "S0.5": 520,
-        "S2": 821,
+        "S2": 825,
         "S3": 239
       },
       "ok": true
     },
     {
       "symbol": "ADA",
-      "bars": 10107,
-      "cases": 2651,
+      "bars": 10113,
+      "cases": 2657,
       "states": {
         "S0.5": 812,
         "S1": 598,
-        "S2": 993,
+        "S2": 999,
         "S3": 248
       },
       "ok": true
     },
     {
       "symbol": "ALGO",
-      "bars": 10107,
-      "cases": 2624,
+      "bars": 10113,
+      "cases": 2630,
       "states": {
         "S0.5": 870,
         "S1": 635,
-        "S2": 914,
+        "S2": 920,
         "S3": 205
       },
       "ok": true
     },
     {
       "symbol": "ARB",
-      "bars": 7528,
-      "cases": 1809,
+      "bars": 7534,
+      "cases": 1815,
       "states": {
         "S0.5": 599,
         "S1": 402,
-        "S2": 692,
+        "S2": 698,
         "S3": 116
       },
       "ok": true
     },
     {
       "symbol": "UNI",
-      "bars": 10107,
-      "cases": 3007,
+      "bars": 10113,
+      "cases": 3009,
       "states": {
         "S0.5": 846,
         "S1": 600,
-        "S2": 1175,
+        "S2": 1177,
         "S3": 386
       },
       "ok": true
     },
     {
       "symbol": "CRV",
-      "bars": 10107,
-      "cases": 2552,
+      "bars": 10113,
+      "cases": 2558,
       "states": {
         "S0.5": 739,
         "S1": 671,
-        "S2": 970,
+        "S2": 976,
         "S3": 172
       },
       "ok": true
     },
     {
       "symbol": "ENA",
-      "bars": 5273,
+      "bars": 5279,
       "cases": 1300,
       "states": {
         "S1": 323,
@@ -503,19 +503,19 @@
     },
     {
       "symbol": "MANA",
-      "bars": 10107,
-      "cases": 2601,
+      "bars": 10113,
+      "cases": 2606,
       "states": {
         "S0.5": 896,
         "S1": 611,
-        "S2": 909,
+        "S2": 914,
         "S3": 185
       },
       "ok": true
     },
     {
       "symbol": "OKB",
-      "bars": 6565,
+      "bars": 6571,
       "cases": 2098,
       "states": {
         "S2": 833,
@@ -527,7 +527,7 @@
     },
     {
       "symbol": "APT",
-      "bars": 8461,
+      "bars": 8467,
       "cases": 2239,
       "states": {
         "S2": 888,
@@ -539,11 +539,11 @@
     },
     {
       "symbol": "DOT",
-      "bars": 10107,
-      "cases": 2515,
+      "bars": 10113,
+      "cases": 2521,
       "states": {
         "S1": 607,
-        "S2": 890,
+        "S2": 896,
         "S0.5": 787,
         "S3": 231
       },
@@ -551,10 +551,10 @@
     },
     {
       "symbol": "FLOKI",
-      "bars": 7206,
-      "cases": 1903,
+      "bars": 7212,
+      "cases": 1906,
       "states": {
-        "S2": 725,
+        "S2": 728,
         "S0.5": 554,
         "S1": 473,
         "S3": 151
@@ -563,7 +563,7 @@
     },
     {
       "symbol": "HBAR",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2598,
       "states": {
         "S0.5": 810,
@@ -575,31 +575,31 @@
     },
     {
       "symbol": "SEI",
-      "bars": 6658,
-      "cases": 1561,
+      "bars": 6664,
+      "cases": 1563,
       "states": {
         "S1": 333,
         "S0.5": 423,
-        "S2": 623,
+        "S2": 625,
         "S3": 182
       },
       "ok": true
     },
     {
       "symbol": "STRK",
-      "bars": 5520,
-      "cases": 1189,
+      "bars": 5526,
+      "cases": 1195,
       "states": {
         "S0.5": 412,
         "S1": 294,
-        "S2": 385,
+        "S2": 391,
         "S3": 98
       },
       "ok": true
     },
     {
       "symbol": "TRUMP",
-      "bars": 3497,
+      "bars": 3503,
       "cases": 645,
       "states": {
         "S0.5": 244,
@@ -611,7 +611,7 @@
     },
     {
       "symbol": "BCH",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 3003,
       "states": {
         "S0.5": 883,
@@ -623,19 +623,19 @@
     },
     {
       "symbol": "FIL",
-      "bars": 10107,
-      "cases": 2648,
+      "bars": 10113,
+      "cases": 2654,
       "states": {
         "S0.5": 869,
         "S1": 617,
-        "S2": 942,
+        "S2": 948,
         "S3": 220
       },
       "ok": true
     },
     {
       "symbol": "LPT",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2626,
       "states": {
         "S0.5": 678,
@@ -647,7 +647,7 @@
     },
     {
       "symbol": "AAVE",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2984,
       "states": {
         "S0.5": 826,
@@ -659,24 +659,24 @@
     },
     {
       "symbol": "AVAX",
-      "bars": 10107,
-      "cases": 2618,
+      "bars": 10113,
+      "cases": 2624,
       "states": {
         "S0.5": 674,
         "S1": 644,
-        "S2": 1024,
+        "S2": 1030,
         "S3": 276
       },
       "ok": true
     },
     {
       "symbol": "DOGE",
-      "bars": 10107,
-      "cases": 2684,
+      "bars": 10113,
+      "cases": 2690,
       "states": {
         "S0.5": 793,
         "S1": 569,
-        "S2": 1047,
+        "S2": 1053,
         "S3": 275
       },
       "ok": true
@@ -695,19 +695,19 @@
     },
     {
       "symbol": "ICP",
-      "bars": 10107,
-      "cases": 2724,
+      "bars": 10113,
+      "cases": 2729,
       "states": {
         "S0.5": 963,
         "S1": 549,
-        "S2": 1011,
+        "S2": 1016,
         "S3": 201
       },
       "ok": true
     },
     {
       "symbol": "LRC",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2283,
       "states": {
         "S0.5": 728,
@@ -719,19 +719,19 @@
     },
     {
       "symbol": "SAND",
-      "bars": 10107,
-      "cases": 2520,
+      "bars": 10113,
+      "cases": 2522,
       "states": {
         "S0.5": 795,
         "S1": 665,
-        "S2": 857,
+        "S2": 859,
         "S3": 203
       },
       "ok": true
     },
     {
       "symbol": "STX",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2640,
       "states": {
         "S0.5": 793,
@@ -743,7 +743,7 @@
     },
     {
       "symbol": "VET",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2642,
       "states": {
         "S0.5": 785,
@@ -755,11 +755,11 @@
     },
     {
       "symbol": "ONDO",
-      "bars": 5321,
-      "cases": 1416,
+      "bars": 5327,
+      "cases": 1422,
       "states": {
         "S0.5": 412,
-        "S2": 493,
+        "S2": 499,
         "S3": 99,
         "S1": 412
       },
@@ -767,7 +767,7 @@
     },
     {
       "symbol": "YFI",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2555,
       "states": {
         "S0.5": 900,
@@ -779,10 +779,10 @@
     },
     {
       "symbol": "ATOM",
-      "bars": 10107,
-      "cases": 2579,
+      "bars": 10113,
+      "cases": 2585,
       "states": {
-        "S2": 862,
+        "S2": 868,
         "S3": 239,
         "S0.5": 822,
         "S1": 656
@@ -791,19 +791,19 @@
     },
     {
       "symbol": "DYDX",
-      "bars": 10107,
-      "cases": 2622,
+      "bars": 10113,
+      "cases": 2625,
       "states": {
         "S0.5": 698,
         "S1": 674,
-        "S2": 1001,
+        "S2": 1004,
         "S3": 249
       },
       "ok": true
     },
     {
       "symbol": "IMX",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2658,
       "states": {
         "S1": 592,
@@ -815,22 +815,22 @@
     },
     {
       "symbol": "ROSE",
-      "bars": 10107,
-      "cases": 2419,
+      "bars": 10113,
+      "cases": 2424,
       "states": {
         "S0.5": 652,
         "S1": 603,
-        "S2": 974,
+        "S2": 979,
         "S3": 190
       },
       "ok": true
     },
     {
       "symbol": "CHZ",
-      "bars": 10107,
-      "cases": 2567,
+      "bars": 10113,
+      "cases": 2572,
       "states": {
-        "S2": 1098,
+        "S2": 1103,
         "S3": 231,
         "S0.5": 643,
         "S1": 595
@@ -839,19 +839,19 @@
     },
     {
       "symbol": "GALA",
-      "bars": 10107,
-      "cases": 2322,
+      "bars": 10113,
+      "cases": 2328,
       "states": {
         "S0.5": 711,
         "S1": 538,
-        "S2": 880,
+        "S2": 886,
         "S3": 193
       },
       "ok": true
     },
     {
       "symbol": "GRT",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2420,
       "states": {
         "S1": 494,
@@ -863,7 +863,7 @@
     },
     {
       "symbol": "HYPE",
-      "bars": 3551,
+      "bars": 3557,
       "cases": 1056,
       "states": {
         "S0.5": 301,
@@ -875,22 +875,22 @@
     },
     {
       "symbol": "MEME",
-      "bars": 6179,
-      "cases": 1358,
+      "bars": 6185,
+      "cases": 1363,
       "states": {
         "S0.5": 394,
         "S1": 359,
-        "S2": 490,
+        "S2": 495,
         "S3": 115
       },
       "ok": true
     },
     {
       "symbol": "TIA",
-      "bars": 6193,
-      "cases": 1525,
+      "bars": 6199,
+      "cases": 1531,
       "states": {
-        "S2": 577,
+        "S2": 583,
         "S3": 150,
         "S0.5": 356,
         "S1": 442
@@ -899,7 +899,7 @@
     },
     {
       "symbol": "W",
-      "bars": 5225,
+      "bars": 5231,
       "cases": 998,
       "states": {
         "S2": 393,
@@ -911,19 +911,19 @@
     },
     {
       "symbol": "WLD",
-      "bars": 6791,
-      "cases": 1587,
+      "bars": 6797,
+      "cases": 1591,
       "states": {
         "S0.5": 478,
         "S1": 328,
-        "S2": 615,
+        "S2": 619,
         "S3": 166
       },
       "ok": true
     },
     {
       "symbol": "ETC",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2754,
       "states": {
         "S0.5": 915,
@@ -947,7 +947,7 @@
     },
     {
       "symbol": "GLM",
-      "bars": 8773,
+      "bars": 8779,
       "cases": 2208,
       "states": {
         "S2": 918,
@@ -959,7 +959,7 @@
     },
     {
       "symbol": "POL",
-      "bars": 4284,
+      "bars": 4290,
       "cases": 953,
       "states": {
         "S1": 267,
@@ -971,10 +971,10 @@
     },
     {
       "symbol": "PYTH",
-      "bars": 5927,
-      "cases": 1512,
+      "bars": 5933,
+      "cases": 1513,
       "states": {
-        "S2": 621,
+        "S2": 622,
         "S3": 150,
         "S0.5": 402,
         "S1": 339
@@ -983,7 +983,7 @@
     },
     {
       "symbol": "WIF",
-      "bars": 5718,
+      "bars": 5724,
       "cases": 1582,
       "states": {
         "S2": 623,
@@ -995,11 +995,11 @@
     },
     {
       "symbol": "BONK",
-      "bars": 5927,
-      "cases": 1443,
+      "bars": 5933,
+      "cases": 1449,
       "states": {
         "S1": 281,
-        "S2": 619,
+        "S2": 625,
         "S3": 143,
         "S0.5": 400
       },
@@ -1007,10 +1007,10 @@
     },
     {
       "symbol": "OP",
-      "bars": 9301,
-      "cases": 2385,
+      "bars": 9307,
+      "cases": 2391,
       "states": {
-        "S2": 904,
+        "S2": 910,
         "S3": 184,
         "S0.5": 688,
         "S1": 609
@@ -1019,7 +1019,7 @@
     },
     {
       "symbol": "S",
-      "bars": 3533,
+      "bars": 3539,
       "cases": 679,
       "states": {
         "S0.5": 205,
@@ -1031,7 +1031,7 @@
     },
     {
       "symbol": "PAXG",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 3188,
       "states": {
         "S2": 1397,
@@ -1043,19 +1043,19 @@
     },
     {
       "symbol": "AXS",
-      "bars": 10107,
-      "cases": 2646,
+      "bars": 10113,
+      "cases": 2652,
       "states": {
         "S0.5": 770,
         "S1": 698,
-        "S2": 948,
+        "S2": 954,
         "S3": 230
       },
       "ok": true
     },
     {
       "symbol": "EGLD",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2424,
       "states": {
         "S1": 635,
@@ -1067,11 +1067,11 @@
     },
     {
       "symbol": "LDO",
-      "bars": 9424,
-      "cases": 2532,
+      "bars": 9430,
+      "cases": 2538,
       "states": {
         "S1": 656,
-        "S2": 1057,
+        "S2": 1063,
         "S3": 187,
         "S0.5": 632
       },
@@ -1079,7 +1079,7 @@
     },
     {
       "symbol": "ZEC",
-      "bars": 10107,
+      "bars": 10113,
       "cases": 2807,
       "states": {
         "S2": 1149,
@@ -1429,168 +1429,168 @@
     },
     "S2": {
       "3": {
-        "samples": 78381,
-        "wins": 6225,
-        "raw_probability": 0.07942,
-        "probability": 0.07942,
+        "samples": 78605,
+        "wins": 6228,
+        "raw_probability": 0.079232,
+        "probability": 0.079232,
         "wilson95": [
-          0.077547,
-          0.081333
+          0.077364,
+          0.08114
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 6225,
-            "raw_probability": 0.07942,
-            "probability": 0.07942
+            "count": 6228,
+            "raw_probability": 0.079232,
+            "probability": 0.079232
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 64645,
-            "raw_probability": 0.824753,
-            "probability": 0.824753
+            "count": 64838,
+            "raw_probability": 0.824858,
+            "probability": 0.824858
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
             "count": 2746,
-            "raw_probability": 0.035034,
-            "probability": 0.035034
+            "raw_probability": 0.034934,
+            "probability": 0.034934
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 4765,
-            "raw_probability": 0.060793,
-            "probability": 0.060793
+            "count": 4793,
+            "raw_probability": 0.060976,
+            "probability": 0.060976
           }
         },
-        "raw_structural_survival_probability": 0.904173,
-        "structural_survival_probability": 0.904173,
-        "true_fail_probability": 0.035034,
-        "other_probability": 0.060793
+        "raw_structural_survival_probability": 0.90409,
+        "structural_survival_probability": 0.90409,
+        "true_fail_probability": 0.034934,
+        "other_probability": 0.060976
       },
       "6": {
-        "samples": 78381,
-        "wins": 10883,
-        "raw_probability": 0.138847,
-        "probability": 0.138847,
+        "samples": 78605,
+        "wins": 10896,
+        "raw_probability": 0.138617,
+        "probability": 0.138617,
         "wilson95": [
-          0.136444,
-          0.141286
+          0.136219,
+          0.14105
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 10883,
-            "raw_probability": 0.138847,
-            "probability": 0.138847
+            "count": 10896,
+            "raw_probability": 0.138617,
+            "probability": 0.138617
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 52935,
-            "raw_probability": 0.675355,
-            "probability": 0.675355
+            "count": 53101,
+            "raw_probability": 0.675542,
+            "probability": 0.675542
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
             "count": 7044,
-            "raw_probability": 0.089869,
-            "probability": 0.089869
+            "raw_probability": 0.089613,
+            "probability": 0.089613
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 7519,
-            "raw_probability": 0.095929,
-            "probability": 0.095929
+            "count": 7564,
+            "raw_probability": 0.096228,
+            "probability": 0.096228
           }
         },
-        "raw_structural_survival_probability": 0.814202,
-        "structural_survival_probability": 0.814202,
-        "true_fail_probability": 0.089869,
-        "other_probability": 0.095929
+        "raw_structural_survival_probability": 0.814159,
+        "structural_survival_probability": 0.814159,
+        "true_fail_probability": 0.089613,
+        "other_probability": 0.096228
       },
       "12": {
-        "samples": 78381,
-        "wins": 20956,
-        "raw_probability": 0.267361,
-        "probability": 0.267361,
+        "samples": 78605,
+        "wins": 20984,
+        "raw_probability": 0.266955,
+        "probability": 0.266955,
         "wilson95": [
-          0.264274,
-          0.270471
+          0.263874,
+          0.270059
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 20956,
-            "raw_probability": 0.267361,
-            "probability": 0.267361
+            "count": 20984,
+            "raw_probability": 0.266955,
+            "probability": 0.266955
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 33645,
-            "raw_probability": 0.429249,
-            "probability": 0.429249
+            "count": 33819,
+            "raw_probability": 0.43024,
+            "probability": 0.43024
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 14611,
-            "raw_probability": 0.18641,
-            "probability": 0.18641
+            "count": 14613,
+            "raw_probability": 0.185904,
+            "probability": 0.185904
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 9169,
-            "raw_probability": 0.11698,
-            "probability": 0.11698
+            "count": 9189,
+            "raw_probability": 0.116901,
+            "probability": 0.116901
           }
         },
-        "raw_structural_survival_probability": 0.69661,
-        "structural_survival_probability": 0.69661,
-        "true_fail_probability": 0.18641,
-        "other_probability": 0.11698
+        "raw_structural_survival_probability": 0.697195,
+        "structural_survival_probability": 0.697195,
+        "true_fail_probability": 0.185904,
+        "other_probability": 0.116901
       },
       "18": {
-        "samples": 78381,
-        "wins": 29174,
-        "raw_probability": 0.372208,
-        "probability": 0.372208,
+        "samples": 78605,
+        "wins": 29209,
+        "raw_probability": 0.371592,
+        "probability": 0.371592,
         "wilson95": [
-          0.36883,
-          0.375598
+          0.36822,
+          0.374977
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 29174,
-            "raw_probability": 0.372208,
-            "probability": 0.372208
+            "count": 29209,
+            "raw_probability": 0.371592,
+            "probability": 0.371592
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 20811,
-            "raw_probability": 0.265511,
-            "probability": 0.265511
+            "count": 20976,
+            "raw_probability": 0.266853,
+            "probability": 0.266853
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 19679,
-            "raw_probability": 0.251068,
-            "probability": 0.251068
+            "count": 19694,
+            "raw_probability": 0.250544,
+            "probability": 0.250544
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 8717,
-            "raw_probability": 0.111213,
-            "probability": 0.111213
+            "count": 8726,
+            "raw_probability": 0.111011,
+            "probability": 0.111011
           }
         },
-        "raw_structural_survival_probability": 0.637718,
-        "structural_survival_probability": 0.637718,
-        "true_fail_probability": 0.251068,
-        "other_probability": 0.111213,
+        "raw_structural_survival_probability": 0.638445,
+        "structural_survival_probability": 0.638445,
+        "true_fail_probability": 0.250544,
+        "other_probability": 0.111011,
         "late_success_4_7d": {
-          "eligible_samples": 49098,
+          "eligible_samples": 49103,
           "count": 11545,
-          "probability": 0.235142,
+          "probability": 0.235118,
           "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
         }
       }
@@ -1820,27 +1820,27 @@
     "S2": {
       "SUCCESS_WITHIN_HORIZON": {
         "label_zh": "期限內成功",
-        "count": 29174,
-        "raw_probability": 0.372208,
-        "probability": 0.372208
+        "count": 29209,
+        "raw_probability": 0.371592,
+        "probability": 0.371592
       },
       "ALIVE_SLOW": {
         "label_zh": "還活著只是慢",
-        "count": 20811,
-        "raw_probability": 0.265511,
-        "probability": 0.265511
+        "count": 20976,
+        "raw_probability": 0.266853,
+        "probability": 0.266853
       },
       "TRUE_FAIL": {
         "label_zh": "真失敗",
-        "count": 19679,
-        "raw_probability": 0.251068,
-        "probability": 0.251068
+        "count": 19694,
+        "raw_probability": 0.250544,
+        "probability": 0.250544
       },
       "OTHER": {
         "label_zh": "其他",
-        "count": 8717,
-        "raw_probability": 0.111213,
-        "probability": 0.111213
+        "count": 8726,
+        "raw_probability": 0.111011,
+        "probability": 0.111011
       }
     },
     "S3": {
@@ -1873,7 +1873,7 @@
   "primary_72h_structural_survival": {
     "S0.5": 0.856049,
     "S1": 0.697693,
-    "S2": 0.637718,
+    "S2": 0.638445,
     "S3": 0.720509
   },
   "outcome_note": "72H main view: success + alive_slow + true_fail + other = 100%. Existing probability remains success-within-horizon for UI compatibility."
