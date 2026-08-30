@@ -162,6 +162,13 @@ def replay_symbol(
                             "di_gap_slope_3d": features.get("di_gap_slope_3d"),
                             "adx": features.get("adx"),
                             "adx_slope_3d": features.get("adx_slope_3d"),
+                            "adx_axis_zone": features.get("adx_axis_zone"),
+                            "adx_step_direction": features.get("adx_step_direction"),
+                            "adx_step_age_days": features.get("adx_step_age_days"),
+                            "adx_step_age_bin": features.get("adx_step_age_bin"),
+                            "adx_turn_event": features.get("adx_turn_event"),
+                            "adx_step_delta": features.get("adx_step_delta"),
+                            "dmi_adx_regime": features.get("dmi_adx_regime"),
                         },
                     }
                 )

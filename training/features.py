@@ -128,6 +128,93 @@ def _cross_event(previous_relation: str | None, current_relation: str) -> str:
     return "UNKNOWN"
 
 
+def _adx_axis_zone(adx: float | None) -> str:
+    if adx is None:
+        return "UNKNOWN"
+    if adx > DMI_AXIS:
+        return "ABOVE_20"
+    if adx < DMI_AXIS:
+        return "BELOW_20"
+    return "TOUCHING_20"
+
+
+def _adx_step_direction(previous: float | None, current: float | None) -> str:
+    if previous is None or current is None:
+        return "UNKNOWN"
+    if current > previous:
+        return "RISING"
+    if current < previous:
+        return "FALLING"
+    return "FLAT"
+
+
+def _adx_step_features(values: list[Any]) -> dict[str, Any]:
+    # The live chart colors each DAILY ADX stepline segment by comparing the
+    # current daily ADX with the previous daily ADX. Historical 4H replay uses
+    # the partial daily candle visible at that cutoff, so this is no-lookahead
+    # and matches what the Terminal would have shown at that moment.
+    series = [_safe_float(value) for value in values]
+    if len(series) < 2:
+        return {
+            "adx_step_direction": "UNKNOWN",
+            "adx_step_age_days": 0,
+            "adx_step_age_bin": "UNKNOWN",
+            "adx_turn_event": "UNKNOWN",
+            "adx_step_delta": None,
+        }
+
+    current_direction = _adx_step_direction(series[-2], series[-1])
+    if current_direction == "UNKNOWN":
+        return {
+            "adx_step_direction": "UNKNOWN",
+            "adx_step_age_days": 0,
+            "adx_step_age_bin": "UNKNOWN",
+            "adx_turn_event": "UNKNOWN",
+            "adx_step_delta": None,
+        }
+
+    directions = [
+        _adx_step_direction(series[i - 1], series[i])
+        for i in range(1, len(series))
+    ]
+    age = 1
+    for direction in reversed(directions[:-1]):
+        if direction != current_direction:
+            break
+        age += 1
+
+    previous_direction = directions[-2] if len(directions) >= 2 else "UNKNOWN"
+    if previous_direction == "FALLING" and current_direction == "RISING":
+        turn = "RED_TO_GREEN"
+    elif previous_direction == "RISING" and current_direction == "FALLING":
+        turn = "GREEN_TO_RED"
+    elif previous_direction in {"RISING", "FALLING", "FLAT"} and previous_direction != current_direction:
+        turn = "OTHER_TURN"
+    elif previous_direction == current_direction:
+        turn = "NONE"
+    else:
+        turn = "UNKNOWN"
+
+    previous_value = series[-2]
+    current_value = series[-1]
+    delta = (current_value - previous_value) if previous_value is not None and current_value is not None else None
+    return {
+        "adx_step_direction": current_direction,
+        "adx_step_age_days": int(age),
+        "adx_step_age_bin": _bin_age(int(age)),
+        "adx_turn_event": turn,
+        "adx_step_delta": round(delta, 8) if delta is not None else None,
+    }
+
+
+def _dmi_adx_regime(relation: str, adx_step_direction: str) -> str:
+    if relation not in {"PLUS", "MINUS"}:
+        return "NEUTRAL" if relation == "TIE" else "UNKNOWN"
+    if adx_step_direction not in {"RISING", "FALLING", "FLAT"}:
+        return "UNKNOWN"
+    return f"{relation}_{adx_step_direction}"
+
+
 def _dmi_features(
     record: dict[str, Any],
     previous_dmi_relation: str | None,
@@ -159,6 +246,7 @@ def _dmi_features(
     ]
     gap_slope = _slope_last3(gap_series)
     adx_slope = _slope_last3(adx_series)
+    step = _adx_step_features(adx_series)
 
     return {
         # Raw values are kept in every historical case so later research can
@@ -173,7 +261,10 @@ def _dmi_features(
         "di_gap_slope_3d": round(gap_slope, 8) if gap_slope is not None else None,
         "adx": round(adx, 8) if adx is not None else None,
         "adx_slope_3d": round(adx_slope, 8) if adx_slope is not None else None,
+        "adx_axis_zone": _adx_axis_zone(adx),
+        **step,
         "dmi_relation": relation,
+        "dmi_adx_regime": _dmi_adx_regime(relation, str(step.get("adx_step_direction") or "UNKNOWN")),
         "dmi_axis_zone": _dmi_axis_zone(di_plus, di_minus),
         "dmi_cross_event": _cross_event(previous_dmi_relation, relation),
         "dmi_cross_age_bars": int(max(1, dmi_relation_age_bars)),

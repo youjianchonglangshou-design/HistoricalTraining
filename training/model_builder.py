@@ -27,7 +27,7 @@ FEATURE_LEVELS = [
     ["midline_state", "bandpos_bin", "trigger_stage", "bandwidth_trend", "state_age_bin"],
 ]
 
-DMI_EXPERT_VERSION = "DMI-EXPERT-v1"
+DMI_EXPERT_VERSION = "DMI-EXPERT-v2-ADX-STEP"
 DMI_QUANTILE_FIELDS = {
     "di_abs_gap": "di_abs_gap_q",
     "di_axis_distance": "di_axis_distance_q",
@@ -59,7 +59,24 @@ DMI_EXPERT_FACETS = [
         "name": "trend_strength",
         "fields": ["dmi_relation", "di_abs_gap_q", "adx_q", "adx_slope_q"],
     },
+    # v2 ADX Step Regime: model the exact red/green stepline language used in
+    # SStateMarketTerminal. These remain independent facets so S0.5/S1/S2/S3
+    # can learn different meanings without exploding the Level 1-5 hierarchy.
+    {
+        "name": "adx_step_regime",
+        "fields": ["dmi_adx_regime", "adx_axis_zone"],
+    },
+    {
+        "name": "adx_step_persistence",
+        "fields": ["dmi_adx_regime", "adx_step_age_bin"],
+    },
+    {
+        "name": "adx_turn_handover",
+        "fields": ["dmi_relation", "dmi_cross_age_bin", "adx_turn_event"],
+    },
 ]
+
+ADX_STEP_FACET_NAMES = {"adx_step_regime", "adx_step_persistence", "adx_turn_handover"}
 
 
 def _wilson(wins: int, total: int, z: float = 1.96) -> tuple[float, float]:
@@ -489,7 +506,10 @@ def build_model(
             "source_formula": "Pine-equivalent period14 recursive TR/DM smoothing; DI+/DI-; DX; ADX=SMA14(DX)",
             "axis": 20,
             "binning": "Per-state terciles learned from historical raw DMI values; no fixed bullish/bearish magnitude threshold.",
+            "adx_step_definition": "Terminal parity: ADX > previous daily ADX = RISING/green; ADX < previous daily ADX = FALLING/red; equal = FLAT. The current daily candle may be partial at a 4H replay cutoff, never future-complete.",
+            "adx_step_semantics": "DI controller and ADX step direction are learned jointly per S-state. Green/red is not hard-coded bullish/bearish; PLUS_RISING, PLUS_FALLING, MINUS_RISING and MINUS_FALLING may have different outcomes in S0.5/S1/S2/S3.",
             "facets": DMI_EXPERT_FACETS,
+            "adx_step_facets": sorted(ADX_STEP_FACET_NAMES),
             "combiner": "Reliability-weighted geometric mean of facet likelihood ratios relative to the state baseline, applied as a conservative correction to the legacy BB/HA rule.",
         },
         "states": {},
