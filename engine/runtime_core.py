@@ -17,6 +17,7 @@ from .ha_threshold import compute_threshold_from_daily_data
 TW_TZ = timezone(timedelta(hours=8))
 STRUCTURE_WINDOW_DAYS = 30
 BB_PERIOD = 20
+ADX_PERIOD = 14
 LIVE_DAILY_FETCH_BARS = 150
 LIVE_4H_FETCH_BARS = 150
 MIN_DAILY_BARS = STRUCTURE_WINDOW_DAYS + BB_PERIOD - 1
@@ -72,6 +73,82 @@ def calculate_bollinger_bands(
     basis = float(np.mean(closes))
     std = float(np.std(closes, ddof=0))
     return basis, basis + std_multiplier * std, basis - std_multiplier * std
+
+
+def calculate_adx_dmi(klines: list[dict[str, Any]], period: int = ADX_PERIOD) -> list[dict[str, Any]]:
+    """Pine-equivalent DI+ / DI- / DX / ADX used by SStateMarketTerminal.
+
+    This intentionally mirrors the user-provided TradingView source and the
+    live Terminal implementation: TR/DM use the recursive Wilder-style
+    ``prev - prev / period + current`` smoothing, while ADX is SMA(period) of
+    DX.  Keeping the exact arithmetic here makes historical replay and live
+    inference share the same DMI inputs without introducing another engine.
+    """
+    if not klines:
+        return []
+    if period <= 0:
+        raise ValueError("ADX period must be positive")
+
+    smoothed_true_range = 0.0
+    smoothed_dm_plus = 0.0
+    smoothed_dm_minus = 0.0
+    dx_window: list[float] = []
+    output: list[dict[str, Any]] = []
+
+    for index, candle in enumerate(klines):
+        high = float(candle["high"])
+        low = float(candle["low"])
+        previous = klines[index - 1] if index > 0 else None
+        previous_close = float(previous["close"]) if previous is not None else 0.0
+        previous_high = float(previous["high"]) if previous is not None else 0.0
+        previous_low = float(previous["low"]) if previous is not None else 0.0
+
+        true_range = max(
+            high - low,
+            abs(high - previous_close),
+            abs(low - previous_close),
+        )
+        up_move = high - previous_high
+        down_move = previous_low - low
+        directional_plus = max(up_move, 0.0) if up_move > down_move else 0.0
+        directional_minus = max(down_move, 0.0) if down_move > up_move else 0.0
+
+        smoothed_true_range = smoothed_true_range - smoothed_true_range / period + true_range
+        smoothed_dm_plus = smoothed_dm_plus - smoothed_dm_plus / period + directional_plus
+        smoothed_dm_minus = smoothed_dm_minus - smoothed_dm_minus / period + directional_minus
+
+        if smoothed_true_range > 0:
+            di_plus = smoothed_dm_plus / smoothed_true_range * 100.0
+            di_minus = smoothed_dm_minus / smoothed_true_range * 100.0
+        else:
+            di_plus = None
+            di_minus = None
+
+        denominator = (di_plus or 0.0) + (di_minus or 0.0)
+        dx = (
+            abs(di_plus - di_minus) / denominator * 100.0
+            if di_plus is not None and di_minus is not None and denominator > 0
+            else None
+        )
+
+        if dx is None:
+            dx_window.clear()
+            adx = None
+        else:
+            dx_window.append(dx)
+            if len(dx_window) > period:
+                dx_window.pop(0)
+            adx = float(np.mean(dx_window)) if len(dx_window) == period else None
+
+        output.append({
+            "time": candle.get("time"),
+            "di_plus": di_plus,
+            "di_minus": di_minus,
+            "dx": dx,
+            "adx": adx,
+        })
+
+    return output
 
 
 def utc_day_start_ms(timestamp_ms: int) -> int:
@@ -144,6 +221,7 @@ def build_record_from_daily_and_4h(
 
     daily_ha = calculate_heikin_ashi(daily_raw)
     four_h_ha = calculate_heikin_ashi(four_h_raw_display)
+    daily_adx = calculate_adx_dmi(daily_raw, period=ADX_PERIOD)
     basis, upper_band, lower_band = calculate_bollinger_bands(daily_raw, period=20, std_multiplier=2.0)
     if basis is None or upper_band is None or lower_band is None:
         return None
@@ -153,6 +231,7 @@ def build_record_from_daily_and_4h(
 
     last_30 = daily_ha[-STRUCTURE_WINDOW_DAYS:]
     raw_last_30 = daily_raw[-STRUCTURE_WINDOW_DAYS:]
+    adx_last_30 = daily_adx[-len(last_30):]
     start_index = len(daily_raw) - len(last_30)
     band_basis_series, band_upper_series, band_lower_series = _rolling_bb_series(daily_raw, start_index)
     percentages = [
@@ -200,6 +279,10 @@ def build_record_from_daily_and_4h(
         "_raw_highs_last30": [float(item["high"]) for item in raw_last_30],
         "_raw_lows_last30": [float(item["low"]) for item in raw_last_30],
         "_raw_closes_last30": [float(item["close"]) for item in raw_last_30],
+        "_di_plus_last30": [item.get("di_plus") for item in adx_last_30],
+        "_di_minus_last30": [item.get("di_minus") for item in adx_last_30],
+        "_dx_last30": [item.get("dx") for item in adx_last_30],
+        "_adx_last30": [item.get("adx") for item in adx_last_30],
         "_ha4h_color_series": four_h_colors,
         "_ha_threshold": threshold,
     }
