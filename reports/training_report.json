@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-30T00:37:27.714307+00:00",
-  "model_id": "1dd17cd35330bd35",
-  "schema_version": 2,
-  "total_cases": 201389,
-  "historical_case_count": 199213,
+  "generated_at": "2026-08-30T03:33:51.385890+00:00",
+  "model_id": "b9c2a8e4b4f75183",
+  "schema_version": 3,
+  "total_cases": 199465,
+  "historical_case_count": 197289,
   "live_case_count": 2176,
   "live_since_ms": 1786147200000,
   "live_since_tw": "2026-08-08T08:00:00+08:00",
@@ -11,48 +11,48 @@
   "symbols": [
     {
       "symbol": "BTC",
-      "bars": 10113,
-      "cases": 2974,
+      "bars": 10000,
+      "cases": 2920,
       "states": {
-        "S1": 673,
-        "S0.5": 717,
-        "S2": 1254,
-        "S3": 330
+        "S2": 1248,
+        "S3": 330,
+        "S0.5": 709,
+        "S1": 633
       },
       "ok": true
     },
     {
       "symbol": "1INCH",
-      "bars": 10113,
-      "cases": 2700,
+      "bars": 10000,
+      "cases": 2676,
       "states": {
-        "S0.5": 810,
-        "S1": 685,
-        "S2": 1024,
+        "S2": 1022,
+        "S0.5": 793,
+        "S1": 680,
         "S3": 181
       },
       "ok": true
     },
     {
       "symbol": "RAY",
-      "bars": 10113,
-      "cases": 2802,
+      "bars": 10000,
+      "cases": 2783,
       "states": {
-        "S0.5": 653,
-        "S1": 624,
-        "S2": 1175,
+        "S2": 1174,
+        "S0.5": 644,
+        "S1": 615,
         "S3": 350
       },
       "ok": true
     },
     {
       "symbol": "RSR",
-      "bars": 10113,
-      "cases": 2550,
+      "bars": 10000,
+      "cases": 2514,
       "states": {
-        "S0.5": 609,
-        "S1": 660,
-        "S2": 1057,
+        "S2": 1051,
+        "S0.5": 595,
+        "S1": 644,
         "S3": 224
       },
       "ok": true
@@ -71,72 +71,72 @@
     },
     {
       "symbol": "KAVA",
-      "bars": 10113,
-      "cases": 2546,
+      "bars": 10000,
+      "cases": 2525,
       "states": {
-        "S1": 730,
-        "S0.5": 873,
         "S2": 790,
-        "S3": 153
+        "S3": 153,
+        "S0.5": 864,
+        "S1": 718
       },
       "ok": true
     },
     {
       "symbol": "INJ",
-      "bars": 10113,
-      "cases": 2638,
+      "bars": 10000,
+      "cases": 2600,
       "states": {
-        "S0.5": 651,
-        "S1": 607,
         "S2": 1117,
-        "S3": 263
+        "S3": 263,
+        "S1": 591,
+        "S0.5": 629
       },
       "ok": true
     },
     {
       "symbol": "LTC",
-      "bars": 10113,
-      "cases": 3291,
+      "bars": 10000,
+      "cases": 3244,
       "states": {
-        "S0.5": 932,
-        "S1": 757,
         "S2": 1269,
-        "S3": 333
+        "S3": 333,
+        "S0.5": 907,
+        "S1": 735
       },
       "ok": true
     },
     {
       "symbol": "SNX",
-      "bars": 10113,
-      "cases": 2599,
+      "bars": 10000,
+      "cases": 2582,
       "states": {
-        "S1": 569,
-        "S2": 1085,
-        "S3": 209,
-        "S0.5": 736
+        "S2": 1073,
+        "S3": 205,
+        "S0.5": 736,
+        "S1": 568
       },
       "ok": true
     },
     {
       "symbol": "SUSHI",
-      "bars": 10113,
-      "cases": 2723,
+      "bars": 10000,
+      "cases": 2700,
       "states": {
-        "S0.5": 871,
-        "S1": 696,
-        "S2": 922,
+        "S2": 920,
+        "S0.5": 865,
+        "S1": 681,
         "S3": 234
       },
       "ok": true
     },
     {
       "symbol": "TRX",
-      "bars": 10113,
-      "cases": 3293,
+      "bars": 10000,
+      "cases": 3264,
       "states": {
-        "S1": 776,
-        "S2": 1545,
+        "S2": 1535,
         "S0.5": 510,
+        "S1": 757,
         "S3": 462
       },
       "ok": true
@@ -191,12 +191,12 @@
     },
     {
       "symbol": "NEAR",
-      "bars": 10113,
-      "cases": 2654,
+      "bars": 10000,
+      "cases": 2577,
       "states": {
-        "S2": 1062,
-        "S3": 296,
-        "S0.5": 727,
+        "S2": 1025,
+        "S3": 258,
+        "S0.5": 725,
         "S1": 569
       },
       "ok": true
@@ -215,49 +215,49 @@
     },
     {
       "symbol": "SHIB",
-      "bars": 10113,
-      "cases": 2828,
+      "bars": 10000,
+      "cases": 2797,
       "states": {
-        "S0.5": 686,
-        "S1": 650,
         "S2": 1154,
+        "S0.5": 674,
+        "S1": 631,
         "S3": 338
       },
       "ok": true
     },
     {
       "symbol": "SOL",
-      "bars": 10113,
-      "cases": 2946,
+      "bars": 10000,
+      "cases": 2898,
       "states": {
-        "S0.5": 719,
-        "S1": 719,
-        "S2": 1246,
+        "S2": 1240,
+        "S0.5": 697,
+        "S1": 699,
         "S3": 262
       },
       "ok": true
     },
     {
       "symbol": "XLM",
-      "bars": 10113,
-      "cases": 2739,
+      "bars": 10000,
+      "cases": 2707,
       "states": {
-        "S1": 631,
-        "S0.5": 874,
         "S2": 1034,
+        "S0.5": 870,
+        "S1": 603,
         "S3": 200
       },
       "ok": true
     },
     {
       "symbol": "XRP",
-      "bars": 10113,
-      "cases": 3119,
+      "bars": 10000,
+      "cases": 3086,
       "states": {
-        "S0.5": 959,
-        "S1": 699,
-        "S2": 1111,
-        "S3": 350
+        "S2": 1092,
+        "S3": 349,
+        "S0.5": 953,
+        "S1": 692
       },
       "ok": true
     },
@@ -287,11 +287,11 @@
     },
     {
       "symbol": "RUNE",
-      "bars": 10113,
-      "cases": 2694,
+      "bars": 10000,
+      "cases": 2660,
       "states": {
-        "S2": 1048,
-        "S3": 293,
+        "S2": 1016,
+        "S3": 291,
         "S0.5": 594,
         "S1": 759
       },
@@ -299,24 +299,24 @@
     },
     {
       "symbol": "LINK",
-      "bars": 10113,
-      "cases": 2804,
+      "bars": 10000,
+      "cases": 2762,
       "states": {
-        "S0.5": 755,
-        "S1": 655,
-        "S2": 1193,
+        "S2": 1190,
+        "S0.5": 736,
+        "S1": 635,
         "S3": 201
       },
       "ok": true
     },
     {
       "symbol": "ETH",
-      "bars": 10113,
-      "cases": 2883,
+      "bars": 10000,
+      "cases": 2851,
       "states": {
-        "S0.5": 938,
-        "S1": 571,
-        "S2": 1120,
+        "S2": 1118,
+        "S0.5": 919,
+        "S1": 560,
         "S3": 254
       },
       "ok": true
@@ -383,36 +383,36 @@
     },
     {
       "symbol": "BNB",
-      "bars": 10113,
-      "cases": 3121,
+      "bars": 10000,
+      "cases": 3072,
       "states": {
-        "S0.5": 898,
-        "S1": 724,
-        "S2": 1234,
-        "S3": 265
+        "S2": 1228,
+        "S3": 265,
+        "S0.5": 882,
+        "S1": 697
       },
       "ok": true
     },
     {
       "symbol": "CAKE",
-      "bars": 10113,
-      "cases": 2846,
+      "bars": 10000,
+      "cases": 2819,
       "states": {
-        "S1": 678,
         "S2": 1136,
         "S3": 270,
-        "S0.5": 762
+        "S0.5": 762,
+        "S1": 651
       },
       "ok": true
     },
     {
       "symbol": "COMP",
-      "bars": 10113,
-      "cases": 2803,
+      "bars": 10000,
+      "cases": 2753,
       "states": {
-        "S0.5": 803,
-        "S1": 740,
-        "S2": 1016,
+        "S2": 999,
+        "S0.5": 784,
+        "S1": 726,
         "S3": 244
       },
       "ok": true
@@ -431,24 +431,24 @@
     },
     {
       "symbol": "ADA",
-      "bars": 10113,
-      "cases": 2657,
+      "bars": 10000,
+      "cases": 2626,
       "states": {
-        "S0.5": 812,
-        "S1": 598,
         "S2": 999,
-        "S3": 248
+        "S3": 248,
+        "S1": 587,
+        "S0.5": 792
       },
       "ok": true
     },
     {
       "symbol": "ALGO",
-      "bars": 10113,
-      "cases": 2630,
+      "bars": 10000,
+      "cases": 2589,
       "states": {
-        "S0.5": 870,
-        "S1": 635,
         "S2": 920,
+        "S0.5": 845,
+        "S1": 619,
         "S3": 205
       },
       "ok": true
@@ -467,24 +467,24 @@
     },
     {
       "symbol": "UNI",
-      "bars": 10113,
-      "cases": 3009,
+      "bars": 10000,
+      "cases": 2960,
       "states": {
-        "S0.5": 846,
-        "S1": 600,
-        "S2": 1177,
+        "S2": 1171,
+        "S0.5": 825,
+        "S1": 578,
         "S3": 386
       },
       "ok": true
     },
     {
       "symbol": "CRV",
-      "bars": 10113,
-      "cases": 2558,
+      "bars": 10000,
+      "cases": 2536,
       "states": {
-        "S0.5": 739,
-        "S1": 671,
         "S2": 976,
+        "S0.5": 731,
+        "S1": 657,
         "S3": 172
       },
       "ok": true
@@ -503,12 +503,12 @@
     },
     {
       "symbol": "MANA",
-      "bars": 10113,
-      "cases": 2606,
+      "bars": 10000,
+      "cases": 2579,
       "states": {
-        "S0.5": 896,
-        "S1": 611,
         "S2": 914,
+        "S0.5": 879,
+        "S1": 601,
         "S3": 185
       },
       "ok": true
@@ -539,12 +539,12 @@
     },
     {
       "symbol": "DOT",
-      "bars": 10113,
-      "cases": 2521,
+      "bars": 10000,
+      "cases": 2476,
       "states": {
-        "S1": 607,
-        "S2": 896,
+        "S2": 889,
         "S0.5": 787,
+        "S1": 569,
         "S3": 231
       },
       "ok": true
@@ -563,12 +563,12 @@
     },
     {
       "symbol": "HBAR",
-      "bars": 10113,
-      "cases": 2598,
+      "bars": 10000,
+      "cases": 2565,
       "states": {
-        "S0.5": 810,
-        "S1": 587,
         "S2": 951,
+        "S0.5": 788,
+        "S1": 576,
         "S3": 250
       },
       "ok": true
@@ -611,82 +611,82 @@
     },
     {
       "symbol": "BCH",
-      "bars": 10113,
-      "cases": 3003,
+      "bars": 10000,
+      "cases": 2959,
       "states": {
-        "S0.5": 883,
-        "S1": 563,
         "S2": 1239,
-        "S3": 318
+        "S1": 553,
+        "S3": 318,
+        "S0.5": 849
       },
       "ok": true
     },
     {
       "symbol": "FIL",
-      "bars": 10113,
-      "cases": 2654,
+      "bars": 10000,
+      "cases": 2628,
       "states": {
-        "S0.5": 869,
-        "S1": 617,
         "S2": 948,
+        "S0.5": 849,
+        "S1": 611,
         "S3": 220
       },
       "ok": true
     },
     {
       "symbol": "LPT",
-      "bars": 10113,
-      "cases": 2626,
+      "bars": 10000,
+      "cases": 2589,
       "states": {
-        "S0.5": 678,
-        "S1": 596,
         "S2": 1051,
+        "S1": 573,
+        "S0.5": 664,
         "S3": 301
       },
       "ok": true
     },
     {
       "symbol": "AAVE",
-      "bars": 10113,
-      "cases": 2984,
+      "bars": 10000,
+      "cases": 2975,
       "states": {
-        "S0.5": 826,
-        "S1": 673,
-        "S2": 1204,
+        "S2": 1203,
+        "S0.5": 820,
+        "S1": 671,
         "S3": 281
       },
       "ok": true
     },
     {
       "symbol": "AVAX",
-      "bars": 10113,
-      "cases": 2624,
+      "bars": 10000,
+      "cases": 2593,
       "states": {
-        "S0.5": 674,
-        "S1": 644,
-        "S2": 1030,
-        "S3": 276
+        "S2": 1027,
+        "S3": 276,
+        "S0.5": 654,
+        "S1": 636
       },
       "ok": true
     },
     {
       "symbol": "DOGE",
-      "bars": 10113,
-      "cases": 2690,
+      "bars": 10000,
+      "cases": 2667,
       "states": {
-        "S0.5": 793,
-        "S1": 569,
         "S2": 1053,
-        "S3": 275
+        "S3": 275,
+        "S0.5": 779,
+        "S1": 560
       },
       "ok": true
     },
     {
       "symbol": "ENJ",
-      "bars": 10053,
-      "cases": 2414,
+      "bars": 10000,
+      "cases": 2400,
       "states": {
-        "S0.5": 925,
+        "S0.5": 911,
         "S1": 486,
         "S2": 828,
         "S3": 175
@@ -695,60 +695,60 @@
     },
     {
       "symbol": "ICP",
-      "bars": 10113,
-      "cases": 2729,
+      "bars": 10000,
+      "cases": 2689,
       "states": {
-        "S0.5": 963,
-        "S1": 549,
         "S2": 1016,
+        "S0.5": 935,
+        "S1": 537,
         "S3": 201
       },
       "ok": true
     },
     {
       "symbol": "LRC",
-      "bars": 10113,
-      "cases": 2283,
+      "bars": 10000,
+      "cases": 2260,
       "states": {
-        "S0.5": 728,
-        "S1": 526,
-        "S2": 857,
-        "S3": 172
+        "S2": 856,
+        "S3": 172,
+        "S0.5": 708,
+        "S1": 524
       },
       "ok": true
     },
     {
       "symbol": "SAND",
-      "bars": 10113,
-      "cases": 2522,
+      "bars": 10000,
+      "cases": 2486,
       "states": {
-        "S0.5": 795,
-        "S1": 665,
-        "S2": 859,
+        "S2": 841,
+        "S0.5": 791,
+        "S1": 651,
         "S3": 203
       },
       "ok": true
     },
     {
       "symbol": "STX",
-      "bars": 10113,
-      "cases": 2640,
+      "bars": 10000,
+      "cases": 2560,
       "states": {
-        "S0.5": 793,
-        "S2": 933,
-        "S3": 314,
+        "S3": 280,
+        "S2": 897,
+        "S0.5": 783,
         "S1": 600
       },
       "ok": true
     },
     {
       "symbol": "VET",
-      "bars": 10113,
-      "cases": 2642,
+      "bars": 10000,
+      "cases": 2600,
       "states": {
-        "S0.5": 785,
-        "S1": 726,
-        "S2": 947,
+        "S2": 945,
+        "S0.5": 765,
+        "S1": 706,
         "S3": 184
       },
       "ok": true
@@ -767,97 +767,97 @@
     },
     {
       "symbol": "YFI",
-      "bars": 10113,
-      "cases": 2555,
+      "bars": 10000,
+      "cases": 2515,
       "states": {
-        "S0.5": 900,
-        "S1": 588,
-        "S2": 911,
+        "S2": 901,
+        "S0.5": 884,
+        "S1": 574,
         "S3": 156
       },
       "ok": true
     },
     {
       "symbol": "ATOM",
-      "bars": 10113,
-      "cases": 2585,
+      "bars": 10000,
+      "cases": 2527,
       "states": {
-        "S2": 868,
-        "S3": 239,
-        "S0.5": 822,
-        "S1": 656
+        "S1": 650,
+        "S2": 851,
+        "S0.5": 795,
+        "S3": 231
       },
       "ok": true
     },
     {
       "symbol": "DYDX",
-      "bars": 10113,
-      "cases": 2625,
+      "bars": 10000,
+      "cases": 2609,
       "states": {
-        "S0.5": 698,
-        "S1": 674,
         "S2": 1004,
+        "S0.5": 694,
+        "S1": 662,
         "S3": 249
       },
       "ok": true
     },
     {
       "symbol": "IMX",
-      "bars": 10113,
-      "cases": 2658,
+      "bars": 10000,
+      "cases": 2610,
       "states": {
-        "S1": 592,
-        "S2": 1003,
-        "S3": 271,
+        "S2": 983,
+        "S3": 265,
+        "S1": 570,
         "S0.5": 792
       },
       "ok": true
     },
     {
       "symbol": "ROSE",
-      "bars": 10113,
-      "cases": 2424,
+      "bars": 10000,
+      "cases": 2380,
       "states": {
-        "S0.5": 652,
-        "S1": 603,
-        "S2": 979,
+        "S2": 974,
+        "S1": 592,
+        "S0.5": 624,
         "S3": 190
       },
       "ok": true
     },
     {
       "symbol": "CHZ",
-      "bars": 10113,
-      "cases": 2572,
+      "bars": 10000,
+      "cases": 2483,
       "states": {
-        "S2": 1103,
-        "S3": 231,
+        "S2": 1049,
         "S0.5": 643,
-        "S1": 595
+        "S1": 595,
+        "S3": 196
       },
       "ok": true
     },
     {
       "symbol": "GALA",
-      "bars": 10113,
-      "cases": 2328,
+      "bars": 10000,
+      "cases": 2291,
       "states": {
-        "S0.5": 711,
-        "S1": 538,
-        "S2": 886,
+        "S2": 880,
+        "S0.5": 694,
+        "S1": 524,
         "S3": 193
       },
       "ok": true
     },
     {
       "symbol": "GRT",
-      "bars": 10113,
-      "cases": 2420,
+      "bars": 10000,
+      "cases": 2401,
       "states": {
-        "S1": 494,
-        "S2": 935,
-        "S3": 209,
-        "S0.5": 782
+        "S2": 923,
+        "S0.5": 782,
+        "S1": 489,
+        "S3": 207
       },
       "ok": true
     },
@@ -923,13 +923,13 @@
     },
     {
       "symbol": "ETC",
-      "bars": 10113,
-      "cases": 2754,
+      "bars": 10000,
+      "cases": 2722,
       "states": {
-        "S0.5": 915,
-        "S1": 677,
         "S2": 981,
-        "S3": 181
+        "S3": 181,
+        "S0.5": 887,
+        "S1": 673
       },
       "ok": true
     },
@@ -1031,37 +1031,37 @@
     },
     {
       "symbol": "PAXG",
-      "bars": 10113,
-      "cases": 3188,
+      "bars": 10000,
+      "cases": 3140,
       "states": {
-        "S2": 1397,
-        "S0.5": 759,
+        "S0.5": 737,
         "S1": 820,
+        "S2": 1371,
         "S3": 212
       },
       "ok": true
     },
     {
       "symbol": "AXS",
-      "bars": 10113,
-      "cases": 2652,
+      "bars": 10000,
+      "cases": 2609,
       "states": {
-        "S0.5": 770,
-        "S1": 698,
-        "S2": 954,
-        "S3": 230
+        "S2": 948,
+        "S3": 230,
+        "S0.5": 757,
+        "S1": 674
       },
       "ok": true
     },
     {
       "symbol": "EGLD",
-      "bars": 10113,
-      "cases": 2424,
+      "bars": 10000,
+      "cases": 2416,
       "states": {
-        "S1": 635,
         "S2": 925,
         "S3": 213,
-        "S0.5": 651
+        "S0.5": 651,
+        "S1": 627
       },
       "ok": true
     },
@@ -1079,11 +1079,11 @@
     },
     {
       "symbol": "ZEC",
-      "bars": 10113,
-      "cases": 2807,
+      "bars": 10000,
+      "cases": 2781,
       "states": {
-        "S2": 1149,
-        "S3": 284,
+        "S2": 1128,
+        "S3": 279,
         "S0.5": 707,
         "S1": 667
       },
@@ -1093,72 +1093,72 @@
   "state_horizon_baselines": {
     "S0.5": {
       "3": {
-        "samples": 57096,
-        "wins": 9857,
-        "raw_probability": 0.172639,
-        "probability": 0.172639,
+        "samples": 56395,
+        "wins": 9710,
+        "raw_probability": 0.172178,
+        "probability": 0.172178,
         "wilson95": [
-          0.169561,
-          0.175761
+          0.169085,
+          0.175317
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 9857,
-            "raw_probability": 0.172639,
-            "probability": 0.172639
+            "count": 9710,
+            "raw_probability": 0.172178,
+            "probability": 0.172178
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 46564,
-            "raw_probability": 0.815539,
-            "probability": 0.815539
+            "count": 46010,
+            "raw_probability": 0.815852,
+            "probability": 0.815852
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
             "count": 670,
-            "raw_probability": 0.011735,
-            "probability": 0.011735
+            "raw_probability": 0.01188,
+            "probability": 0.01188
           },
           "OTHER": {
             "label_zh": "其他",
             "count": 5,
-            "raw_probability": 8.8e-05,
-            "probability": 8.8e-05
+            "raw_probability": 8.9e-05,
+            "probability": 8.9e-05
           }
         },
-        "raw_structural_survival_probability": 0.988178,
-        "structural_survival_probability": 0.988178,
-        "true_fail_probability": 0.011735,
-        "other_probability": 8.8e-05
+        "raw_structural_survival_probability": 0.988031,
+        "structural_survival_probability": 0.988031,
+        "true_fail_probability": 0.01188,
+        "other_probability": 8.9e-05
       },
       "6": {
-        "samples": 57096,
-        "wins": 15870,
-        "raw_probability": 0.277953,
-        "probability": 0.277953,
+        "samples": 56395,
+        "wins": 15609,
+        "raw_probability": 0.27678,
+        "probability": 0.27678,
         "wilson95": [
-          0.274293,
-          0.281642
+          0.273103,
+          0.280488
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 15870,
-            "raw_probability": 0.277953,
-            "probability": 0.277953
+            "count": 15609,
+            "raw_probability": 0.27678,
+            "probability": 0.27678
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 39185,
-            "raw_probability": 0.6863,
-            "probability": 0.6863
+            "count": 38746,
+            "raw_probability": 0.687047,
+            "probability": 0.687047
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 2040,
-            "raw_probability": 0.035729,
-            "probability": 0.035729
+            "count": 2039,
+            "raw_probability": 0.036156,
+            "probability": 0.036156
           },
           "OTHER": {
             "label_zh": "其他",
@@ -1167,598 +1167,598 @@
             "probability": 1.8e-05
           }
         },
-        "raw_structural_survival_probability": 0.964253,
-        "structural_survival_probability": 0.964253,
-        "true_fail_probability": 0.035729,
+        "raw_structural_survival_probability": 0.963827,
+        "structural_survival_probability": 0.963827,
+        "true_fail_probability": 0.036156,
         "other_probability": 1.8e-05
       },
       "12": {
-        "samples": 57096,
-        "wins": 23112,
-        "raw_probability": 0.404792,
-        "probability": 0.404792,
+        "samples": 56395,
+        "wins": 22737,
+        "raw_probability": 0.403174,
+        "probability": 0.403174,
         "wilson95": [
-          0.400772,
-          0.408824
+          0.399132,
+          0.407229
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 23112,
-            "raw_probability": 0.404792,
-            "probability": 0.404792
+            "count": 22737,
+            "raw_probability": 0.403174,
+            "probability": 0.403174
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 28513,
-            "raw_probability": 0.499387,
-            "probability": 0.499387
+            "count": 28194,
+            "raw_probability": 0.499938,
+            "probability": 0.499938
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 5465,
-            "raw_probability": 0.095716,
-            "probability": 0.095716
+            "count": 5458,
+            "raw_probability": 0.096782,
+            "probability": 0.096782
           },
           "OTHER": {
             "label_zh": "其他",
             "count": 6,
-            "raw_probability": 0.000105,
-            "probability": 0.000105
+            "raw_probability": 0.000106,
+            "probability": 0.000106
           }
         },
-        "raw_structural_survival_probability": 0.904179,
-        "structural_survival_probability": 0.904179,
-        "true_fail_probability": 0.095716,
-        "other_probability": 0.000105
+        "raw_structural_survival_probability": 0.903112,
+        "structural_survival_probability": 0.903112,
+        "true_fail_probability": 0.096782,
+        "other_probability": 0.000106
       },
       "18": {
-        "samples": 57096,
-        "wins": 27652,
-        "raw_probability": 0.484307,
-        "probability": 0.484307,
+        "samples": 56395,
+        "wins": 27199,
+        "raw_probability": 0.482295,
+        "probability": 0.482295,
         "wilson95": [
-          0.480209,
-          0.488407
+          0.478172,
+          0.48642
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 27652,
-            "raw_probability": 0.484307,
-            "probability": 0.484307
+            "count": 27199,
+            "raw_probability": 0.482295,
+            "probability": 0.482295
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 21225,
-            "raw_probability": 0.371742,
-            "probability": 0.371742
+            "count": 20990,
+            "raw_probability": 0.372196,
+            "probability": 0.372196
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 8211,
-            "raw_probability": 0.14381,
-            "probability": 0.14381
+            "count": 8198,
+            "raw_probability": 0.145367,
+            "probability": 0.145367
           },
           "OTHER": {
             "label_zh": "其他",
             "count": 8,
-            "raw_probability": 0.00014,
-            "probability": 0.00014
+            "raw_probability": 0.000142,
+            "probability": 0.000142
           }
         },
-        "raw_structural_survival_probability": 0.856049,
-        "structural_survival_probability": 0.856049,
-        "true_fail_probability": 0.14381,
-        "other_probability": 0.00014,
+        "raw_structural_survival_probability": 0.854491,
+        "structural_survival_probability": 0.854491,
+        "true_fail_probability": 0.145367,
+        "other_probability": 0.000142,
         "late_success_4_7d": {
-          "eligible_samples": 29444,
-          "count": 11239,
-          "probability": 0.381708,
+          "eligible_samples": 29196,
+          "count": 11116,
+          "probability": 0.380737,
           "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
         }
       }
     },
     "S1": {
       "3": {
-        "samples": 47369,
-        "wins": 8438,
-        "raw_probability": 0.178133,
-        "probability": 0.178133,
+        "samples": 46693,
+        "wins": 8314,
+        "raw_probability": 0.178057,
+        "probability": 0.178057,
         "wilson95": [
-          0.174714,
-          0.181605
+          0.174613,
+          0.181553
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 8438,
-            "raw_probability": 0.178133,
-            "probability": 0.178133
+            "count": 8314,
+            "raw_probability": 0.178057,
+            "probability": 0.178057
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 32584,
-            "raw_probability": 0.687876,
-            "probability": 0.687876
+            "count": 32096,
+            "raw_probability": 0.687384,
+            "probability": 0.687384
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
             "count": 76,
-            "raw_probability": 0.001604,
-            "probability": 0.001604
+            "raw_probability": 0.001628,
+            "probability": 0.001628
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 6271,
-            "raw_probability": 0.132386,
-            "probability": 0.132386
+            "count": 6207,
+            "raw_probability": 0.132932,
+            "probability": 0.132932
           }
         },
-        "raw_structural_survival_probability": 0.866009,
-        "structural_survival_probability": 0.866009,
-        "true_fail_probability": 0.001604,
-        "other_probability": 0.132386
+        "raw_structural_survival_probability": 0.86544,
+        "structural_survival_probability": 0.86544,
+        "true_fail_probability": 0.001628,
+        "other_probability": 0.132932
       },
       "6": {
-        "samples": 47369,
-        "wins": 13954,
-        "raw_probability": 0.294581,
-        "probability": 0.294581,
+        "samples": 46693,
+        "wins": 13740,
+        "raw_probability": 0.294263,
+        "probability": 0.294263,
         "wilson95": [
-          0.290492,
-          0.298703
+          0.290146,
+          0.298413
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 13954,
-            "raw_probability": 0.294581,
-            "probability": 0.294581
+            "count": 13740,
+            "raw_probability": 0.294263,
+            "probability": 0.294263
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 22928,
-            "raw_probability": 0.48403,
-            "probability": 0.48403
+            "count": 22562,
+            "raw_probability": 0.483199,
+            "probability": 0.483199
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
             "count": 398,
-            "raw_probability": 0.008402,
-            "probability": 0.008402
+            "raw_probability": 0.008524,
+            "probability": 0.008524
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 10089,
-            "raw_probability": 0.212987,
-            "probability": 0.212987
+            "count": 9993,
+            "raw_probability": 0.214015,
+            "probability": 0.214015
           }
         },
-        "raw_structural_survival_probability": 0.77861,
-        "structural_survival_probability": 0.77861,
-        "true_fail_probability": 0.008402,
-        "other_probability": 0.212987
+        "raw_structural_survival_probability": 0.777461,
+        "structural_survival_probability": 0.777461,
+        "true_fail_probability": 0.008524,
+        "other_probability": 0.214015
       },
       "12": {
-        "samples": 47369,
-        "wins": 20440,
-        "raw_probability": 0.431506,
-        "probability": 0.431506,
+        "samples": 46693,
+        "wins": 20075,
+        "raw_probability": 0.429936,
+        "probability": 0.429936,
         "wilson95": [
-          0.427051,
-          0.435972
+          0.425451,
+          0.434432
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 20440,
-            "raw_probability": 0.431506,
-            "probability": 0.431506
+            "count": 20075,
+            "raw_probability": 0.429936,
+            "probability": 0.429936
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 13267,
-            "raw_probability": 0.280078,
-            "probability": 0.280078
+            "count": 13035,
+            "raw_probability": 0.279164,
+            "probability": 0.279164
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
             "count": 1948,
-            "raw_probability": 0.041124,
-            "probability": 0.041124
+            "raw_probability": 0.041719,
+            "probability": 0.041719
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 11714,
-            "raw_probability": 0.247293,
-            "probability": 0.247293
+            "count": 11635,
+            "raw_probability": 0.249181,
+            "probability": 0.249181
           }
         },
-        "raw_structural_survival_probability": 0.711584,
-        "structural_survival_probability": 0.711584,
-        "true_fail_probability": 0.041124,
-        "other_probability": 0.247293
+        "raw_structural_survival_probability": 0.7091,
+        "structural_survival_probability": 0.7091,
+        "true_fail_probability": 0.041719,
+        "other_probability": 0.249181
       },
       "18": {
-        "samples": 47369,
-        "wins": 24412,
-        "raw_probability": 0.515358,
-        "probability": 0.515358,
+        "samples": 46693,
+        "wins": 23937,
+        "raw_probability": 0.512646,
+        "probability": 0.512646,
         "wilson95": [
-          0.510856,
-          0.519857
+          0.508112,
+          0.517179
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 24412,
-            "raw_probability": 0.515358,
-            "probability": 0.515358
+            "count": 23937,
+            "raw_probability": 0.512646,
+            "probability": 0.512646
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 8637,
-            "raw_probability": 0.182334,
-            "probability": 0.182334
+            "count": 8499,
+            "raw_probability": 0.182019,
+            "probability": 0.182019
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
             "count": 3722,
-            "raw_probability": 0.078575,
-            "probability": 0.078575
+            "raw_probability": 0.079712,
+            "probability": 0.079712
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 10598,
-            "raw_probability": 0.223733,
-            "probability": 0.223733
+            "count": 10535,
+            "raw_probability": 0.225623,
+            "probability": 0.225623
           }
         },
-        "raw_structural_survival_probability": 0.697693,
-        "structural_survival_probability": 0.697693,
-        "true_fail_probability": 0.078575,
-        "other_probability": 0.223733,
+        "raw_structural_survival_probability": 0.694665,
+        "structural_survival_probability": 0.694665,
+        "true_fail_probability": 0.079712,
+        "other_probability": 0.225623,
         "late_success_4_7d": {
-          "eligible_samples": 22952,
-          "count": 7375,
-          "probability": 0.321323,
+          "eligible_samples": 22751,
+          "count": 7220,
+          "probability": 0.317349,
           "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
         }
       }
     },
     "S2": {
       "3": {
-        "samples": 78605,
-        "wins": 6228,
-        "raw_probability": 0.079232,
-        "probability": 0.079232,
+        "samples": 78193,
+        "wins": 6192,
+        "raw_probability": 0.079189,
+        "probability": 0.079189,
         "wilson95": [
-          0.077364,
-          0.08114
+          0.077317,
+          0.081102
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 6228,
-            "raw_probability": 0.079232,
-            "probability": 0.079232
+            "count": 6192,
+            "raw_probability": 0.079189,
+            "probability": 0.079189
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 64838,
-            "raw_probability": 0.824858,
-            "probability": 0.824858
+            "count": 64518,
+            "raw_probability": 0.825112,
+            "probability": 0.825112
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 2746,
-            "raw_probability": 0.034934,
-            "probability": 0.034934
+            "count": 2743,
+            "raw_probability": 0.03508,
+            "probability": 0.03508
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 4793,
-            "raw_probability": 0.060976,
-            "probability": 0.060976
+            "count": 4740,
+            "raw_probability": 0.060619,
+            "probability": 0.060619
           }
         },
-        "raw_structural_survival_probability": 0.90409,
-        "structural_survival_probability": 0.90409,
-        "true_fail_probability": 0.034934,
-        "other_probability": 0.060976
+        "raw_structural_survival_probability": 0.904301,
+        "structural_survival_probability": 0.904301,
+        "true_fail_probability": 0.03508,
+        "other_probability": 0.060619
       },
       "6": {
-        "samples": 78605,
-        "wins": 10896,
-        "raw_probability": 0.138617,
-        "probability": 0.138617,
+        "samples": 78193,
+        "wins": 10833,
+        "raw_probability": 0.138542,
+        "probability": 0.138542,
         "wilson95": [
-          0.136219,
-          0.14105
+          0.136138,
+          0.140981
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 10896,
-            "raw_probability": 0.138617,
-            "probability": 0.138617
+            "count": 10833,
+            "raw_probability": 0.138542,
+            "probability": 0.138542
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 53101,
-            "raw_probability": 0.675542,
-            "probability": 0.675542
+            "count": 52850,
+            "raw_probability": 0.675892,
+            "probability": 0.675892
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 7044,
-            "raw_probability": 0.089613,
-            "probability": 0.089613
+            "count": 7038,
+            "raw_probability": 0.090008,
+            "probability": 0.090008
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 7564,
-            "raw_probability": 0.096228,
-            "probability": 0.096228
+            "count": 7472,
+            "raw_probability": 0.095558,
+            "probability": 0.095558
           }
         },
-        "raw_structural_survival_probability": 0.814159,
-        "structural_survival_probability": 0.814159,
-        "true_fail_probability": 0.089613,
-        "other_probability": 0.096228
+        "raw_structural_survival_probability": 0.814434,
+        "structural_survival_probability": 0.814434,
+        "true_fail_probability": 0.090008,
+        "other_probability": 0.095558
       },
       "12": {
-        "samples": 78605,
-        "wins": 20984,
-        "raw_probability": 0.266955,
-        "probability": 0.266955,
+        "samples": 78193,
+        "wins": 20852,
+        "raw_probability": 0.266673,
+        "probability": 0.266673,
         "wilson95": [
-          0.263874,
-          0.270059
+          0.263585,
+          0.269785
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 20984,
-            "raw_probability": 0.266955,
-            "probability": 0.266955
+            "count": 20852,
+            "raw_probability": 0.266673,
+            "probability": 0.266673
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 33819,
-            "raw_probability": 0.43024,
-            "probability": 0.43024
+            "count": 33669,
+            "raw_probability": 0.430588,
+            "probability": 0.430588
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 14613,
-            "raw_probability": 0.185904,
-            "probability": 0.185904
+            "count": 14607,
+            "raw_probability": 0.186807,
+            "probability": 0.186807
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 9189,
-            "raw_probability": 0.116901,
-            "probability": 0.116901
+            "count": 9065,
+            "raw_probability": 0.115931,
+            "probability": 0.115931
           }
         },
-        "raw_structural_survival_probability": 0.697195,
-        "structural_survival_probability": 0.697195,
-        "true_fail_probability": 0.185904,
-        "other_probability": 0.116901
+        "raw_structural_survival_probability": 0.697262,
+        "structural_survival_probability": 0.697262,
+        "true_fail_probability": 0.186807,
+        "other_probability": 0.115931
       },
       "18": {
-        "samples": 78605,
-        "wins": 29209,
-        "raw_probability": 0.371592,
-        "probability": 0.371592,
+        "samples": 78193,
+        "wins": 29016,
+        "raw_probability": 0.371082,
+        "probability": 0.371082,
         "wilson95": [
-          0.36822,
-          0.374977
+          0.367702,
+          0.374474
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 29209,
-            "raw_probability": 0.371592,
-            "probability": 0.371592
+            "count": 29016,
+            "raw_probability": 0.371082,
+            "probability": 0.371082
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 20976,
-            "raw_probability": 0.266853,
-            "probability": 0.266853
+            "count": 20892,
+            "raw_probability": 0.267185,
+            "probability": 0.267185
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 19694,
-            "raw_probability": 0.250544,
-            "probability": 0.250544
+            "count": 19679,
+            "raw_probability": 0.251672,
+            "probability": 0.251672
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 8726,
-            "raw_probability": 0.111011,
-            "probability": 0.111011
+            "count": 8606,
+            "raw_probability": 0.110061,
+            "probability": 0.110061
           }
         },
-        "raw_structural_survival_probability": 0.638445,
-        "structural_survival_probability": 0.638445,
-        "true_fail_probability": 0.250544,
-        "other_probability": 0.111011,
+        "raw_structural_survival_probability": 0.638267,
+        "structural_survival_probability": 0.638267,
+        "true_fail_probability": 0.251672,
+        "other_probability": 0.110061,
         "late_success_4_7d": {
-          "eligible_samples": 49103,
-          "count": 11545,
-          "probability": 0.235118,
+          "eligible_samples": 48884,
+          "count": 11500,
+          "probability": 0.235251,
           "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
         }
       }
     },
     "S3": {
       "3": {
-        "samples": 18319,
-        "wins": 3448,
-        "raw_probability": 0.18822,
-        "probability": 0.18822,
+        "samples": 18184,
+        "wins": 3418,
+        "raw_probability": 0.187967,
+        "probability": 0.187967,
         "wilson95": [
-          0.182625,
-          0.193946
+          0.182355,
+          0.193712
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 3448,
-            "raw_probability": 0.18822,
-            "probability": 0.18822
+            "count": 3418,
+            "raw_probability": 0.187967,
+            "probability": 0.187967
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 14465,
-            "raw_probability": 0.789617,
-            "probability": 0.789617
+            "count": 14361,
+            "raw_probability": 0.78976,
+            "probability": 0.78976
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
             "count": 241,
-            "raw_probability": 0.013156,
-            "probability": 0.013156
+            "raw_probability": 0.013253,
+            "probability": 0.013253
           },
           "OTHER": {
             "label_zh": "其他",
-            "count": 165,
-            "raw_probability": 0.009007,
-            "probability": 0.009007
+            "count": 164,
+            "raw_probability": 0.009019,
+            "probability": 0.009019
           }
         },
-        "raw_structural_survival_probability": 0.977837,
-        "structural_survival_probability": 0.977837,
-        "true_fail_probability": 0.013156,
-        "other_probability": 0.009007
+        "raw_structural_survival_probability": 0.977728,
+        "structural_survival_probability": 0.977728,
+        "true_fail_probability": 0.013253,
+        "other_probability": 0.009019
       },
       "6": {
-        "samples": 18319,
-        "wins": 5220,
-        "raw_probability": 0.28495,
-        "probability": 0.28495,
+        "samples": 18184,
+        "wins": 5169,
+        "raw_probability": 0.284261,
+        "probability": 0.284261,
         "wilson95": [
-          0.278459,
-          0.291531
+          0.277751,
+          0.290862
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 5220,
-            "raw_probability": 0.28495,
-            "probability": 0.28495
+            "count": 5169,
+            "raw_probability": 0.284261,
+            "probability": 0.284261
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 11921,
-            "raw_probability": 0.650745,
-            "probability": 0.650745
+            "count": 11837,
+            "raw_probability": 0.650957,
+            "probability": 0.650957
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
             "count": 1042,
-            "raw_probability": 0.056881,
-            "probability": 0.056881
+            "raw_probability": 0.057303,
+            "probability": 0.057303
           },
           "OTHER": {
             "label_zh": "其他",
             "count": 136,
-            "raw_probability": 0.007424,
-            "probability": 0.007424
+            "raw_probability": 0.007479,
+            "probability": 0.007479
           }
         },
-        "raw_structural_survival_probability": 0.935695,
-        "structural_survival_probability": 0.935695,
-        "true_fail_probability": 0.056881,
-        "other_probability": 0.007424
+        "raw_structural_survival_probability": 0.935218,
+        "structural_survival_probability": 0.935218,
+        "true_fail_probability": 0.057303,
+        "other_probability": 0.007479
       },
       "12": {
-        "samples": 18319,
-        "wins": 7122,
-        "raw_probability": 0.388777,
-        "probability": 0.388777,
+        "samples": 18184,
+        "wins": 7044,
+        "raw_probability": 0.387374,
+        "probability": 0.387374,
         "wilson95": [
-          0.381742,
-          0.395858
+          0.380317,
+          0.394477
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 7122,
-            "raw_probability": 0.388777,
-            "probability": 0.388777
+            "count": 7044,
+            "raw_probability": 0.387374,
+            "probability": 0.387374
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 7835,
-            "raw_probability": 0.427698,
-            "probability": 0.427698
+            "count": 7778,
+            "raw_probability": 0.427739,
+            "probability": 0.427739
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
             "count": 3196,
-            "raw_probability": 0.174464,
-            "probability": 0.174464
+            "raw_probability": 0.175759,
+            "probability": 0.175759
           },
           "OTHER": {
             "label_zh": "其他",
             "count": 166,
-            "raw_probability": 0.009062,
-            "probability": 0.009062
+            "raw_probability": 0.009129,
+            "probability": 0.009129
           }
         },
-        "raw_structural_survival_probability": 0.816475,
-        "structural_survival_probability": 0.816475,
-        "true_fail_probability": 0.174464,
-        "other_probability": 0.009062
+        "raw_structural_survival_probability": 0.815112,
+        "structural_survival_probability": 0.815112,
+        "true_fail_probability": 0.175759,
+        "other_probability": 0.009129
       },
       "18": {
-        "samples": 18319,
-        "wins": 8271,
-        "raw_probability": 0.451498,
-        "probability": 0.451498,
+        "samples": 18184,
+        "wins": 8181,
+        "raw_probability": 0.449901,
+        "probability": 0.449901,
         "wilson95": [
-          0.444303,
-          0.458714
+          0.442681,
+          0.457142
         ],
         "outcomes": {
           "SUCCESS_WITHIN_HORIZON": {
             "label_zh": "期限內成功",
-            "count": 8271,
-            "raw_probability": 0.451498,
-            "probability": 0.451498
+            "count": 8181,
+            "raw_probability": 0.449901,
+            "probability": 0.449901
           },
           "ALIVE_SLOW": {
             "label_zh": "還活著只是慢",
-            "count": 4928,
-            "raw_probability": 0.26901,
-            "probability": 0.26901
+            "count": 4885,
+            "raw_probability": 0.268643,
+            "probability": 0.268643
           },
           "TRUE_FAIL": {
             "label_zh": "真失敗",
-            "count": 4903,
-            "raw_probability": 0.267646,
-            "probability": 0.267646
+            "count": 4901,
+            "raw_probability": 0.269523,
+            "probability": 0.269523
           },
           "OTHER": {
             "label_zh": "其他",
             "count": 217,
-            "raw_probability": 0.011846,
-            "probability": 0.011846
+            "raw_probability": 0.011934,
+            "probability": 0.011934
           }
         },
-        "raw_structural_survival_probability": 0.720509,
-        "structural_survival_probability": 0.720509,
-        "true_fail_probability": 0.267646,
-        "other_probability": 0.011846,
+        "raw_structural_survival_probability": 0.718544,
+        "structural_survival_probability": 0.718544,
+        "true_fail_probability": 0.269523,
+        "other_probability": 0.011934,
         "late_success_4_7d": {
-          "eligible_samples": 10048,
-          "count": 2318,
-          "probability": 0.230693,
+          "eligible_samples": 10003,
+          "count": 2284,
+          "probability": 0.228332,
           "meaning": "Among cases that missed the primary horizon and had enough future data, target hit on day 4-7."
         }
       }
@@ -1768,113 +1768,2498 @@
     "S0.5": {
       "SUCCESS_WITHIN_HORIZON": {
         "label_zh": "期限內成功",
-        "count": 27652,
-        "raw_probability": 0.484307,
-        "probability": 0.484307
+        "count": 27199,
+        "raw_probability": 0.482295,
+        "probability": 0.482295
       },
       "ALIVE_SLOW": {
         "label_zh": "還活著只是慢",
-        "count": 21225,
-        "raw_probability": 0.371742,
-        "probability": 0.371742
+        "count": 20990,
+        "raw_probability": 0.372196,
+        "probability": 0.372196
       },
       "TRUE_FAIL": {
         "label_zh": "真失敗",
-        "count": 8211,
-        "raw_probability": 0.14381,
-        "probability": 0.14381
+        "count": 8198,
+        "raw_probability": 0.145367,
+        "probability": 0.145367
       },
       "OTHER": {
         "label_zh": "其他",
         "count": 8,
-        "raw_probability": 0.00014,
-        "probability": 0.00014
+        "raw_probability": 0.000142,
+        "probability": 0.000142
       }
     },
     "S1": {
       "SUCCESS_WITHIN_HORIZON": {
         "label_zh": "期限內成功",
-        "count": 24412,
-        "raw_probability": 0.515358,
-        "probability": 0.515358
+        "count": 23937,
+        "raw_probability": 0.512646,
+        "probability": 0.512646
       },
       "ALIVE_SLOW": {
         "label_zh": "還活著只是慢",
-        "count": 8637,
-        "raw_probability": 0.182334,
-        "probability": 0.182334
+        "count": 8499,
+        "raw_probability": 0.182019,
+        "probability": 0.182019
       },
       "TRUE_FAIL": {
         "label_zh": "真失敗",
         "count": 3722,
-        "raw_probability": 0.078575,
-        "probability": 0.078575
+        "raw_probability": 0.079712,
+        "probability": 0.079712
       },
       "OTHER": {
         "label_zh": "其他",
-        "count": 10598,
-        "raw_probability": 0.223733,
-        "probability": 0.223733
+        "count": 10535,
+        "raw_probability": 0.225623,
+        "probability": 0.225623
       }
     },
     "S2": {
       "SUCCESS_WITHIN_HORIZON": {
         "label_zh": "期限內成功",
-        "count": 29209,
-        "raw_probability": 0.371592,
-        "probability": 0.371592
+        "count": 29016,
+        "raw_probability": 0.371082,
+        "probability": 0.371082
       },
       "ALIVE_SLOW": {
         "label_zh": "還活著只是慢",
-        "count": 20976,
-        "raw_probability": 0.266853,
-        "probability": 0.266853
+        "count": 20892,
+        "raw_probability": 0.267185,
+        "probability": 0.267185
       },
       "TRUE_FAIL": {
         "label_zh": "真失敗",
-        "count": 19694,
-        "raw_probability": 0.250544,
-        "probability": 0.250544
+        "count": 19679,
+        "raw_probability": 0.251672,
+        "probability": 0.251672
       },
       "OTHER": {
         "label_zh": "其他",
-        "count": 8726,
-        "raw_probability": 0.111011,
-        "probability": 0.111011
+        "count": 8606,
+        "raw_probability": 0.110061,
+        "probability": 0.110061
       }
     },
     "S3": {
       "SUCCESS_WITHIN_HORIZON": {
         "label_zh": "期限內成功",
-        "count": 8271,
-        "raw_probability": 0.451498,
-        "probability": 0.451498
+        "count": 8181,
+        "raw_probability": 0.449901,
+        "probability": 0.449901
       },
       "ALIVE_SLOW": {
         "label_zh": "還活著只是慢",
-        "count": 4928,
-        "raw_probability": 0.26901,
-        "probability": 0.26901
+        "count": 4885,
+        "raw_probability": 0.268643,
+        "probability": 0.268643
       },
       "TRUE_FAIL": {
         "label_zh": "真失敗",
-        "count": 4903,
-        "raw_probability": 0.267646,
-        "probability": 0.267646
+        "count": 4901,
+        "raw_probability": 0.269523,
+        "probability": 0.269523
       },
       "OTHER": {
         "label_zh": "其他",
         "count": 217,
-        "raw_probability": 0.011846,
-        "probability": 0.011846
+        "raw_probability": 0.011934,
+        "probability": 0.011934
       }
     }
   },
   "primary_72h_structural_survival": {
-    "S0.5": 0.856049,
-    "S1": 0.697693,
-    "S2": 0.638445,
-    "S3": 0.720509
+    "S0.5": 0.854491,
+    "S1": 0.694665,
+    "S2": 0.638267,
+    "S3": 0.718544
   },
-  "outcome_note": "72H main view: success + alive_slow + true_fail + other = 100%. Existing probability remains success-within-horizon for UI compatibility."
+  "outcome_note": "72H main view: success + alive_slow + true_fail + other = 100%. Existing probability remains success-within-horizon for UI compatibility.",
+  "dmi_expert_contract": {
+    "version": "DMI-EXPERT-v1",
+    "role": "Independent DMI evidence corrects the existing BB/HA/S-state probability; it never changes the S-state itself.",
+    "source_formula": "Pine-equivalent period14 recursive TR/DM smoothing; DI+/DI-; DX; ADX=SMA14(DX)",
+    "axis": 20,
+    "binning": "Per-state terciles learned from historical raw DMI values; no fixed bullish/bearish magnitude threshold.",
+    "facets": [
+      {
+        "name": "lead_axis",
+        "fields": [
+          "dmi_relation",
+          "dmi_axis_zone",
+          "di_axis_distance_q"
+        ]
+      },
+      {
+        "name": "cross_momentum",
+        "fields": [
+          "dmi_relation",
+          "dmi_cross_age_bin",
+          "di_gap_slope_q"
+        ]
+      },
+      {
+        "name": "line_motion",
+        "fields": [
+          "dmi_relation",
+          "di_plus_slope_q",
+          "di_minus_slope_q"
+        ]
+      },
+      {
+        "name": "trend_strength",
+        "fields": [
+          "dmi_relation",
+          "di_abs_gap_q",
+          "adx_q",
+          "adx_slope_q"
+        ]
+      }
+    ],
+    "combiner": "Reliability-weighted geometric mean of facet likelihood ratios relative to the state baseline, applied as a conservative correction to the legacy BB/HA rule."
+  },
+  "dmi_expert_72h": {
+    "S0.5": {
+      "baseline_samples": 56395,
+      "baseline_success_probability": 0.482295,
+      "baseline_structural_survival_probability": 0.854491,
+      "baseline_true_fail_probability": 0.145367,
+      "dmi_binning": {
+        "di_abs_gap": {
+          "derived_field": "di_abs_gap_q",
+          "q33": 3.95680189,
+          "q67": 8.78898914,
+          "samples": 56395
+        },
+        "di_axis_distance": {
+          "derived_field": "di_axis_distance_q",
+          "q33": 2.60704803,
+          "q67": 4.59253054,
+          "samples": 56395
+        },
+        "di_plus_slope_3d": {
+          "derived_field": "di_plus_slope_q",
+          "q33": 0.07282053,
+          "q67": 0.94231381,
+          "samples": 56395
+        },
+        "di_minus_slope_3d": {
+          "derived_field": "di_minus_slope_q",
+          "q33": -1.10580559,
+          "q67": -0.71083278,
+          "samples": 56395
+        },
+        "di_gap_slope_3d": {
+          "derived_field": "di_gap_slope_q",
+          "q33": 0.78554176,
+          "q67": 1.9786283,
+          "samples": 56395
+        },
+        "adx": {
+          "derived_field": "adx_q",
+          "q33": 16.07785608,
+          "q67": 28.07955401,
+          "samples": 56395
+        },
+        "adx_slope_3d": {
+          "derived_field": "adx_slope_q",
+          "q33": -1.00378991,
+          "q67": 0.0852972,
+          "samples": 56395
+        }
+      },
+      "facets": [
+        {
+          "name": "lead_axis",
+          "fields": [
+            "dmi_relation",
+            "dmi_axis_zone",
+            "di_axis_distance_q"
+          ],
+          "eligible_rule_count": 18,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=BOTH_ABOVE_20|di_axis_distance_q=MID",
+              "samples": 1195,
+              "success_probability": 0.587363,
+              "structural_survival_probability": 0.937522,
+              "true_fail_probability": 0.062475,
+              "success_delta_vs_state": 0.105068,
+              "true_fail_delta_vs_state": -0.082892,
+              "direction_score": 0.18796
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=PLUS_ONLY_ABOVE_20|di_axis_distance_q=HIGH",
+              "samples": 1577,
+              "success_probability": 0.578989,
+              "structural_survival_probability": 0.875448,
+              "true_fail_probability": 0.12142,
+              "success_delta_vs_state": 0.096694,
+              "true_fail_delta_vs_state": -0.023947,
+              "direction_score": 0.120641
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=BOTH_ABOVE_20|di_axis_distance_q=LOW",
+              "samples": 1823,
+              "success_probability": 0.564648,
+              "structural_survival_probability": 0.890445,
+              "true_fail_probability": 0.109554,
+              "success_delta_vs_state": 0.082353,
+              "true_fail_delta_vs_state": -0.035813,
+              "direction_score": 0.118166
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=BOTH_BELOW_20|di_axis_distance_q=HIGH",
+              "samples": 194,
+              "success_probability": 0.545074,
+              "structural_survival_probability": 0.906962,
+              "true_fail_probability": 0.093025,
+              "success_delta_vs_state": 0.062779,
+              "true_fail_delta_vs_state": -0.052342,
+              "direction_score": 0.115121
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=PLUS_ONLY_ABOVE_20|di_axis_distance_q=MID",
+              "samples": 2422,
+              "success_probability": 0.564556,
+              "structural_survival_probability": 0.871454,
+              "true_fail_probability": 0.128545,
+              "success_delta_vs_state": 0.082261,
+              "true_fail_delta_vs_state": -0.016822,
+              "direction_score": 0.099083
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_ABOVE_20|di_axis_distance_q=HIGH",
+              "samples": 536,
+              "success_probability": 0.511953,
+              "structural_survival_probability": 0.912032,
+              "true_fail_probability": 0.087963,
+              "success_delta_vs_state": 0.029658,
+              "true_fail_delta_vs_state": -0.057404,
+              "direction_score": 0.087062
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_BELOW_20|di_axis_distance_q=HIGH",
+              "samples": 287,
+              "success_probability": 0.357153,
+              "structural_survival_probability": 0.687589,
+              "true_fail_probability": 0.312402,
+              "success_delta_vs_state": -0.125142,
+              "true_fail_delta_vs_state": 0.167035,
+              "direction_score": -0.292177
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=MINUS_ONLY_ABOVE_20|di_axis_distance_q=HIGH",
+              "samples": 15743,
+              "success_probability": 0.406309,
+              "structural_survival_probability": 0.864372,
+              "true_fail_probability": 0.135501,
+              "success_delta_vs_state": -0.075986,
+              "true_fail_delta_vs_state": -0.009866,
+              "direction_score": -0.06612
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_BELOW_20|di_axis_distance_q=MID",
+              "samples": 1935,
+              "success_probability": 0.501098,
+              "structural_survival_probability": 0.813857,
+              "true_fail_probability": 0.186142,
+              "success_delta_vs_state": 0.018803,
+              "true_fail_delta_vs_state": 0.040775,
+              "direction_score": -0.021972
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=MINUS_ONLY_ABOVE_20|di_axis_distance_q=MID",
+              "samples": 10483,
+              "success_probability": 0.470975,
+              "structural_survival_probability": 0.849194,
+              "true_fail_probability": 0.150805,
+              "success_delta_vs_state": -0.01132,
+              "true_fail_delta_vs_state": 0.005438,
+              "direction_score": -0.016758
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=BOTH_ABOVE_20|di_axis_distance_q=HIGH",
+              "samples": 461,
+              "success_probability": 0.437933,
+              "structural_survival_probability": 0.883763,
+              "true_fail_probability": 0.114152,
+              "success_delta_vs_state": -0.044362,
+              "true_fail_delta_vs_state": -0.031215,
+              "direction_score": -0.013147
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=MINUS_ONLY_ABOVE_20|di_axis_distance_q=LOW",
+              "samples": 6775,
+              "success_probability": 0.495018,
+              "structural_survival_probability": 0.838129,
+              "true_fail_probability": 0.16187,
+              "success_delta_vs_state": 0.012723,
+              "true_fail_delta_vs_state": 0.016503,
+              "direction_score": -0.00378
+            }
+          ]
+        },
+        {
+          "name": "cross_momentum",
+          "fields": [
+            "dmi_relation",
+            "dmi_cross_age_bin",
+            "di_gap_slope_q"
+          ],
+          "eligible_rule_count": 18,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=1|di_gap_slope_q=HIGH",
+              "samples": 620,
+              "success_probability": 0.752572,
+              "structural_survival_probability": 0.94389,
+              "true_fail_probability": 0.056105,
+              "success_delta_vs_state": 0.270277,
+              "true_fail_delta_vs_state": -0.089262,
+              "direction_score": 0.359539
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=2_3|di_gap_slope_q=HIGH",
+              "samples": 1110,
+              "success_probability": 0.687297,
+              "structural_survival_probability": 0.921318,
+              "true_fail_probability": 0.078679,
+              "success_delta_vs_state": 0.205002,
+              "true_fail_delta_vs_state": -0.066688,
+              "direction_score": 0.27169
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=1|di_gap_slope_q=LOW",
+              "samples": 155,
+              "success_probability": 0.643691,
+              "structural_survival_probability": 0.857656,
+              "true_fail_probability": 0.142328,
+              "success_delta_vs_state": 0.161396,
+              "true_fail_delta_vs_state": -0.003039,
+              "direction_score": 0.164435
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=1|di_gap_slope_q=MID",
+              "samples": 311,
+              "success_probability": 0.60316,
+              "structural_survival_probability": 0.897552,
+              "true_fail_probability": 0.102439,
+              "success_delta_vs_state": 0.120865,
+              "true_fail_delta_vs_state": -0.042928,
+              "direction_score": 0.163793
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=7_PLUS|di_gap_slope_q=HIGH",
+              "samples": 1864,
+              "success_probability": 0.561914,
+              "structural_survival_probability": 0.89336,
+              "true_fail_probability": 0.103985,
+              "success_delta_vs_state": 0.079619,
+              "true_fail_delta_vs_state": -0.041382,
+              "direction_score": 0.121001
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=4_6|di_gap_slope_q=HIGH",
+              "samples": 1137,
+              "success_probability": 0.567542,
+              "structural_survival_probability": 0.879075,
+              "true_fail_probability": 0.120923,
+              "success_delta_vs_state": 0.085247,
+              "true_fail_delta_vs_state": -0.024444,
+              "direction_score": 0.109691
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=1|di_gap_slope_q=LOW",
+              "samples": 84,
+              "success_probability": 0.419672,
+              "structural_survival_probability": 0.808556,
+              "true_fail_probability": 0.191417,
+              "success_delta_vs_state": -0.062623,
+              "true_fail_delta_vs_state": 0.04605,
+              "direction_score": -0.108673
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=4_6|di_gap_slope_q=LOW",
+              "samples": 122,
+              "success_probability": 0.483422,
+              "structural_survival_probability": 0.789365,
+              "true_fail_probability": 0.210615,
+              "success_delta_vs_state": 0.001127,
+              "true_fail_delta_vs_state": 0.065248,
+              "direction_score": -0.064121
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=7_PLUS|di_gap_slope_q=LOW",
+              "samples": 13659,
+              "success_probability": 0.43948,
+              "structural_survival_probability": 0.838737,
+              "true_fail_probability": 0.161262,
+              "success_delta_vs_state": -0.042815,
+              "true_fail_delta_vs_state": 0.015895,
+              "direction_score": -0.05871
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=7_PLUS|di_gap_slope_q=MID",
+              "samples": 14682,
+              "success_probability": 0.44597,
+              "structural_survival_probability": 0.852339,
+              "true_fail_probability": 0.147593,
+              "success_delta_vs_state": -0.036325,
+              "true_fail_delta_vs_state": 0.002226,
+              "direction_score": -0.038551
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=2_3|di_gap_slope_q=LOW",
+              "samples": 122,
+              "success_probability": 0.490464,
+              "structural_survival_probability": 0.817534,
+              "true_fail_probability": 0.182446,
+              "success_delta_vs_state": 0.008169,
+              "true_fail_delta_vs_state": 0.037079,
+              "direction_score": -0.02891
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=7_PLUS|di_gap_slope_q=LOW",
+              "samples": 4346,
+              "success_probability": 0.489154,
+              "structural_survival_probability": 0.829613,
+              "true_fail_probability": 0.170157,
+              "success_delta_vs_state": 0.006859,
+              "true_fail_delta_vs_state": 0.02479,
+              "direction_score": -0.017931
+            }
+          ]
+        },
+        {
+          "name": "line_motion",
+          "fields": [
+            "dmi_relation",
+            "di_plus_slope_q",
+            "di_minus_slope_q"
+          ],
+          "eligible_rule_count": 18,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=HIGH|di_minus_slope_q=HIGH",
+              "samples": 722,
+              "success_probability": 0.663943,
+              "structural_survival_probability": 0.892304,
+              "true_fail_probability": 0.103649,
+              "success_delta_vs_state": 0.181648,
+              "true_fail_delta_vs_state": -0.041718,
+              "direction_score": 0.223366
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=HIGH|di_minus_slope_q=LOW",
+              "samples": 2758,
+              "success_probability": 0.616503,
+              "structural_survival_probability": 0.90896,
+              "true_fail_probability": 0.090319,
+              "success_delta_vs_state": 0.134208,
+              "true_fail_delta_vs_state": -0.055048,
+              "direction_score": 0.189256
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=HIGH|di_minus_slope_q=MID",
+              "samples": 1638,
+              "success_probability": 0.621017,
+              "structural_survival_probability": 0.898124,
+              "true_fail_probability": 0.101874,
+              "success_delta_vs_state": 0.138722,
+              "true_fail_delta_vs_state": -0.043493,
+              "direction_score": 0.182215
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=MID|di_minus_slope_q=LOW",
+              "samples": 584,
+              "success_probability": 0.565639,
+              "structural_survival_probability": 0.879288,
+              "true_fail_probability": 0.120708,
+              "success_delta_vs_state": 0.083344,
+              "true_fail_delta_vs_state": -0.024659,
+              "direction_score": 0.108003
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=LOW|di_minus_slope_q=LOW",
+              "samples": 328,
+              "success_probability": 0.582316,
+              "structural_survival_probability": 0.85658,
+              "true_fail_probability": 0.143412,
+              "success_delta_vs_state": 0.100021,
+              "true_fail_delta_vs_state": -0.001955,
+              "direction_score": 0.101976
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=HIGH|di_minus_slope_q=HIGH",
+              "samples": 1228,
+              "success_probability": 0.5518,
+              "structural_survival_probability": 0.877476,
+              "true_fail_probability": 0.122522,
+              "success_delta_vs_state": 0.069505,
+              "true_fail_delta_vs_state": -0.022845,
+              "direction_score": 0.09235
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=LOW|di_minus_slope_q=LOW",
+              "samples": 2331,
+              "success_probability": 0.387344,
+              "structural_survival_probability": 0.82054,
+              "true_fail_probability": 0.179459,
+              "success_delta_vs_state": -0.094951,
+              "true_fail_delta_vs_state": 0.034092,
+              "direction_score": -0.129043
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=MID|di_minus_slope_q=LOW",
+              "samples": 3949,
+              "success_probability": 0.415633,
+              "structural_survival_probability": 0.839781,
+              "true_fail_probability": 0.160219,
+              "success_delta_vs_state": -0.066662,
+              "true_fail_delta_vs_state": 0.014852,
+              "direction_score": -0.081514
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=LOW|di_minus_slope_q=MID",
+              "samples": 4717,
+              "success_probability": 0.422556,
+              "structural_survival_probability": 0.841691,
+              "true_fail_probability": 0.158308,
+              "success_delta_vs_state": -0.059739,
+              "true_fail_delta_vs_state": 0.012941,
+              "direction_score": -0.07268
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=LOW|di_minus_slope_q=HIGH",
+              "samples": 7339,
+              "success_probability": 0.444034,
+              "structural_survival_probability": 0.837626,
+              "true_fail_probability": 0.162374,
+              "success_delta_vs_state": -0.038261,
+              "true_fail_delta_vs_state": 0.017007,
+              "direction_score": -0.055268
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=LOW|di_minus_slope_q=HIGH",
+              "samples": 2921,
+              "success_probability": 0.476248,
+              "structural_survival_probability": 0.82628,
+              "true_fail_probability": 0.173379,
+              "success_delta_vs_state": -0.006047,
+              "true_fail_delta_vs_state": 0.028012,
+              "direction_score": -0.034059
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=MID|di_minus_slope_q=MID",
+              "samples": 6152,
+              "success_probability": 0.453766,
+              "structural_survival_probability": 0.855653,
+              "true_fail_probability": 0.144347,
+              "success_delta_vs_state": -0.028529,
+              "true_fail_delta_vs_state": -0.00102,
+              "direction_score": -0.027509
+            }
+          ]
+        },
+        {
+          "name": "trend_strength",
+          "fields": [
+            "dmi_relation",
+            "di_abs_gap_q",
+            "adx_q",
+            "adx_slope_q"
+          ],
+          "eligible_rule_count": 47,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=LOW|adx_q=HIGH|adx_slope_q=MID",
+              "samples": 95,
+              "success_probability": 0.823008,
+              "structural_survival_probability": 0.965998,
+              "true_fail_probability": 0.033977,
+              "success_delta_vs_state": 0.340713,
+              "true_fail_delta_vs_state": -0.11139,
+              "direction_score": 0.452103
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=HIGH|adx_q=MID|adx_slope_q=LOW",
+              "samples": 260,
+              "success_probability": 0.748735,
+              "structural_survival_probability": 0.953892,
+              "true_fail_probability": 0.046098,
+              "success_delta_vs_state": 0.26644,
+              "true_fail_delta_vs_state": -0.099269,
+              "direction_score": 0.365709
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=MID|adx_q=LOW|adx_slope_q=HIGH",
+              "samples": 349,
+              "success_probability": 0.760558,
+              "structural_survival_probability": 0.894552,
+              "true_fail_probability": 0.10544,
+              "success_delta_vs_state": 0.278263,
+              "true_fail_delta_vs_state": -0.039927,
+              "direction_score": 0.31819
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=MID|adx_q=LOW|adx_slope_q=LOW",
+              "samples": 675,
+              "success_probability": 0.639778,
+              "structural_survival_probability": 0.941136,
+              "true_fail_probability": 0.058859,
+              "success_delta_vs_state": 0.157483,
+              "true_fail_delta_vs_state": -0.086508,
+              "direction_score": 0.243991
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=LOW|adx_q=LOW|adx_slope_q=HIGH",
+              "samples": 357,
+              "success_probability": 0.704631,
+              "structural_survival_probability": 0.849045,
+              "true_fail_probability": 0.150948,
+              "success_delta_vs_state": 0.222336,
+              "true_fail_delta_vs_state": 0.005581,
+              "direction_score": 0.216755
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=LOW|adx_q=MID|adx_slope_q=HIGH",
+              "samples": 540,
+              "success_probability": 0.608296,
+              "structural_survival_probability": 0.935875,
+              "true_fail_probability": 0.06412,
+              "success_delta_vs_state": 0.126001,
+              "true_fail_delta_vs_state": -0.081247,
+              "direction_score": 0.207248
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=HIGH|adx_q=MID|adx_slope_q=MID",
+              "samples": 677,
+              "success_probability": 0.328043,
+              "structural_survival_probability": 0.688795,
+              "true_fail_probability": 0.311201,
+              "success_delta_vs_state": -0.154252,
+              "true_fail_delta_vs_state": 0.165834,
+              "direction_score": -0.320086
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=HIGH|adx_q=MID|adx_slope_q=LOW",
+              "samples": 213,
+              "success_probability": 0.333244,
+              "structural_survival_probability": 0.729999,
+              "true_fail_probability": 0.269989,
+              "success_delta_vs_state": -0.149051,
+              "true_fail_delta_vs_state": 0.124622,
+              "direction_score": -0.273673
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=HIGH|adx_q=MID|adx_slope_q=HIGH",
+              "samples": 2758,
+              "success_probability": 0.317007,
+              "structural_survival_probability": 0.824366,
+              "true_fail_probability": 0.175633,
+              "success_delta_vs_state": -0.165288,
+              "true_fail_delta_vs_state": 0.030266,
+              "direction_score": -0.195554
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=HIGH|adx_q=LOW|adx_slope_q=HIGH",
+              "samples": 358,
+              "success_probability": 0.382661,
+              "structural_survival_probability": 0.762142,
+              "true_fail_probability": 0.23785,
+              "success_delta_vs_state": -0.099634,
+              "true_fail_delta_vs_state": 0.092483,
+              "direction_score": -0.192117
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=MID|adx_q=LOW|adx_slope_q=LOW",
+              "samples": 580,
+              "success_probability": 0.361077,
+              "structural_survival_probability": 0.798483,
+              "true_fail_probability": 0.201512,
+              "success_delta_vs_state": -0.121218,
+              "true_fail_delta_vs_state": 0.056145,
+              "direction_score": -0.177363
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=MID|adx_q=LOW|adx_slope_q=HIGH",
+              "samples": 2365,
+              "success_probability": 0.409076,
+              "structural_survival_probability": 0.768172,
+              "true_fail_probability": 0.231827,
+              "success_delta_vs_state": -0.073219,
+              "true_fail_delta_vs_state": 0.08646,
+              "direction_score": -0.159679
+            }
+          ]
+        }
+      ]
+    },
+    "S1": {
+      "baseline_samples": 46693,
+      "baseline_success_probability": 0.512646,
+      "baseline_structural_survival_probability": 0.694665,
+      "baseline_true_fail_probability": 0.079712,
+      "dmi_binning": {
+        "di_abs_gap": {
+          "derived_field": "di_abs_gap_q",
+          "q33": 2.85620115,
+          "q67": 6.53362465,
+          "samples": 46693
+        },
+        "di_axis_distance": {
+          "derived_field": "di_axis_distance_q",
+          "q33": 2.21780426,
+          "q67": 3.76609959,
+          "samples": 46693
+        },
+        "di_plus_slope_3d": {
+          "derived_field": "di_plus_slope_q",
+          "q33": 0.25815837,
+          "q67": 1.63049725,
+          "samples": 46693
+        },
+        "di_minus_slope_3d": {
+          "derived_field": "di_minus_slope_q",
+          "q33": -1.32484449,
+          "q67": -0.84950199,
+          "samples": 46693
+        },
+        "di_gap_slope_3d": {
+          "derived_field": "di_gap_slope_q",
+          "q33": 1.09859663,
+          "q67": 2.87803649,
+          "samples": 46693
+        },
+        "adx": {
+          "derived_field": "adx_q",
+          "q33": 14.79531409,
+          "q67": 26.29594444,
+          "samples": 46693
+        },
+        "adx_slope_3d": {
+          "derived_field": "adx_slope_q",
+          "q33": -1.46220156,
+          "q67": -0.35780456,
+          "samples": 46693
+        }
+      },
+      "facets": [
+        {
+          "name": "lead_axis",
+          "fields": [
+            "dmi_relation",
+            "dmi_axis_zone",
+            "di_axis_distance_q"
+          ],
+          "eligible_rule_count": 18,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=BOTH_ABOVE_20|di_axis_distance_q=HIGH",
+              "samples": 1971,
+              "success_probability": 0.595808,
+              "structural_survival_probability": 0.785481,
+              "true_fail_probability": 0.020389,
+              "success_delta_vs_state": 0.083162,
+              "true_fail_delta_vs_state": -0.059323,
+              "direction_score": 0.142485
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_BELOW_20|di_axis_distance_q=HIGH",
+              "samples": 384,
+              "success_probability": 0.683794,
+              "structural_survival_probability": 0.759637,
+              "true_fail_probability": 0.125233,
+              "success_delta_vs_state": 0.171148,
+              "true_fail_delta_vs_state": 0.045521,
+              "direction_score": 0.125627
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_ABOVE_20|di_axis_distance_q=HIGH",
+              "samples": 1136,
+              "success_probability": 0.557312,
+              "structural_survival_probability": 0.819977,
+              "true_fail_probability": 0.010895,
+              "success_delta_vs_state": 0.044666,
+              "true_fail_delta_vs_state": -0.068817,
+              "direction_score": 0.113483
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=BOTH_BELOW_20|di_axis_distance_q=HIGH",
+              "samples": 358,
+              "success_probability": 0.614426,
+              "structural_survival_probability": 0.766913,
+              "true_fail_probability": 0.09681,
+              "success_delta_vs_state": 0.10178,
+              "true_fail_delta_vs_state": 0.017098,
+              "direction_score": 0.084682
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=PLUS_ONLY_ABOVE_20|di_axis_distance_q=HIGH",
+              "samples": 6826,
+              "success_probability": 0.563139,
+              "structural_survival_probability": 0.745675,
+              "true_fail_probability": 0.047414,
+              "success_delta_vs_state": 0.050493,
+              "true_fail_delta_vs_state": -0.032298,
+              "direction_score": 0.082791
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=BOTH_ABOVE_20|di_axis_distance_q=MID",
+              "samples": 2290,
+              "success_probability": 0.539503,
+              "structural_survival_probability": 0.75017,
+              "true_fail_probability": 0.043114,
+              "success_delta_vs_state": 0.026857,
+              "true_fail_delta_vs_state": -0.036598,
+              "direction_score": 0.063455
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=BOTH_BELOW_20|di_axis_distance_q=MID",
+              "samples": 1177,
+              "success_probability": 0.433795,
+              "structural_survival_probability": 0.603085,
+              "true_fail_probability": 0.120797,
+              "success_delta_vs_state": -0.078851,
+              "true_fail_delta_vs_state": 0.041085,
+              "direction_score": -0.119936
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_BELOW_20|di_axis_distance_q=LOW",
+              "samples": 1715,
+              "success_probability": 0.435881,
+              "structural_survival_probability": 0.636826,
+              "true_fail_probability": 0.112734,
+              "success_delta_vs_state": -0.076765,
+              "true_fail_delta_vs_state": 0.033022,
+              "direction_score": -0.109787
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_BELOW_20|di_axis_distance_q=MID",
+              "samples": 1235,
+              "success_probability": 0.467134,
+              "structural_survival_probability": 0.638959,
+              "true_fail_probability": 0.117605,
+              "success_delta_vs_state": -0.045512,
+              "true_fail_delta_vs_state": 0.037893,
+              "direction_score": -0.083405
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=BOTH_BELOW_20|di_axis_distance_q=LOW",
+              "samples": 1738,
+              "success_probability": 0.484217,
+              "structural_survival_probability": 0.627357,
+              "true_fail_probability": 0.132306,
+              "success_delta_vs_state": -0.028429,
+              "true_fail_delta_vs_state": 0.052594,
+              "direction_score": -0.081023
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=MINUS_ONLY_ABOVE_20|di_axis_distance_q=LOW",
+              "samples": 3858,
+              "success_probability": 0.479952,
+              "structural_survival_probability": 0.650823,
+              "true_fail_probability": 0.102268,
+              "success_delta_vs_state": -0.032694,
+              "true_fail_delta_vs_state": 0.022556,
+              "direction_score": -0.05525
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=MINUS_ONLY_ABOVE_20|di_axis_distance_q=HIGH",
+              "samples": 4889,
+              "success_probability": 0.472653,
+              "structural_survival_probability": 0.638601,
+              "true_fail_probability": 0.089549,
+              "success_delta_vs_state": -0.039993,
+              "true_fail_delta_vs_state": 0.009837,
+              "direction_score": -0.04983
+            }
+          ]
+        },
+        {
+          "name": "cross_momentum",
+          "fields": [
+            "dmi_relation",
+            "dmi_cross_age_bin",
+            "di_gap_slope_q"
+          ],
+          "eligible_rule_count": 18,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=1|di_gap_slope_q=HIGH",
+              "samples": 815,
+              "success_probability": 0.68174,
+              "structural_survival_probability": 0.819034,
+              "true_fail_probability": 0.034245,
+              "success_delta_vs_state": 0.169094,
+              "true_fail_delta_vs_state": -0.045467,
+              "direction_score": 0.214561
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=2_3|di_gap_slope_q=HIGH",
+              "samples": 1746,
+              "success_probability": 0.637742,
+              "structural_survival_probability": 0.783632,
+              "true_fail_probability": 0.042805,
+              "success_delta_vs_state": 0.125096,
+              "true_fail_delta_vs_state": -0.036907,
+              "direction_score": 0.162003
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=1|di_gap_slope_q=MID",
+              "samples": 359,
+              "success_probability": 0.618082,
+              "structural_survival_probability": 0.743782,
+              "true_fail_probability": 0.075447,
+              "success_delta_vs_state": 0.105436,
+              "true_fail_delta_vs_state": -0.004265,
+              "direction_score": 0.109701
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=1|di_gap_slope_q=LOW",
+              "samples": 135,
+              "success_probability": 0.608083,
+              "structural_survival_probability": 0.75415,
+              "true_fail_probability": 0.074802,
+              "success_delta_vs_state": 0.095437,
+              "true_fail_delta_vs_state": -0.00491,
+              "direction_score": 0.100347
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=7_PLUS|di_gap_slope_q=HIGH",
+              "samples": 4011,
+              "success_probability": 0.532933,
+              "structural_survival_probability": 0.738252,
+              "true_fail_probability": 0.065144,
+              "success_delta_vs_state": 0.020287,
+              "true_fail_delta_vs_state": -0.014568,
+              "direction_score": 0.034855
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=4_6|di_gap_slope_q=HIGH",
+              "samples": 2465,
+              "success_probability": 0.542959,
+              "structural_survival_probability": 0.725108,
+              "true_fail_probability": 0.08032,
+              "success_delta_vs_state": 0.030313,
+              "true_fail_delta_vs_state": 0.000608,
+              "direction_score": 0.029705
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=1|di_gap_slope_q=LOW",
+              "samples": 138,
+              "success_probability": 0.330715,
+              "structural_survival_probability": 0.549958,
+              "true_fail_probability": 0.174647,
+              "success_delta_vs_state": -0.181931,
+              "true_fail_delta_vs_state": 0.094935,
+              "direction_score": -0.276866
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=2_3|di_gap_slope_q=LOW",
+              "samples": 192,
+              "success_probability": 0.392702,
+              "structural_survival_probability": 0.636289,
+              "true_fail_probability": 0.130162,
+              "success_delta_vs_state": -0.119944,
+              "true_fail_delta_vs_state": 0.05045,
+              "direction_score": -0.170394
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=4_6|di_gap_slope_q=LOW",
+              "samples": 184,
+              "success_probability": 0.413005,
+              "structural_survival_probability": 0.592614,
+              "true_fail_probability": 0.140168,
+              "success_delta_vs_state": -0.099641,
+              "true_fail_delta_vs_state": 0.060456,
+              "direction_score": -0.160097
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=4_6|di_gap_slope_q=LOW",
+              "samples": 205,
+              "success_probability": 0.418902,
+              "structural_survival_probability": 0.608415,
+              "true_fail_probability": 0.122641,
+              "success_delta_vs_state": -0.093744,
+              "true_fail_delta_vs_state": 0.042929,
+              "direction_score": -0.136673
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=4_6|di_gap_slope_q=MID",
+              "samples": 1180,
+              "success_probability": 0.465211,
+              "structural_survival_probability": 0.658244,
+              "true_fail_probability": 0.104662,
+              "success_delta_vs_state": -0.047435,
+              "true_fail_delta_vs_state": 0.02495,
+              "direction_score": -0.072385
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=7_PLUS|di_gap_slope_q=LOW",
+              "samples": 6588,
+              "success_probability": 0.474009,
+              "structural_survival_probability": 0.647684,
+              "true_fail_probability": 0.103298,
+              "success_delta_vs_state": -0.038637,
+              "true_fail_delta_vs_state": 0.023586,
+              "direction_score": -0.062223
+            }
+          ]
+        },
+        {
+          "name": "line_motion",
+          "fields": [
+            "dmi_relation",
+            "di_plus_slope_q",
+            "di_minus_slope_q"
+          ],
+          "eligible_rule_count": 18,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=HIGH|di_minus_slope_q=HIGH",
+              "samples": 158,
+              "success_probability": 0.681196,
+              "structural_survival_probability": 0.836479,
+              "true_fail_probability": 0.02581,
+              "success_delta_vs_state": 0.16855,
+              "true_fail_delta_vs_state": -0.053902,
+              "direction_score": 0.222452
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=HIGH|di_minus_slope_q=LOW",
+              "samples": 6153,
+              "success_probability": 0.584684,
+              "structural_survival_probability": 0.761039,
+              "true_fail_probability": 0.059063,
+              "success_delta_vs_state": 0.072038,
+              "true_fail_delta_vs_state": -0.020649,
+              "direction_score": 0.092687
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=HIGH|di_minus_slope_q=MID",
+              "samples": 1591,
+              "success_probability": 0.57868,
+              "structural_survival_probability": 0.720604,
+              "true_fail_probability": 0.062442,
+              "success_delta_vs_state": 0.066034,
+              "true_fail_delta_vs_state": -0.01727,
+              "direction_score": 0.083304
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=HIGH|di_minus_slope_q=HIGH",
+              "samples": 540,
+              "success_probability": 0.550452,
+              "structural_survival_probability": 0.726595,
+              "true_fail_probability": 0.049275,
+              "success_delta_vs_state": 0.037806,
+              "true_fail_delta_vs_state": -0.030437,
+              "direction_score": 0.068243
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=MID|di_minus_slope_q=HIGH",
+              "samples": 2239,
+              "success_probability": 0.526894,
+              "structural_survival_probability": 0.710887,
+              "true_fail_probability": 0.060467,
+              "success_delta_vs_state": 0.014248,
+              "true_fail_delta_vs_state": -0.019245,
+              "direction_score": 0.033493
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=HIGH|di_minus_slope_q=MID",
+              "samples": 2605,
+              "success_probability": 0.52962,
+              "structural_survival_probability": 0.731388,
+              "true_fail_probability": 0.063464,
+              "success_delta_vs_state": 0.016974,
+              "true_fail_delta_vs_state": -0.016248,
+              "direction_score": 0.033222
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=LOW|di_minus_slope_q=HIGH",
+              "samples": 4451,
+              "success_probability": 0.46729,
+              "structural_survival_probability": 0.629589,
+              "true_fail_probability": 0.112636,
+              "success_delta_vs_state": -0.045356,
+              "true_fail_delta_vs_state": 0.032924,
+              "direction_score": -0.07828
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=LOW|di_minus_slope_q=MID",
+              "samples": 2013,
+              "success_probability": 0.463971,
+              "structural_survival_probability": 0.636445,
+              "true_fail_probability": 0.106539,
+              "success_delta_vs_state": -0.048675,
+              "true_fail_delta_vs_state": 0.026827,
+              "direction_score": -0.075502
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=HIGH|di_minus_slope_q=LOW",
+              "samples": 4517,
+              "success_probability": 0.473496,
+              "structural_survival_probability": 0.685231,
+              "true_fail_probability": 0.077054,
+              "success_delta_vs_state": -0.03915,
+              "true_fail_delta_vs_state": -0.002658,
+              "direction_score": -0.036492
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=MID|di_minus_slope_q=HIGH",
+              "samples": 2831,
+              "success_probability": 0.486935,
+              "structural_survival_probability": 0.662888,
+              "true_fail_probability": 0.0893,
+              "success_delta_vs_state": -0.025711,
+              "true_fail_delta_vs_state": 0.009588,
+              "direction_score": -0.035299
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=MID|di_minus_slope_q=MID",
+              "samples": 3851,
+              "success_probability": 0.493736,
+              "structural_survival_probability": 0.652775,
+              "true_fail_probability": 0.093669,
+              "success_delta_vs_state": -0.01891,
+              "true_fail_delta_vs_state": 0.013957,
+              "direction_score": -0.032867
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=LOW|di_minus_slope_q=HIGH",
+              "samples": 5345,
+              "success_probability": 0.494362,
+              "structural_survival_probability": 0.686839,
+              "true_fail_probability": 0.077837,
+              "success_delta_vs_state": -0.018284,
+              "true_fail_delta_vs_state": -0.001875,
+              "direction_score": -0.016409
+            }
+          ]
+        },
+        {
+          "name": "trend_strength",
+          "fields": [
+            "dmi_relation",
+            "di_abs_gap_q",
+            "adx_q",
+            "adx_slope_q"
+          ],
+          "eligible_rule_count": 52,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=MID|adx_q=HIGH|adx_slope_q=HIGH",
+              "samples": 69,
+              "success_probability": 0.721943,
+              "structural_survival_probability": 0.819026,
+              "true_fail_probability": 0.017913,
+              "success_delta_vs_state": 0.209297,
+              "true_fail_delta_vs_state": -0.061799,
+              "direction_score": 0.271096
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=MID|adx_q=HIGH|adx_slope_q=MID",
+              "samples": 202,
+              "success_probability": 0.667806,
+              "structural_survival_probability": 0.891411,
+              "true_fail_probability": 0.007181,
+              "success_delta_vs_state": 0.15516,
+              "true_fail_delta_vs_state": -0.072531,
+              "direction_score": 0.227691
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=HIGH|adx_q=LOW|adx_slope_q=MID",
+              "samples": 749,
+              "success_probability": 0.594607,
+              "structural_survival_probability": 0.825609,
+              "true_fail_probability": 0.020279,
+              "success_delta_vs_state": 0.081961,
+              "true_fail_delta_vs_state": -0.059433,
+              "direction_score": 0.141394
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=HIGH|adx_q=LOW|adx_slope_q=HIGH",
+              "samples": 2409,
+              "success_probability": 0.630405,
+              "structural_survival_probability": 0.772702,
+              "true_fail_probability": 0.061175,
+              "success_delta_vs_state": 0.117759,
+              "true_fail_delta_vs_state": -0.018537,
+              "direction_score": 0.136296
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=MID|adx_q=MID|adx_slope_q=LOW",
+              "samples": 676,
+              "success_probability": 0.625363,
+              "structural_survival_probability": 0.728295,
+              "true_fail_probability": 0.077003,
+              "success_delta_vs_state": 0.112717,
+              "true_fail_delta_vs_state": -0.002709,
+              "direction_score": 0.115426
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=MID|adx_q=HIGH|adx_slope_q=LOW",
+              "samples": 2583,
+              "success_probability": 0.614773,
+              "structural_survival_probability": 0.764846,
+              "true_fail_probability": 0.068995,
+              "success_delta_vs_state": 0.102127,
+              "true_fail_delta_vs_state": -0.010717,
+              "direction_score": 0.112844
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=MID|adx_q=MID|adx_slope_q=HIGH",
+              "samples": 890,
+              "success_probability": 0.299179,
+              "structural_survival_probability": 0.507575,
+              "true_fail_probability": 0.156697,
+              "success_delta_vs_state": -0.213467,
+              "true_fail_delta_vs_state": 0.076985,
+              "direction_score": -0.290452
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=LOW|adx_q=MID|adx_slope_q=HIGH",
+              "samples": 724,
+              "success_probability": 0.356523,
+              "structural_survival_probability": 0.587222,
+              "true_fail_probability": 0.140584,
+              "success_delta_vs_state": -0.156123,
+              "true_fail_delta_vs_state": 0.060872,
+              "direction_score": -0.216995
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=MID|adx_q=LOW|adx_slope_q=HIGH",
+              "samples": 377,
+              "success_probability": 0.365876,
+              "structural_survival_probability": 0.551369,
+              "true_fail_probability": 0.140036,
+              "success_delta_vs_state": -0.14677,
+              "true_fail_delta_vs_state": 0.060324,
+              "direction_score": -0.207094
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=HIGH|adx_q=HIGH|adx_slope_q=LOW",
+              "samples": 781,
+              "success_probability": 0.334898,
+              "structural_survival_probability": 0.610354,
+              "true_fail_probability": 0.104362,
+              "success_delta_vs_state": -0.177748,
+              "true_fail_delta_vs_state": 0.02465,
+              "direction_score": -0.202398
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=HIGH|adx_q=MID|adx_slope_q=HIGH",
+              "samples": 332,
+              "success_probability": 0.421173,
+              "structural_survival_probability": 0.576401,
+              "true_fail_probability": 0.180665,
+              "success_delta_vs_state": -0.091473,
+              "true_fail_delta_vs_state": 0.100953,
+              "direction_score": -0.192426
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=HIGH|adx_q=LOW|adx_slope_q=HIGH",
+              "samples": 50,
+              "success_probability": 0.460756,
+              "structural_survival_probability": 0.598476,
+              "true_fail_probability": 0.208489,
+              "success_delta_vs_state": -0.05189,
+              "true_fail_delta_vs_state": 0.128777,
+              "direction_score": -0.180667
+            }
+          ]
+        }
+      ]
+    },
+    "S2": {
+      "baseline_samples": 78193,
+      "baseline_success_probability": 0.371082,
+      "baseline_structural_survival_probability": 0.638267,
+      "baseline_true_fail_probability": 0.251672,
+      "dmi_binning": {
+        "di_abs_gap": {
+          "derived_field": "di_abs_gap_q",
+          "q33": 4.43071623,
+          "q67": 10.04056078,
+          "samples": 78193
+        },
+        "di_axis_distance": {
+          "derived_field": "di_axis_distance_q",
+          "q33": 2.84065332,
+          "q67": 5.18021069,
+          "samples": 78193
+        },
+        "di_plus_slope_3d": {
+          "derived_field": "di_plus_slope_q",
+          "q33": -1.52227178,
+          "q67": -0.87907216,
+          "samples": 78193
+        },
+        "di_minus_slope_3d": {
+          "derived_field": "di_minus_slope_q",
+          "q33": -0.008164,
+          "q67": 1.12402257,
+          "samples": 78193
+        },
+        "di_gap_slope_3d": {
+          "derived_field": "di_gap_slope_q",
+          "q33": -2.55158489,
+          "q67": -0.92633085,
+          "samples": 78193
+        },
+        "adx": {
+          "derived_field": "adx_q",
+          "q33": 18.56497284,
+          "q67": 32.57360284,
+          "samples": 78193
+        },
+        "adx_slope_3d": {
+          "derived_field": "adx_slope_q",
+          "q33": -1.07562048,
+          "q67": 0.27717625,
+          "samples": 78193
+        }
+      },
+      "facets": [
+        {
+          "name": "lead_axis",
+          "fields": [
+            "dmi_relation",
+            "dmi_axis_zone",
+            "di_axis_distance_q"
+          ],
+          "eligible_rule_count": 17,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=BOTH_ABOVE_20|di_axis_distance_q=HIGH",
+              "samples": 885,
+              "success_probability": 0.392731,
+              "structural_survival_probability": 0.732337,
+              "true_fail_probability": 0.181252,
+              "success_delta_vs_state": 0.021649,
+              "true_fail_delta_vs_state": -0.07042,
+              "direction_score": 0.092069
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=PLUS_ONLY_ABOVE_20|di_axis_distance_q=HIGH",
+              "samples": 23922,
+              "success_probability": 0.370622,
+              "structural_survival_probability": 0.709329,
+              "true_fail_probability": 0.165986,
+              "success_delta_vs_state": -0.00046,
+              "true_fail_delta_vs_state": -0.085686,
+              "direction_score": 0.085226
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=BOTH_BELOW_20|di_axis_distance_q=HIGH",
+              "samples": 204,
+              "success_probability": 0.430454,
+              "structural_survival_probability": 0.61056,
+              "true_fail_probability": 0.227828,
+              "success_delta_vs_state": 0.059372,
+              "true_fail_delta_vs_state": -0.023844,
+              "direction_score": 0.083216
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=PLUS_ONLY_ABOVE_20|di_axis_distance_q=MID",
+              "samples": 16073,
+              "success_probability": 0.382615,
+              "structural_survival_probability": 0.639891,
+              "true_fail_probability": 0.254833,
+              "success_delta_vs_state": 0.011533,
+              "true_fail_delta_vs_state": 0.003161,
+              "direction_score": 0.008372
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=PLUS_ONLY_ABOVE_20|di_axis_distance_q=LOW",
+              "samples": 10160,
+              "success_probability": 0.391986,
+              "structural_survival_probability": 0.629741,
+              "true_fail_probability": 0.270828,
+              "success_delta_vs_state": 0.020904,
+              "true_fail_delta_vs_state": 0.019156,
+              "direction_score": 0.001748
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_ABOVE_20|di_axis_distance_q=MID",
+              "samples": 1578,
+              "success_probability": 0.36885,
+              "structural_survival_probability": 0.643157,
+              "true_fail_probability": 0.277242,
+              "success_delta_vs_state": -0.002232,
+              "true_fail_delta_vs_state": 0.02557,
+              "direction_score": -0.027802
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=MINUS_ONLY_ABOVE_20|di_axis_distance_q=MID",
+              "samples": 2637,
+              "success_probability": 0.34265,
+              "structural_survival_probability": 0.507251,
+              "true_fail_probability": 0.388421,
+              "success_delta_vs_state": -0.028432,
+              "true_fail_delta_vs_state": 0.136749,
+              "direction_score": -0.165181
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_BELOW_20|di_axis_distance_q=MID",
+              "samples": 946,
+              "success_probability": 0.366896,
+              "structural_survival_probability": 0.470772,
+              "true_fail_probability": 0.396515,
+              "success_delta_vs_state": -0.004186,
+              "true_fail_delta_vs_state": 0.144843,
+              "direction_score": -0.149029
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_ABOVE_20|di_axis_distance_q=HIGH",
+              "samples": 327,
+              "success_probability": 0.3528,
+              "structural_survival_probability": 0.584338,
+              "true_fail_probability": 0.371854,
+              "success_delta_vs_state": -0.018282,
+              "true_fail_delta_vs_state": 0.120182,
+              "direction_score": -0.138464
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=MINUS_ONLY_ABOVE_20|di_axis_distance_q=HIGH",
+              "samples": 684,
+              "success_probability": 0.358553,
+              "structural_survival_probability": 0.54086,
+              "true_fail_probability": 0.356582,
+              "success_delta_vs_state": -0.012529,
+              "true_fail_delta_vs_state": 0.10491,
+              "direction_score": -0.117439
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_BELOW_20|di_axis_distance_q=LOW",
+              "samples": 2013,
+              "success_probability": 0.338132,
+              "structural_survival_probability": 0.563092,
+              "true_fail_probability": 0.32466,
+              "success_delta_vs_state": -0.03295,
+              "true_fail_delta_vs_state": 0.072988,
+              "direction_score": -0.105938
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_ABOVE_20|di_axis_distance_q=LOW",
+              "samples": 2659,
+              "success_probability": 0.338717,
+              "structural_survival_probability": 0.566542,
+              "true_fail_probability": 0.316175,
+              "success_delta_vs_state": -0.032365,
+              "true_fail_delta_vs_state": 0.064503,
+              "direction_score": -0.096868
+            }
+          ]
+        },
+        {
+          "name": "cross_momentum",
+          "fields": [
+            "dmi_relation",
+            "dmi_cross_age_bin",
+            "di_gap_slope_q"
+          ],
+          "eligible_rule_count": 18,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=1|di_gap_slope_q=HIGH",
+              "samples": 127,
+              "success_probability": 0.526678,
+              "structural_survival_probability": 0.692281,
+              "true_fail_probability": 0.183901,
+              "success_delta_vs_state": 0.155596,
+              "true_fail_delta_vs_state": -0.067771,
+              "direction_score": 0.223367
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=2_3|di_gap_slope_q=HIGH",
+              "samples": 219,
+              "success_probability": 0.533145,
+              "structural_survival_probability": 0.710315,
+              "true_fail_probability": 0.209345,
+              "success_delta_vs_state": 0.162063,
+              "true_fail_delta_vs_state": -0.042327,
+              "direction_score": 0.20439
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=7_PLUS|di_gap_slope_q=HIGH",
+              "samples": 19568,
+              "success_probability": 0.419717,
+              "structural_survival_probability": 0.662639,
+              "true_fail_probability": 0.236371,
+              "success_delta_vs_state": 0.048635,
+              "true_fail_delta_vs_state": -0.015301,
+              "direction_score": 0.063936
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=7_PLUS|di_gap_slope_q=MID",
+              "samples": 20701,
+              "success_probability": 0.377077,
+              "structural_survival_probability": 0.660719,
+              "true_fail_probability": 0.228031,
+              "success_delta_vs_state": 0.005995,
+              "true_fail_delta_vs_state": -0.023641,
+              "direction_score": 0.029636
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=4_6|di_gap_slope_q=HIGH",
+              "samples": 297,
+              "success_probability": 0.398806,
+              "structural_survival_probability": 0.623865,
+              "true_fail_probability": 0.268244,
+              "success_delta_vs_state": 0.027724,
+              "true_fail_delta_vs_state": 0.016572,
+              "direction_score": 0.011152
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=7_PLUS|di_gap_slope_q=LOW",
+              "samples": 1427,
+              "success_probability": 0.418398,
+              "structural_survival_probability": 0.611448,
+              "true_fail_probability": 0.305483,
+              "success_delta_vs_state": 0.047316,
+              "true_fail_delta_vs_state": 0.053811,
+              "direction_score": -0.006495
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=1|di_gap_slope_q=LOW",
+              "samples": 617,
+              "success_probability": 0.209453,
+              "structural_survival_probability": 0.412504,
+              "true_fail_probability": 0.502407,
+              "success_delta_vs_state": -0.161629,
+              "true_fail_delta_vs_state": 0.250735,
+              "direction_score": -0.412364
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=2_3|di_gap_slope_q=LOW",
+              "samples": 1090,
+              "success_probability": 0.234614,
+              "structural_survival_probability": 0.455644,
+              "true_fail_probability": 0.455886,
+              "success_delta_vs_state": -0.136468,
+              "true_fail_delta_vs_state": 0.204214,
+              "direction_score": -0.340682
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=1|di_gap_slope_q=HIGH",
+              "samples": 206,
+              "success_probability": 0.227529,
+              "structural_survival_probability": 0.459139,
+              "true_fail_probability": 0.447051,
+              "success_delta_vs_state": -0.143553,
+              "true_fail_delta_vs_state": 0.195379,
+              "direction_score": -0.338932
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=2_3|di_gap_slope_q=HIGH",
+              "samples": 290,
+              "success_probability": 0.211038,
+              "structural_survival_probability": 0.466985,
+              "true_fail_probability": 0.425914,
+              "success_delta_vs_state": -0.160044,
+              "true_fail_delta_vs_state": 0.174242,
+              "direction_score": -0.334286
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=1|di_gap_slope_q=MID",
+              "samples": 431,
+              "success_probability": 0.260358,
+              "structural_survival_probability": 0.485067,
+              "true_fail_probability": 0.410274,
+              "success_delta_vs_state": -0.110724,
+              "true_fail_delta_vs_state": 0.158602,
+              "direction_score": -0.269326
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=4_6|di_gap_slope_q=HIGH",
+              "samples": 220,
+              "success_probability": 0.293424,
+              "structural_survival_probability": 0.507356,
+              "true_fail_probability": 0.391806,
+              "success_delta_vs_state": -0.077658,
+              "true_fail_delta_vs_state": 0.140134,
+              "direction_score": -0.217792
+            }
+          ]
+        },
+        {
+          "name": "line_motion",
+          "fields": [
+            "dmi_relation",
+            "di_plus_slope_q",
+            "di_minus_slope_q"
+          ],
+          "eligible_rule_count": 18,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=LOW|di_minus_slope_q=LOW",
+              "samples": 127,
+              "success_probability": 0.553889,
+              "structural_survival_probability": 0.726295,
+              "true_fail_probability": 0.224717,
+              "success_delta_vs_state": 0.182807,
+              "true_fail_delta_vs_state": -0.026955,
+              "direction_score": 0.209762
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=MID|di_minus_slope_q=LOW",
+              "samples": 6213,
+              "success_probability": 0.42731,
+              "structural_survival_probability": 0.698021,
+              "true_fail_probability": 0.20007,
+              "success_delta_vs_state": 0.056228,
+              "true_fail_delta_vs_state": -0.051602,
+              "direction_score": 0.10783
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=LOW|di_minus_slope_q=LOW",
+              "samples": 3006,
+              "success_probability": 0.360351,
+              "structural_survival_probability": 0.686638,
+              "true_fail_probability": 0.142113,
+              "success_delta_vs_state": -0.010731,
+              "true_fail_delta_vs_state": -0.109559,
+              "direction_score": 0.098828
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=HIGH|di_minus_slope_q=LOW",
+              "samples": 11801,
+              "success_probability": 0.432994,
+              "structural_survival_probability": 0.659146,
+              "true_fail_probability": 0.248967,
+              "success_delta_vs_state": 0.061912,
+              "true_fail_delta_vs_state": -0.002705,
+              "direction_score": 0.064617
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=MID|di_minus_slope_q=MID",
+              "samples": 9126,
+              "success_probability": 0.390927,
+              "structural_survival_probability": 0.653484,
+              "true_fail_probability": 0.241639,
+              "success_delta_vs_state": 0.019845,
+              "true_fail_delta_vs_state": -0.010033,
+              "direction_score": 0.029878
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=LOW|di_minus_slope_q=MID",
+              "samples": 6089,
+              "success_probability": 0.326964,
+              "structural_survival_probability": 0.649168,
+              "true_fail_probability": 0.196273,
+              "success_delta_vs_state": -0.044118,
+              "true_fail_delta_vs_state": -0.055399,
+              "direction_score": 0.011281
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=LOW|di_minus_slope_q=HIGH",
+              "samples": 2123,
+              "success_probability": 0.270845,
+              "structural_survival_probability": 0.496391,
+              "true_fail_probability": 0.412988,
+              "success_delta_vs_state": -0.100237,
+              "true_fail_delta_vs_state": 0.161316,
+              "direction_score": -0.261553
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=HIGH|di_minus_slope_q=HIGH",
+              "samples": 862,
+              "success_probability": 0.270319,
+              "structural_survival_probability": 0.46572,
+              "true_fail_probability": 0.409335,
+              "success_delta_vs_state": -0.100763,
+              "true_fail_delta_vs_state": 0.157663,
+              "direction_score": -0.258426
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=HIGH|di_minus_slope_q=HIGH",
+              "samples": 1232,
+              "success_probability": 0.251135,
+              "structural_survival_probability": 0.562113,
+              "true_fail_probability": 0.325107,
+              "success_delta_vs_state": -0.119947,
+              "true_fail_delta_vs_state": 0.073435,
+              "direction_score": -0.193382
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=HIGH|di_minus_slope_q=MID",
+              "samples": 2510,
+              "success_probability": 0.338902,
+              "structural_survival_probability": 0.540223,
+              "true_fail_probability": 0.339539,
+              "success_delta_vs_state": -0.03218,
+              "true_fail_delta_vs_state": 0.087867,
+              "direction_score": -0.120047
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=MID|di_minus_slope_q=MID",
+              "samples": 2114,
+              "success_probability": 0.344621,
+              "structural_survival_probability": 0.558934,
+              "true_fail_probability": 0.319603,
+              "success_delta_vs_state": -0.026461,
+              "true_fail_delta_vs_state": 0.067931,
+              "direction_score": -0.094392
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=MID|di_minus_slope_q=HIGH",
+              "samples": 2338,
+              "success_probability": 0.373376,
+              "structural_survival_probability": 0.569875,
+              "true_fail_probability": 0.340981,
+              "success_delta_vs_state": 0.002294,
+              "true_fail_delta_vs_state": 0.089309,
+              "direction_score": -0.087015
+            }
+          ]
+        },
+        {
+          "name": "trend_strength",
+          "fields": [
+            "dmi_relation",
+            "di_abs_gap_q",
+            "adx_q",
+            "adx_slope_q"
+          ],
+          "eligible_rule_count": 43,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=HIGH|adx_q=MID|adx_slope_q=LOW",
+              "samples": 234,
+              "success_probability": 0.584337,
+              "structural_survival_probability": 0.656556,
+              "true_fail_probability": 0.326903,
+              "success_delta_vs_state": 0.213255,
+              "true_fail_delta_vs_state": 0.075231,
+              "direction_score": 0.138024
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=HIGH|adx_q=HIGH|adx_slope_q=HIGH",
+              "samples": 9488,
+              "success_probability": 0.379199,
+              "structural_survival_probability": 0.733253,
+              "true_fail_probability": 0.142515,
+              "success_delta_vs_state": 0.008117,
+              "true_fail_delta_vs_state": -0.109157,
+              "direction_score": 0.117274
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=HIGH|adx_q=HIGH|adx_slope_q=MID",
+              "samples": 4659,
+              "success_probability": 0.415136,
+              "structural_survival_probability": 0.717625,
+              "true_fail_probability": 0.185731,
+              "success_delta_vs_state": 0.044054,
+              "true_fail_delta_vs_state": -0.065941,
+              "direction_score": 0.109995
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=HIGH|adx_q=HIGH|adx_slope_q=LOW",
+              "samples": 4252,
+              "success_probability": 0.426129,
+              "structural_survival_probability": 0.712726,
+              "true_fail_probability": 0.202255,
+              "success_delta_vs_state": 0.055047,
+              "true_fail_delta_vs_state": -0.049417,
+              "direction_score": 0.104464
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=MID|adx_q=MID|adx_slope_q=MID",
+              "samples": 3770,
+              "success_probability": 0.443911,
+              "structural_survival_probability": 0.666693,
+              "true_fail_probability": 0.224019,
+              "success_delta_vs_state": 0.072829,
+              "true_fail_delta_vs_state": -0.027653,
+              "direction_score": 0.100482
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=LOW|adx_q=MID|adx_slope_q=MID",
+              "samples": 1600,
+              "success_probability": 0.463841,
+              "structural_survival_probability": 0.675781,
+              "true_fail_probability": 0.258663,
+              "success_delta_vs_state": 0.092759,
+              "true_fail_delta_vs_state": 0.006991,
+              "direction_score": 0.085768
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=HIGH|adx_q=HIGH|adx_slope_q=MID",
+              "samples": 71,
+              "success_probability": 0.081556,
+              "structural_survival_probability": 0.294125,
+              "true_fail_probability": 0.582785,
+              "success_delta_vs_state": -0.289526,
+              "true_fail_delta_vs_state": 0.331113,
+              "direction_score": -0.620639
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=MID|adx_q=LOW|adx_slope_q=HIGH",
+              "samples": 114,
+              "success_probability": 0.316579,
+              "structural_survival_probability": 0.408697,
+              "true_fail_probability": 0.545026,
+              "success_delta_vs_state": -0.054503,
+              "true_fail_delta_vs_state": 0.293354,
+              "direction_score": -0.347857
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=LOW|adx_q=LOW|adx_slope_q=HIGH",
+              "samples": 154,
+              "success_probability": 0.238055,
+              "structural_survival_probability": 0.446927,
+              "true_fail_probability": 0.436974,
+              "success_delta_vs_state": -0.133027,
+              "true_fail_delta_vs_state": 0.185302,
+              "direction_score": -0.318329
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=MID|adx_q=MID|adx_slope_q=MID",
+              "samples": 497,
+              "success_probability": 0.263872,
+              "structural_survival_probability": 0.417341,
+              "true_fail_probability": 0.427531,
+              "success_delta_vs_state": -0.10721,
+              "true_fail_delta_vs_state": 0.175859,
+              "direction_score": -0.283069
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=MID|adx_q=HIGH|adx_slope_q=LOW",
+              "samples": 447,
+              "success_probability": 0.247156,
+              "structural_survival_probability": 0.444894,
+              "true_fail_probability": 0.387652,
+              "success_delta_vs_state": -0.123926,
+              "true_fail_delta_vs_state": 0.13598,
+              "direction_score": -0.259906
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=LOW|adx_q=MID|adx_slope_q=HIGH",
+              "samples": 92,
+              "success_probability": 0.262693,
+              "structural_survival_probability": 0.533619,
+              "true_fail_probability": 0.402084,
+              "success_delta_vs_state": -0.108389,
+              "true_fail_delta_vs_state": 0.150412,
+              "direction_score": -0.258801
+            }
+          ]
+        }
+      ]
+    },
+    "S3": {
+      "baseline_samples": 18184,
+      "baseline_success_probability": 0.449901,
+      "baseline_structural_survival_probability": 0.718544,
+      "baseline_true_fail_probability": 0.269523,
+      "dmi_binning": {
+        "di_abs_gap": {
+          "derived_field": "di_abs_gap_q",
+          "q33": 5.25072921,
+          "q67": 10.66336022,
+          "samples": 18184
+        },
+        "di_axis_distance": {
+          "derived_field": "di_axis_distance_q",
+          "q33": 3.07027897,
+          "q67": 5.39867822,
+          "samples": 18184
+        },
+        "di_plus_slope_3d": {
+          "derived_field": "di_plus_slope_q",
+          "q33": -0.19260721,
+          "q67": 0.76705181,
+          "samples": 18184
+        },
+        "di_minus_slope_3d": {
+          "derived_field": "di_minus_slope_q",
+          "q33": -0.93596683,
+          "q67": -0.56780727,
+          "samples": 18184
+        },
+        "di_gap_slope_3d": {
+          "derived_field": "di_gap_slope_q",
+          "q33": 0.36873046,
+          "q67": 1.64787216,
+          "samples": 18184
+        },
+        "adx": {
+          "derived_field": "adx_q",
+          "q33": 16.65675619,
+          "q67": 31.39064488,
+          "samples": 18184
+        },
+        "adx_slope_3d": {
+          "derived_field": "adx_slope_q",
+          "q33": -1.22616557,
+          "q67": -0.06237871,
+          "samples": 18184
+        }
+      },
+      "facets": [
+        {
+          "name": "lead_axis",
+          "fields": [
+            "dmi_relation",
+            "dmi_axis_zone",
+            "di_axis_distance_q"
+          ],
+          "eligible_rule_count": 15,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_BELOW_20|di_axis_distance_q=MID",
+              "samples": 135,
+              "success_probability": 0.561278,
+              "structural_survival_probability": 0.75078,
+              "true_fail_probability": 0.241229,
+              "success_delta_vs_state": 0.111377,
+              "true_fail_delta_vs_state": -0.028294,
+              "direction_score": 0.139671
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=MINUS_ONLY_ABOVE_20|di_axis_distance_q=HIGH",
+              "samples": 61,
+              "success_probability": 0.493803,
+              "structural_survival_probability": 0.807048,
+              "true_fail_probability": 0.190006,
+              "success_delta_vs_state": 0.043902,
+              "true_fail_delta_vs_state": -0.079517,
+              "direction_score": 0.123419
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_ABOVE_20|di_axis_distance_q=MID",
+              "samples": 179,
+              "success_probability": 0.467327,
+              "structural_survival_probability": 0.790808,
+              "true_fail_probability": 0.207992,
+              "success_delta_vs_state": 0.017426,
+              "true_fail_delta_vs_state": -0.061531,
+              "direction_score": 0.078957
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=BOTH_ABOVE_20|di_axis_distance_q=HIGH",
+              "samples": 83,
+              "success_probability": 0.38833,
+              "structural_survival_probability": 0.809426,
+              "true_fail_probability": 0.159131,
+              "success_delta_vs_state": -0.061571,
+              "true_fail_delta_vs_state": -0.110392,
+              "direction_score": 0.048821
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=BOTH_BELOW_20|di_axis_distance_q=LOW",
+              "samples": 1030,
+              "success_probability": 0.502855,
+              "structural_survival_probability": 0.710829,
+              "true_fail_probability": 0.277515,
+              "success_delta_vs_state": 0.052954,
+              "true_fail_delta_vs_state": 0.007992,
+              "direction_score": 0.044962
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=PLUS_ONLY_ABOVE_20|di_axis_distance_q=HIGH",
+              "samples": 5837,
+              "success_probability": 0.439132,
+              "structural_survival_probability": 0.774009,
+              "true_fail_probability": 0.215877,
+              "success_delta_vs_state": -0.010769,
+              "true_fail_delta_vs_state": -0.053646,
+              "direction_score": 0.042877
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=MINUS_ONLY_ABOVE_20|di_axis_distance_q=LOW",
+              "samples": 710,
+              "success_probability": 0.457532,
+              "structural_survival_probability": 0.615577,
+              "true_fail_probability": 0.374507,
+              "success_delta_vs_state": 0.007631,
+              "true_fail_delta_vs_state": 0.104984,
+              "direction_score": -0.097353
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_BELOW_20|di_axis_distance_q=LOW",
+              "samples": 493,
+              "success_probability": 0.442491,
+              "structural_survival_probability": 0.632302,
+              "true_fail_probability": 0.355537,
+              "success_delta_vs_state": -0.00741,
+              "true_fail_delta_vs_state": 0.086014,
+              "direction_score": -0.093424
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=PLUS_ONLY_ABOVE_20|di_axis_distance_q=MID",
+              "samples": 4493,
+              "success_probability": 0.426324,
+              "structural_survival_probability": 0.676129,
+              "true_fail_probability": 0.311631,
+              "success_delta_vs_state": -0.023577,
+              "true_fail_delta_vs_state": 0.042108,
+              "direction_score": -0.065685
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=MINUS_ONLY_ABOVE_20|di_axis_distance_q=MID",
+              "samples": 332,
+              "success_probability": 0.451699,
+              "structural_survival_probability": 0.67719,
+              "true_fail_probability": 0.31645,
+              "success_delta_vs_state": 0.001798,
+              "true_fail_delta_vs_state": 0.046927,
+              "direction_score": -0.045129
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_axis_zone=BOTH_ABOVE_20|di_axis_distance_q=LOW",
+              "samples": 786,
+              "success_probability": 0.431759,
+              "structural_survival_probability": 0.705175,
+              "true_fail_probability": 0.269715,
+              "success_delta_vs_state": -0.018142,
+              "true_fail_delta_vs_state": 0.000192,
+              "direction_score": -0.018334
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_axis_zone=BOTH_ABOVE_20|di_axis_distance_q=LOW",
+              "samples": 450,
+              "success_probability": 0.465953,
+              "structural_survival_probability": 0.702917,
+              "true_fail_probability": 0.273171,
+              "success_delta_vs_state": 0.016052,
+              "true_fail_delta_vs_state": 0.003648,
+              "direction_score": 0.012404
+            }
+          ]
+        },
+        {
+          "name": "cross_momentum",
+          "fields": [
+            "dmi_relation",
+            "dmi_cross_age_bin",
+            "di_gap_slope_q"
+          ],
+          "eligible_rule_count": 12,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=1|di_gap_slope_q=HIGH",
+              "samples": 170,
+              "success_probability": 0.663147,
+              "structural_survival_probability": 0.828268,
+              "true_fail_probability": 0.14416,
+              "success_delta_vs_state": 0.213246,
+              "true_fail_delta_vs_state": -0.125363,
+              "direction_score": 0.338609
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=2_3|di_gap_slope_q=HIGH",
+              "samples": 396,
+              "success_probability": 0.639418,
+              "structural_survival_probability": 0.818199,
+              "true_fail_probability": 0.161996,
+              "success_delta_vs_state": 0.189517,
+              "true_fail_delta_vs_state": -0.107527,
+              "direction_score": 0.297044
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=1|di_gap_slope_q=MID",
+              "samples": 104,
+              "success_probability": 0.580629,
+              "structural_survival_probability": 0.761055,
+              "true_fail_probability": 0.23702,
+              "success_delta_vs_state": 0.130728,
+              "true_fail_delta_vs_state": -0.032503,
+              "direction_score": 0.163231
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=4_6|di_gap_slope_q=HIGH",
+              "samples": 505,
+              "success_probability": 0.537139,
+              "structural_survival_probability": 0.764516,
+              "true_fail_probability": 0.214077,
+              "success_delta_vs_state": 0.087238,
+              "true_fail_delta_vs_state": -0.055446,
+              "direction_score": 0.142684
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=7_PLUS|di_gap_slope_q=HIGH",
+              "samples": 759,
+              "success_probability": 0.507058,
+              "structural_survival_probability": 0.754006,
+              "true_fail_probability": 0.230283,
+              "success_delta_vs_state": 0.057157,
+              "true_fail_delta_vs_state": -0.03924,
+              "direction_score": 0.096397
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=2_3|di_gap_slope_q=MID",
+              "samples": 151,
+              "success_probability": 0.491216,
+              "structural_survival_probability": 0.703923,
+              "true_fail_probability": 0.288833,
+              "success_delta_vs_state": 0.041315,
+              "true_fail_delta_vs_state": 0.01931,
+              "direction_score": 0.022005
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=4_6|di_gap_slope_q=MID",
+              "samples": 182,
+              "success_probability": 0.39603,
+              "structural_survival_probability": 0.615697,
+              "true_fail_probability": 0.363319,
+              "success_delta_vs_state": -0.053871,
+              "true_fail_delta_vs_state": 0.093796,
+              "direction_score": -0.147667
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=7_PLUS|di_gap_slope_q=MID",
+              "samples": 906,
+              "success_probability": 0.422244,
+              "structural_survival_probability": 0.611632,
+              "true_fail_probability": 0.372992,
+              "success_delta_vs_state": -0.027657,
+              "true_fail_delta_vs_state": 0.103469,
+              "direction_score": -0.131126
+            },
+            {
+              "signature": "dmi_relation=MINUS|dmi_cross_age_bin=7_PLUS|di_gap_slope_q=LOW",
+              "samples": 622,
+              "success_probability": 0.470402,
+              "structural_survival_probability": 0.653226,
+              "true_fail_probability": 0.340172,
+              "success_delta_vs_state": 0.020501,
+              "true_fail_delta_vs_state": 0.070649,
+              "direction_score": -0.050148
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=7_PLUS|di_gap_slope_q=MID",
+              "samples": 4710,
+              "success_probability": 0.41501,
+              "structural_survival_probability": 0.711706,
+              "true_fail_probability": 0.279575,
+              "success_delta_vs_state": -0.034891,
+              "true_fail_delta_vs_state": 0.010052,
+              "direction_score": -0.044943
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=7_PLUS|di_gap_slope_q=LOW",
+              "samples": 5267,
+              "success_probability": 0.438812,
+              "structural_survival_probability": 0.731487,
+              "true_fail_probability": 0.261659,
+              "success_delta_vs_state": -0.011089,
+              "true_fail_delta_vs_state": -0.007864,
+              "direction_score": -0.003225
+            },
+            {
+              "signature": "dmi_relation=PLUS|dmi_cross_age_bin=7_PLUS|di_gap_slope_q=HIGH",
+              "samples": 4220,
+              "success_probability": 0.450943,
+              "structural_survival_probability": 0.718248,
+              "true_fail_probability": 0.263064,
+              "success_delta_vs_state": 0.001042,
+              "true_fail_delta_vs_state": -0.006459,
+              "direction_score": 0.007501
+            }
+          ]
+        },
+        {
+          "name": "line_motion",
+          "fields": [
+            "dmi_relation",
+            "di_plus_slope_q",
+            "di_minus_slope_q"
+          ],
+          "eligible_rule_count": 18,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=HIGH|di_minus_slope_q=LOW",
+              "samples": 3117,
+              "success_probability": 0.518329,
+              "structural_survival_probability": 0.761674,
+              "true_fail_probability": 0.217848,
+              "success_delta_vs_state": 0.068428,
+              "true_fail_delta_vs_state": -0.051675,
+              "direction_score": 0.120103
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=HIGH|di_minus_slope_q=LOW",
+              "samples": 458,
+              "success_probability": 0.508364,
+              "structural_survival_probability": 0.766466,
+              "true_fail_probability": 0.210022,
+              "success_delta_vs_state": 0.058463,
+              "true_fail_delta_vs_state": -0.059501,
+              "direction_score": 0.117964
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=LOW|di_minus_slope_q=LOW",
+              "samples": 681,
+              "success_probability": 0.450782,
+              "structural_survival_probability": 0.825065,
+              "true_fail_probability": 0.157476,
+              "success_delta_vs_state": 0.000881,
+              "true_fail_delta_vs_state": -0.112047,
+              "direction_score": 0.112928
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=HIGH|di_minus_slope_q=HIGH",
+              "samples": 575,
+              "success_probability": 0.50756,
+              "structural_survival_probability": 0.76701,
+              "true_fail_probability": 0.230908,
+              "success_delta_vs_state": 0.057659,
+              "true_fail_delta_vs_state": -0.038615,
+              "direction_score": 0.096274
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=LOW|di_minus_slope_q=LOW",
+              "samples": 229,
+              "success_probability": 0.530113,
+              "structural_survival_probability": 0.712333,
+              "true_fail_probability": 0.262612,
+              "success_delta_vs_state": 0.080212,
+              "true_fail_delta_vs_state": -0.006911,
+              "direction_score": 0.087123
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=MID|di_minus_slope_q=LOW",
+              "samples": 391,
+              "success_probability": 0.496346,
+              "structural_survival_probability": 0.713798,
+              "true_fail_probability": 0.278322,
+              "success_delta_vs_state": 0.046445,
+              "true_fail_delta_vs_state": 0.008799,
+              "direction_score": 0.037646
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=MID|di_minus_slope_q=HIGH",
+              "samples": 213,
+              "success_probability": 0.364798,
+              "structural_survival_probability": 0.563824,
+              "true_fail_probability": 0.435152,
+              "success_delta_vs_state": -0.085103,
+              "true_fail_delta_vs_state": 0.165629,
+              "direction_score": -0.250732
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=MID|di_minus_slope_q=MID",
+              "samples": 287,
+              "success_probability": 0.364814,
+              "structural_survival_probability": 0.603814,
+              "true_fail_probability": 0.382379,
+              "success_delta_vs_state": -0.085087,
+              "true_fail_delta_vs_state": 0.112856,
+              "direction_score": -0.197943
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_plus_slope_q=LOW|di_minus_slope_q=HIGH",
+              "samples": 376,
+              "success_probability": 0.426763,
+              "structural_survival_probability": 0.614573,
+              "true_fail_probability": 0.369673,
+              "success_delta_vs_state": -0.023138,
+              "true_fail_delta_vs_state": 0.10015,
+              "direction_score": -0.123288
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=HIGH|di_minus_slope_q=MID",
+              "samples": 1691,
+              "success_probability": 0.407363,
+              "structural_survival_probability": 0.65948,
+              "true_fail_probability": 0.325184,
+              "success_delta_vs_state": -0.042538,
+              "true_fail_delta_vs_state": 0.055661,
+              "direction_score": -0.098199
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=MID|di_minus_slope_q=MID",
+              "samples": 2129,
+              "success_probability": 0.424848,
+              "structural_survival_probability": 0.691192,
+              "true_fail_probability": 0.298925,
+              "success_delta_vs_state": -0.025053,
+              "true_fail_delta_vs_state": 0.029402,
+              "direction_score": -0.054455
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_plus_slope_q=MID|di_minus_slope_q=HIGH",
+              "samples": 1853,
+              "success_probability": 0.403629,
+              "structural_survival_probability": 0.716162,
+              "true_fail_probability": 0.273567,
+              "success_delta_vs_state": -0.046272,
+              "true_fail_delta_vs_state": 0.004044,
+              "direction_score": -0.050316
+            }
+          ]
+        },
+        {
+          "name": "trend_strength",
+          "fields": [
+            "dmi_relation",
+            "di_abs_gap_q",
+            "adx_q",
+            "adx_slope_q"
+          ],
+          "eligible_rule_count": 33,
+          "strongest_positive": [
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=MID|adx_q=LOW|adx_slope_q=LOW",
+              "samples": 212,
+              "success_probability": 0.525854,
+              "structural_survival_probability": 0.786081,
+              "true_fail_probability": 0.161166,
+              "success_delta_vs_state": 0.075953,
+              "true_fail_delta_vs_state": -0.108357,
+              "direction_score": 0.18431
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=LOW|adx_q=MID|adx_slope_q=HIGH",
+              "samples": 134,
+              "success_probability": 0.545442,
+              "structural_survival_probability": 0.80111,
+              "true_fail_probability": 0.197341,
+              "success_delta_vs_state": 0.095541,
+              "true_fail_delta_vs_state": -0.072182,
+              "direction_score": 0.167723
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=LOW|adx_q=LOW|adx_slope_q=HIGH",
+              "samples": 644,
+              "success_probability": 0.594877,
+              "structural_survival_probability": 0.749053,
+              "true_fail_probability": 0.249082,
+              "success_delta_vs_state": 0.144976,
+              "true_fail_delta_vs_state": -0.020441,
+              "direction_score": 0.165417
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=LOW|adx_q=MID|adx_slope_q=LOW",
+              "samples": 306,
+              "success_probability": 0.533736,
+              "structural_survival_probability": 0.771076,
+              "true_fail_probability": 0.209787,
+              "success_delta_vs_state": 0.083835,
+              "true_fail_delta_vs_state": -0.059736,
+              "direction_score": 0.143571
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=HIGH|adx_q=HIGH|adx_slope_q=HIGH",
+              "samples": 1852,
+              "success_probability": 0.451922,
+              "structural_survival_probability": 0.849557,
+              "true_fail_probability": 0.147644,
+              "success_delta_vs_state": 0.002021,
+              "true_fail_delta_vs_state": -0.121879,
+              "direction_score": 0.1239
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=MID|adx_q=HIGH|adx_slope_q=LOW",
+              "samples": 62,
+              "success_probability": 0.560951,
+              "structural_survival_probability": 0.724035,
+              "true_fail_probability": 0.273054,
+              "success_delta_vs_state": 0.11105,
+              "true_fail_delta_vs_state": 0.003531,
+              "direction_score": 0.107519
+            }
+          ],
+          "strongest_negative": [
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=LOW|adx_q=MID|adx_slope_q=MID",
+              "samples": 109,
+              "success_probability": 0.286806,
+              "structural_survival_probability": 0.491247,
+              "true_fail_probability": 0.506903,
+              "success_delta_vs_state": -0.163095,
+              "true_fail_delta_vs_state": 0.23738,
+              "direction_score": -0.400475
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=MID|adx_q=HIGH|adx_slope_q=MID",
+              "samples": 379,
+              "success_probability": 0.273178,
+              "structural_survival_probability": 0.619977,
+              "true_fail_probability": 0.379425,
+              "success_delta_vs_state": -0.176723,
+              "true_fail_delta_vs_state": 0.109902,
+              "direction_score": -0.286625
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=MID|adx_q=HIGH|adx_slope_q=LOW",
+              "samples": 663,
+              "success_probability": 0.311857,
+              "structural_survival_probability": 0.590587,
+              "true_fail_probability": 0.384173,
+              "success_delta_vs_state": -0.138044,
+              "true_fail_delta_vs_state": 0.11465,
+              "direction_score": -0.252694
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=LOW|adx_q=HIGH|adx_slope_q=LOW",
+              "samples": 112,
+              "success_probability": 0.310591,
+              "structural_survival_probability": 0.60887,
+              "true_fail_probability": 0.351443,
+              "success_delta_vs_state": -0.13931,
+              "true_fail_delta_vs_state": 0.08192,
+              "direction_score": -0.22123
+            },
+            {
+              "signature": "dmi_relation=MINUS|di_abs_gap_q=MID|adx_q=MID|adx_slope_q=HIGH",
+              "samples": 50,
+              "success_probability": 0.428543,
+              "structural_survival_probability": 0.53387,
+              "true_fail_probability": 0.462721,
+              "success_delta_vs_state": -0.021358,
+              "true_fail_delta_vs_state": 0.193198,
+              "direction_score": -0.214556
+            },
+            {
+              "signature": "dmi_relation=PLUS|di_abs_gap_q=MID|adx_q=HIGH|adx_slope_q=HIGH",
+              "samples": 247,
+              "success_probability": 0.329581,
+              "structural_survival_probability": 0.683037,
+              "true_fail_probability": 0.316069,
+              "success_delta_vs_state": -0.12032,
+              "true_fail_delta_vs_state": 0.046546,
+              "direction_score": -0.166866
+            }
+          ]
+        }
+      ]
+    }
+  }
 }
