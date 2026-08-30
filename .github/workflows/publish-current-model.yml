@@ -1,4 +1,4 @@
-name: Publish Current Model to R2
+name: Publish Current Model as ACTIVE
 
 on:
   workflow_dispatch:
@@ -7,11 +7,11 @@ permissions:
   contents: read
 
 concurrency:
-  group: publish-current-model-to-r2
+  group: publish-current-model-active
   cancel-in-progress: false
 
 jobs:
-  publish:
+  publish-active:
     runs-on: ubuntu-latest
     env:
       WORKER_BASE_URL: ${{ secrets.WORKER_BASE_URL }}
@@ -50,9 +50,9 @@ jobs:
           if not model_id:
               raise SystemExit("model_id missing")
           if schema != 3:
-              raise SystemExit(f"Refusing publish: expected schema_version=3, got {schema}")
+              raise SystemExit(f"Refusing ACTIVE publish: expected schema_version=3, got {schema}")
           if dmi_version != "DMI-EXPERT-v1":
-              raise SystemExit(f"Refusing publish: expected DMI-EXPERT-v1, got {dmi_version!r}")
+              raise SystemExit(f"Refusing ACTIVE publish: expected DMI-EXPERT-v1, got {dmi_version!r}")
           if str(report.get("model_id") or "") != model_id:
               raise SystemExit("training_report model_id does not match probability_model")
           if int(report.get("schema_version") or 0) != schema:
@@ -68,7 +68,7 @@ jobs:
           PY
           cat /tmp/model-meta.env >> "$GITHUB_ENV"
 
-      - name: Publish current model as latest Candidate
+      - name: Preserve model in Candidate history
         shell: bash
         run: |
           BASE="${WORKER_BASE_URL%/}"
@@ -94,77 +94,85 @@ jobs:
             -o /tmp/publish-report.json
           cat /tmp/publish-report.json
 
-      - name: Ensure latest Candidate owns Challenger slot
+      - name: Publish Schema v3 DMI Expert as ACTIVE now
         shell: bash
         run: |
           BASE="${WORKER_BASE_URL%/}"
           curl --fail --silent --show-error \
-            -X POST \
+            -X PUT \
             -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
-            "$BASE/api/internal/model/challenger/ensure" \
-            -o /tmp/challenger-ensure.json
-          cat /tmp/challenger-ensure.json
+            -H "Content-Type: application/json" \
+            --data-binary "@models/probability_model.json" \
+            "$BASE/api/internal/model/active" \
+            -o /tmp/publish-active.json
+          cat /tmp/publish-active.json
 
-      - name: Read back Candidate and Challenger from R2
+      - name: Read Active model back from R2
         shell: bash
         run: |
           BASE="${WORKER_BASE_URL%/}"
-          curl --fail --silent --show-error "$BASE/api/model/candidate/latest" -o /tmp/candidate-latest.json
-          curl --fail --silent --show-error "$BASE/api/model/challenger/current" -o /tmp/challenger-current.json
-          curl --fail --silent --show-error "$BASE/api/model/challenger/model" -o /tmp/challenger-model.json
+          curl --fail --silent --show-error "$BASE/api/model/active" -o /tmp/active-model.json
 
-      - name: Verify Schema v3 DMI Expert is the current Challenger
+          # Challenger is allowed to be absent after the same model becomes Active.
+          set +e
+          CHALLENGER_HTTP=$(curl --silent --show-error -o /tmp/challenger-current.json -w "%{http_code}" "$BASE/api/model/challenger/current")
+          set -e
+          echo "CHALLENGER_HTTP=$CHALLENGER_HTTP" >> "$GITHUB_ENV"
+
+      - name: Verify R2 Active is Schema v3 DMI Expert
         shell: bash
         run: |
           python3 - <<'PY'
           import json
           import os
+          from pathlib import Path
 
           expected_id = os.environ["MODEL_ID"]
           expected_schema = int(os.environ["MODEL_SCHEMA"])
           expected_dmi = os.environ["DMI_EXPERT_VERSION"]
 
-          candidate = json.load(open("/tmp/candidate-latest.json", encoding="utf-8"))
-          current = json.load(open("/tmp/challenger-current.json", encoding="utf-8"))
-          model = json.load(open("/tmp/challenger-model.json", encoding="utf-8"))
-
+          active = json.load(open("/tmp/active-model.json", encoding="utf-8"))
           checks = {
-              "candidate.model_id": candidate.get("model_id") == expected_id,
-              "candidate.schema_version": int(candidate.get("schema_version") or 0) == expected_schema,
-              "candidate.dmi_expert_version": candidate.get("dmi_expert_version") == expected_dmi,
-              "challenger.model_id": current.get("model_id") == expected_id,
-              "challenger.schema_version": int(current.get("schema_version") or 0) == expected_schema,
-              "challenger.dmi_expert_version": current.get("dmi_expert_version") == expected_dmi,
-              "challenger.status": current.get("status") == "SHADOW_EVALUATION",
-              "challenger_model.model_id": model.get("model_id") == expected_id,
-              "challenger_model.schema_version": int(model.get("schema_version") or 0) == expected_schema,
-              "challenger_model.dmi_expert_contract": (model.get("dmi_expert_contract") or {}).get("version") == expected_dmi,
+              "active.model_id": active.get("model_id") == expected_id,
+              "active.schema_version": int(active.get("schema_version") or 0) == expected_schema,
+              "active.dmi_expert_contract": (active.get("dmi_expert_contract") or {}).get("version") == expected_dmi,
           }
 
-          failed = [name for name, ok in checks.items() if not ok]
           for name, ok in checks.items():
               print(("PASS" if ok else "FAIL"), name)
+          failed = [name for name, ok in checks.items() if not ok]
           if failed:
-              raise SystemExit("Publish verification failed: " + ", ".join(failed))
+              raise SystemExit("ACTIVE publish verification failed: " + ", ".join(failed))
+
+          http = os.environ.get("CHALLENGER_HTTP", "")
+          if http == "200" and Path("/tmp/challenger-current.json").exists():
+              current = json.load(open("/tmp/challenger-current.json", encoding="utf-8"))
+              if current.get("model_id") == expected_id:
+                  raise SystemExit("Same model is still both Active and Challenger; deploy Worker v0.1.58 first")
+              print("PASS challenger is a different model:", current.get("model_id"))
+          elif http == "404":
+              print("PASS duplicate Challenger cleared after Active publication")
+          else:
+              print("INFO Challenger HTTP status:", http)
 
           print()
-          print("Verified current Challenger:")
+          print("ACTIVE MODEL VERIFIED")
           print(" model_id           =", expected_id)
           print(" schema_version     =", expected_schema)
           print(" dmi_expert_version =", expected_dmi)
-          print(" status             =", current.get("status"))
+          print(" next_step          = run SStateMarketTerminal Full Analysis once")
           PY
 
       - name: Write publish summary
         shell: bash
         run: |
           {
-            echo "## Schema v3 DMI Expert published"
+            echo "## Schema v3 DMI Expert is ACTIVE"
             echo ""
-            echo "- Model ID: \`$MODEL_ID\`"
+            echo "- Active Model ID: \`$MODEL_ID\`"
             echo "- Schema: \`$MODEL_SCHEMA\`"
             echo "- DMI Expert: \`$DMI_EXPERT_VERSION\`"
-            echo "- Challenger status: \`SHADOW_EVALUATION\`"
-            echo "- Active Champion: unchanged"
             echo "- Historical replay: not rerun"
+            echo "- Challenger waiting period: bypassed by explicit Active publication"
+            echo "- Next step: run SStateMarketTerminal Full Analysis once so snapshots are recalculated with DMI Expert"
           } >> "$GITHUB_STEP_SUMMARY"
