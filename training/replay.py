@@ -4,7 +4,7 @@ from typing import Any
 
 from engine.runtime_core import build_record_from_daily_and_4h, iso_tw, utc_day_start_ms
 from engine.scoring_rules import build_long_opportunity
-from .features import extract_features
+from .features import dmi_relation_from_record, extract_features
 from .outcomes import classify_outcome
 
 TARGET_STATES = {"S0.5", "S1", "S2", "S3"}
@@ -75,6 +75,8 @@ def replay_symbol(
     current_day_key: int | None = None
     previous_state = "NONE"
     state_age = 0
+    previous_dmi_relation = "UNKNOWN"
+    dmi_relation_age = 0
 
     for idx, row in enumerate(rows):
         day_key = utc_day_start_ms(int(row["time"]))
@@ -99,7 +101,21 @@ def replay_symbol(
             state_age += 1
         else:
             state_age = 1
-        features = extract_features(record, opportunity, previous_state, state_age)
+
+        current_dmi_relation = dmi_relation_from_record(record)
+        if current_dmi_relation == previous_dmi_relation and current_dmi_relation != "UNKNOWN":
+            dmi_relation_age += 1
+        else:
+            dmi_relation_age = 1
+
+        features = extract_features(
+            record,
+            opportunity,
+            previous_state,
+            state_age,
+            previous_dmi_relation=previous_dmi_relation,
+            dmi_relation_age_bars=dmi_relation_age,
+        )
         bandpos = float((opportunity.get("current") or {}).get("ha_band_position", 0.5) or 0.5)
         snapshots[idx] = {
             "state": state,
@@ -133,11 +149,25 @@ def replay_symbol(
                             "bandwidth_delta_3d": features.get("bandwidth_delta_3d"),
                             "state_age_bars": features.get("state_age_bars"),
                             "state_age_bin": features.get("state_age_bin"),
+                            "di_plus": features.get("di_plus"),
+                            "di_minus": features.get("di_minus"),
+                            "di_gap": features.get("di_gap"),
+                            "dmi_relation": features.get("dmi_relation"),
+                            "dmi_axis_zone": features.get("dmi_axis_zone"),
+                            "dmi_cross_event": features.get("dmi_cross_event"),
+                            "dmi_cross_age_bars": features.get("dmi_cross_age_bars"),
+                            "dmi_cross_age_bin": features.get("dmi_cross_age_bin"),
+                            "di_plus_slope_3d": features.get("di_plus_slope_3d"),
+                            "di_minus_slope_3d": features.get("di_minus_slope_3d"),
+                            "di_gap_slope_3d": features.get("di_gap_slope_3d"),
+                            "adx": features.get("adx"),
+                            "adx_slope_3d": features.get("adx_slope_3d"),
                         },
                     }
                 )
 
         previous_state = state
+        previous_dmi_relation = current_dmi_relation
 
     cases: list[dict[str, Any]] = []
     step_bars = max(1, int(step_bars))
