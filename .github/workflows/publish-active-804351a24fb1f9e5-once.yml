@@ -1,0 +1,133 @@
+name: Publish ACTIVE 804351a24fb1f9e5 Once
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/publish-active-804351a24fb1f9e5-once.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-active-804351a24fb1f9e5-once
+  cancel-in-progress: false
+
+jobs:
+  publish-active:
+    runs-on: ubuntu-latest
+    env:
+      WORKER_BASE_URL: ${{ secrets.WORKER_BASE_URL }}
+      WORKER_CALLBACK_TOKEN: ${{ secrets.WORKER_CALLBACK_TOKEN }}
+      EXPECTED_MODEL_ID: 804351a24fb1f9e5
+      EXPECTED_SCHEMA: "3"
+      EXPECTED_DMI_VERSION: DMI-EXPERT-v2-ADX-STEP
+
+    steps:
+      - name: Checkout current trained model
+        uses: actions/checkout@v5
+
+      - name: Validate exact trained model
+        shell: bash
+        run: |
+          test -n "$WORKER_BASE_URL" || (echo "WORKER_BASE_URL missing" && exit 1)
+          test -n "$WORKER_CALLBACK_TOKEN" || (echo "WORKER_CALLBACK_TOKEN missing" && exit 1)
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+
+          model = json.loads(Path("models/probability_model.json").read_text(encoding="utf-8"))
+          report = json.loads(Path("reports/training_report.json").read_text(encoding="utf-8"))
+          expected_id = os.environ["EXPECTED_MODEL_ID"]
+          expected_schema = int(os.environ["EXPECTED_SCHEMA"])
+          expected_dmi = os.environ["EXPECTED_DMI_VERSION"]
+
+          model_id = str(model.get("model_id") or "")
+          schema = int(model.get("schema_version") or 0)
+          dmi = str((model.get("dmi_expert_contract") or {}).get("version") or "")
+
+          if model_id != expected_id:
+              raise SystemExit(f"Refusing publish: repo model_id={model_id}, expected={expected_id}")
+          if schema != expected_schema:
+              raise SystemExit(f"Refusing publish: schema={schema}, expected={expected_schema}")
+          if dmi != expected_dmi:
+              raise SystemExit(f"Refusing publish: dmi={dmi}, expected={expected_dmi}")
+          if str(report.get("model_id") or "") != expected_id:
+              raise SystemExit("training_report model_id mismatch")
+          if int(report.get("schema_version") or 0) != expected_schema:
+              raise SystemExit("training_report schema mismatch")
+
+          print("PASS exact model validation")
+          print("model_id=", model_id)
+          print("schema_version=", schema)
+          print("dmi_expert_version=", dmi)
+          PY
+
+      - name: Preserve Candidate and report
+        shell: bash
+        run: |
+          BASE="${WORKER_BASE_URL%/}"
+          curl --fail --silent --show-error \
+            -X PUT \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary "@models/probability_model.json" \
+            "$BASE/api/internal/model/candidate"
+          echo
+          curl --fail --silent --show-error \
+            -X PUT \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary "@reports/training_report.json" \
+            "$BASE/api/internal/learning/report?model_id=$EXPECTED_MODEL_ID"
+          echo
+
+      - name: Publish exact model as ACTIVE
+        shell: bash
+        run: |
+          BASE="${WORKER_BASE_URL%/}"
+          curl --fail --silent --show-error \
+            -X PUT \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary "@models/probability_model.json" \
+            "$BASE/api/internal/model/active" \
+            -o /tmp/publish-active.json
+          cat /tmp/publish-active.json
+
+      - name: Verify ACTIVE from R2
+        shell: bash
+        run: |
+          BASE="${WORKER_BASE_URL%/}"
+          curl --fail --silent --show-error "$BASE/api/model/active" -o /tmp/active-model.json
+          python3 - <<'PY'
+          import json, os
+          active = json.load(open("/tmp/active-model.json", encoding="utf-8"))
+          expected_id = os.environ["EXPECTED_MODEL_ID"]
+          expected_schema = int(os.environ["EXPECTED_SCHEMA"])
+          expected_dmi = os.environ["EXPECTED_DMI_VERSION"]
+          checks = {
+              "model_id": active.get("model_id") == expected_id,
+              "schema_version": int(active.get("schema_version") or 0) == expected_schema,
+              "dmi_expert_version": (active.get("dmi_expert_contract") or {}).get("version") == expected_dmi,
+          }
+          for key, ok in checks.items():
+              print(("PASS" if ok else "FAIL"), key)
+          failed = [k for k, v in checks.items() if not v]
+          if failed:
+              raise SystemExit("ACTIVE verification failed: " + ", ".join(failed))
+          print("ACTIVE MODEL VERIFIED:", expected_id)
+          PY
+
+      - name: Summary
+        shell: bash
+        run: |
+          {
+            echo "## ACTIVE publish verified"
+            echo ""
+            echo "- Model ID: \`$EXPECTED_MODEL_ID\`"
+            echo "- Schema: \`$EXPECTED_SCHEMA\`"
+            echo "- DMI Expert: \`$EXPECTED_DMI_VERSION\`"
+            echo "- Next: run SStateMarketTerminal Full Analysis once"
+          } >> "$GITHUB_STEP_SUMMARY"
