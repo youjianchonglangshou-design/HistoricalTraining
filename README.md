@@ -1,4 +1,4 @@
-# Crypto S-state Learning Engine v2
+# Crypto S-state Learning Engine v3 — DMI Expert
 
 這個儲存庫用 Pionex 歷史 4H K 線逐根重播正式 S-state 引擎，然後把每個歷史決策點的未來結果結算成 JSON 參數，供 Crypto Monitor / HTML 使用。
 
@@ -8,6 +8,36 @@
 - `models/probability_model.json`：訓練結果；會隨歷史與每日新行情持續進化。
 - Replay 與即時系統必須使用同版 S-state 引擎。
 - LLM 不發明機率；機率來自已結算歷史樣本。
+
+
+## v3：DMI Expert 不改 S-state，只修正「這個 S-state 能不能真的走上去」
+
+`S0.5 / S1 / S2 / S3` 的定義仍完全由 `engine/scoring_rules.py` 決定。v3 新增的 DI+ / DI- / ADX 只作為**第二層歷史證據**，用來修正原本 BB + HA 黃紫階梯模型的成功率、結構存活率與真失敗率。
+
+DMI 公式與 SStateMarketTerminal 完全同源：Period 14、TR/DM 採 Pine 原式遞迴平滑，`DI+ / DI- / DX` 依原式計算，`ADX = SMA14(DX)`。歷史 replay 在每一根 4H cutoff 只用當時已經出現的資料，當日 K 仍是當時尚未收完的 partial daily candle，因此不偷看未來。
+
+每一筆歷史案例會保存原始值與動態：
+
+```text
+DI+ / DI- / Gap
+誰領先（PLUS / MINUS / TIE）
+雙方相對 20 軸的位置
+距離 20 軸有多近
+領先關係已維持幾根 4H（可辨認剛交叉）
+DI+ / DI- / Gap 最近 3 日斜率
+ADX / ADX 最近 3 日斜率
+```
+
+為避免把樣本切得過碎，DMI **不硬疊成 Level 6、7、8**。模型使用四個獨立 Expert facets：
+
+1. `lead_axis`：誰領先 + 20 軸結構 + 距離 20 軸
+2. `cross_momentum`：誰領先 + 剛交叉/維持多久 + Gap 變化
+3. `line_motion`：DI+ 與 DI- 各自正在上升或下降的相對位置
+4. `trend_strength`：DI 差距 + ADX 強度 + ADX 變化
+
+數值大小不是手寫「多少算強」。每個 S-state 都從自己的歷史分布學習 tercile（LOW / MID / HIGH）。最後 DMI Expert 以 state baseline 為基準，對既有 Level 1～5 的四分類機率做保守修正。
+
+訓練後 `reports/training_report.json` 會新增 `dmi_expert_72h`，直接列出每個 S-state 各 facet 歷史上最有利與最不利的 DMI 組合、樣本數、成功率、存活率與真失敗率。
 
 ## v2：不再把「沒在期限內達標」全部叫 LOSS
 
@@ -96,7 +126,7 @@ reports/
   training_report.json      訓練摘要，含 72H 四分類 baseline
 ```
 
-## probability_model.json v2
+## probability_model.json v3
 
 為了不讓目前 Streamlit 立刻壞掉，舊欄位仍保留：
 
@@ -108,7 +138,7 @@ reports/
 
 其中 `probability` 仍表示「期限內成功率」。
 
-v2 同時新增：
+v2 起同時保留：
 
 ```json
 "outcomes": {
@@ -121,11 +151,11 @@ v2 同時新增：
 "true_fail_probability": 0.12
 ```
 
-條件規則仍使用 Level 1～5 + Fallback；樣本不足 50 就退回較粗層級。四分類使用同一個 empirical-Bayes prior 做多分類平滑，避免小樣本出現假 90%。
+原本條件規則仍使用 Level 1～5 + Fallback；樣本不足 50 就退回較粗層級。v3 另外加入獨立 DMI Expert facets，不改 Level 1～5。四分類使用同一個 empirical-Bayes prior 做多分類平滑，避免小樣本出現假 90%。
 
 ## 你現在這個 Repository 已經有 10,000 根歷史 cache 時怎麼操作
 
-**不要再重新下載完整 Pionex 歷史。**
+**如果你的 90 隻幣 `data/cache/4h/*.csv` 已經完整，就不要重新下載完整 Pionex 歷史。**
 
 上傳 v2 後：
 
@@ -137,14 +167,15 @@ v2 同時新增：
 
 程式會使用既有 `data/cache/4h/*.csv`，抓最新一頁合併後，重新 Replay / Settlement，然後把舊的二元模型重建成 v2 四分類模型。
 
-第一次 v2 成功後，檢查：
+第一次 v3 重跑成功後，檢查：
 
-- `models/probability_model.json` → `schema_version` 應為 `2`
-- `reports/training_report.json` → 應有 `primary_72h_outcomes`
+- `models/probability_model.json` → `schema_version` 應為 `3`
+- `models/probability_model.json` → 應有 `dmi_expert_contract`
+- `reports/training_report.json` → 應有 `primary_72h_outcomes` 與 `dmi_expert_72h`
 
 ## Daily S-state Learning
 
-後續 `Daily S-state Learning` 不需要另外換邏輯，它會直接呼叫同一個 v2：
+後續 `Daily S-state Learning` 不需要另外換邏輯，它會直接呼叫同一個 v3：
 
 ```text
 最新 Pionex 4H

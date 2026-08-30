@@ -23,6 +23,55 @@ META_PATH = ROOT / "data" / "learning_meta.json"
 QUIZ_TIMELINE_DIR = ROOT / "quiz" / "model_timeline"
 
 
+
+
+def build_dmi_expert_report(model: dict, horizon: str = "18", top_n: int = 6) -> dict:
+    """Compact audit view of what the DMI expert learned at the primary horizon."""
+    output = {}
+    for state, state_node in (model.get("states") or {}).items():
+        hnode = (state_node.get("horizons") or {}).get(str(horizon)) or {}
+        baseline = hnode.get("baseline") or {}
+        baseline_success = float(baseline.get("probability", 0.0) or 0.0)
+        baseline_fail = float(baseline.get("true_fail_probability", 0.0) or 0.0)
+        facets_out = []
+        for facet in ((hnode.get("dmi_expert") or {}).get("facets") or []):
+            rows = []
+            for rule in facet.get("rules") or []:
+                if not rule.get("eligible"):
+                    continue
+                success = float(rule.get("probability", 0.0) or 0.0)
+                fail = float(rule.get("true_fail_probability", 0.0) or 0.0)
+                survival = float(rule.get("structural_survival_probability", success) or success)
+                score = (success - baseline_success) - (fail - baseline_fail)
+                rows.append({
+                    "signature": rule.get("signature"),
+                    "samples": int(rule.get("samples", 0)),
+                    "success_probability": round(success, 6),
+                    "structural_survival_probability": round(survival, 6),
+                    "true_fail_probability": round(fail, 6),
+                    "success_delta_vs_state": round(success - baseline_success, 6),
+                    "true_fail_delta_vs_state": round(fail - baseline_fail, 6),
+                    "direction_score": round(score, 6),
+                })
+            strongest = sorted(rows, key=lambda x: (-x["direction_score"], -x["samples"]))[:top_n]
+            weakest = sorted(rows, key=lambda x: (x["direction_score"], -x["samples"]))[:top_n]
+            facets_out.append({
+                "name": facet.get("name"),
+                "fields": facet.get("fields") or [],
+                "eligible_rule_count": len(rows),
+                "strongest_positive": strongest,
+                "strongest_negative": weakest,
+            })
+        output[state] = {
+            "baseline_samples": int(baseline.get("samples", 0)),
+            "baseline_success_probability": round(baseline_success, 6),
+            "baseline_structural_survival_probability": round(float(baseline.get("structural_survival_probability", baseline_success) or baseline_success), 6),
+            "baseline_true_fail_probability": round(baseline_fail, 6),
+            "dmi_binning": state_node.get("dmi_binning") or {},
+            "facets": facets_out,
+        }
+    return output
+
 def parse_symbols(text: str) -> list[str]:
     if not text or text.upper() == "ALL":
         return list(EXAM_SYMBOLS)
@@ -153,6 +202,8 @@ def main() -> int:
             for state, state_node in model.get("states", {}).items()
         },
         "outcome_note": "72H main view: success + alive_slow + true_fail + other = 100%. Existing probability remains success-within-horizon for UI compatibility.",
+        "dmi_expert_contract": model.get("dmi_expert_contract") or {},
+        "dmi_expert_72h": build_dmi_expert_report(model, primary_horizon),
     }
     save_json(REPORT_PATH, report)
     print(f"MODEL={MODEL_PATH}")
