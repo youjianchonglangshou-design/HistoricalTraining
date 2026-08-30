@@ -2,6 +2,7 @@ import unittest
 
 from engine.runtime_core import aggregate_4h_to_daily, build_live_compatible_record, calculate_adx_dmi
 from engine.scoring_rules import build_long_opportunity
+from training.features import extract_features
 from training.model_builder import build_model, lookup_probability
 from training.outcomes import (
     OUTCOME_ALIVE,
@@ -78,6 +79,10 @@ class CoreTests(unittest.TestCase):
         self.assertIn("dmi_relation", timeline[-1]["features"])
         self.assertIn("dmi_axis_zone", timeline[-1]["features"])
         self.assertIn("adx", timeline[-1]["features"])
+        self.assertIn("adx_step_direction", timeline[-1]["features"])
+        self.assertIn("adx_step_age_bin", timeline[-1]["features"])
+        self.assertIn("adx_turn_event", timeline[-1]["features"])
+        self.assertIn("dmi_adx_regime", timeline[-1]["features"])
         primary = cases[0]["labels"]["18"]
         self.assertIn(primary["outcome"], OUTCOME_KEYS)
 
@@ -150,6 +155,102 @@ class CoreTests(unittest.TestCase):
                 else:
                     self.assertAlmostEqual(float(row[key]), float(value), places=12)
 
+    def test_adx_step_features_match_terminal_red_green_semantics(self):
+        record = {
+            "_bb_upper_series": [120.0, 120.0, 120.0, 120.0],
+            "_bb_lower_series": [80.0, 80.0, 80.0, 80.0],
+            "_bb_basis_series": [100.0, 100.0, 100.0, 100.0],
+            "_di_plus_last30": [15.0, 16.0, 18.0, 22.0],
+            "_di_minus_last30": [27.0, 25.0, 23.0, 20.0],
+            "_adx_last30": [26.0, 22.0, 18.0, 19.0],
+        }
+        opportunity = {
+            "market_state_id": "S0.5",
+            "trigger_stage": "T1",
+            "current": {
+                "ha_band_position": 0.48,
+                "ha_color": "🟢",
+                "current_color_run_length": 1,
+            },
+            "midline": {
+                "state": "flattening",
+                "recent_5d_slope_pct_per_day": 0.0,
+                "slope_improvement_pct_per_day": 0.0,
+            },
+            "purple_structure": {"base_quality": {"qualified": True}},
+        }
+        features = extract_features(
+            record, opportunity, "S0", 1, previous_dmi_relation="MINUS", dmi_relation_age_bars=1
+        )
+        self.assertEqual(features["dmi_relation"], "PLUS")
+        self.assertEqual(features["adx_step_direction"], "RISING")
+        self.assertEqual(features["adx_step_age_days"], 1)
+        self.assertEqual(features["adx_step_age_bin"], "1")
+        self.assertEqual(features["adx_turn_event"], "RED_TO_GREEN")
+        self.assertEqual(features["adx_axis_zone"], "BELOW_20")
+        self.assertEqual(features["dmi_adx_regime"], "PLUS_RISING")
+
+    def test_dmi_expert_v2_learns_adx_step_regime_per_state(self):
+        cases = []
+        regimes = [
+            ("PLUS", "RISING", OUTCOME_SUCCESS),
+            ("PLUS", "FALLING", OUTCOME_ALIVE),
+            ("MINUS", "RISING", OUTCOME_FAIL),
+            ("MINUS", "FALLING", OUTCOME_OTHER),
+        ]
+        t = 0
+        for relation, step_direction, dominant_outcome in regimes:
+            for i in range(100):
+                t += 1
+                outcome = dominant_outcome if i < 85 else OUTCOME_ALIVE
+                regime = f"{relation}_{step_direction}"
+                features = {
+                    "midline_state": "flat",
+                    "bandpos_bin": "025_050",
+                    "trigger_stage": "T1",
+                    "bandwidth_trend": "FLAT",
+                    "state_age_bin": "2_3",
+                    "dmi_relation": relation,
+                    "dmi_axis_zone": "PLUS_ONLY_ABOVE_20" if relation == "PLUS" else "MINUS_ONLY_ABOVE_20",
+                    "dmi_cross_age_bin": "1" if i < 50 else "2_3",
+                    "di_abs_gap": 6.0,
+                    "di_axis_distance": 3.0,
+                    "di_plus_slope_3d": 1.0 if relation == "PLUS" else -1.0,
+                    "di_minus_slope_3d": -1.0 if relation == "PLUS" else 1.0,
+                    "di_gap_slope_3d": 2.0 if relation == "PLUS" else -2.0,
+                    "adx": 18.0,
+                    "adx_slope_3d": 1.0 if step_direction == "RISING" else -1.0,
+                    "adx_axis_zone": "BELOW_20",
+                    "adx_step_direction": step_direction,
+                    "adx_step_age_days": 1 if i < 50 else 3,
+                    "adx_step_age_bin": "1" if i < 50 else "2_3",
+                    "adx_turn_event": "RED_TO_GREEN" if step_direction == "RISING" and i < 50 else "GREEN_TO_RED" if step_direction == "FALLING" and i < 50 else "NONE",
+                    "adx_step_delta": 1.0 if step_direction == "RISING" else -1.0,
+                    "dmi_adx_regime": regime,
+                }
+                label = {"outcome": outcome, "hit": outcome == OUTCOME_SUCCESS, "late_success_4_7d": None}
+                cases.append({
+                    "symbol": "TEST",
+                    "time": t,
+                    "state": "S0.5",
+                    "target": "S1_OR_HIGHER",
+                    "features": features,
+                    "labels": {str(h): dict(label) for h in DEFAULT_HORIZONS},
+                })
+
+        model = build_model(cases, DEFAULT_HORIZONS, min_samples=20)
+        self.assertEqual(model["schema_version"], 3)
+        self.assertEqual((model.get("dmi_expert_contract") or {}).get("version"), "DMI-EXPERT-v2-ADX-STEP")
+        facet_names = {f["name"] for f in model["states"]["S0.5"]["horizons"]["18"]["dmi_expert"]["facets"]}
+        self.assertTrue({"adx_step_regime", "adx_step_persistence", "adx_turn_handover"}.issubset(facet_names))
+        plus_rising = lookup_probability(model, "S0.5", 18, cases[0]["features"])
+        minus_rising = lookup_probability(model, "S0.5", 18, cases[200]["features"])
+        self.assertGreater(plus_rising["probability"], minus_rising["probability"])
+        matched_names = {x.get("name") for x in plus_rising["dmi_expert"]["matched_facets"]}
+        self.assertIn("adx_step_regime", matched_names)
+        self.assertIn("adx_step_persistence", matched_names)
+        self.assertIn("adx_turn_handover", matched_names)
+
     def test_dmi_expert_learns_without_redefining_state(self):
         cases = []
         outcomes = [OUTCOME_SUCCESS, OUTCOME_ALIVE, OUTCOME_FAIL, OUTCOME_OTHER]
@@ -172,6 +273,13 @@ class CoreTests(unittest.TestCase):
                 "di_gap_slope_3d": 3.0 if plus_leads else -3.0,
                 "adx": 26.0,
                 "adx_slope_3d": 1.2,
+                "adx_axis_zone": "ABOVE_20",
+                "adx_step_direction": "RISING",
+                "adx_step_age_days": 2,
+                "adx_step_age_bin": "2_3",
+                "adx_turn_event": "NONE",
+                "adx_step_delta": 1.0,
+                "dmi_adx_regime": "PLUS_RISING" if plus_leads else "MINUS_RISING",
             }
             label = {
                 "outcome": outcome,
