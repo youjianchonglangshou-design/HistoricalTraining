@@ -1,4 +1,4 @@
-name: Historical S-state Training v3 DMI Expert
+name: Historical S-state Training v3 DMI Expert v2 ADX Step
 
 on:
   workflow_dispatch:
@@ -57,7 +57,7 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
 
-      - name: Historical replay + 4-way outcome + DMI Expert model
+      - name: Historical replay + 4-way outcome + DMI Expert v2 ADX Step model
         shell: bash
         run: |
           EXTRA=""
@@ -87,5 +87,5 @@ jobs:
             echo "No learned-data changes."
             exit 0
           fi
-          git commit -m "training: update historical S-state v3 DMI Expert model"
+          git commit -m "training: update historical S-state DMI Expert v2 ADX Step model"
           git push

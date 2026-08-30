@@ -27,7 +27,7 @@ jobs:
           test -n "$WORKER_BASE_URL" || (echo "WORKER_BASE_URL missing" && exit 1)
           test -n "$WORKER_CALLBACK_TOKEN" || (echo "WORKER_CALLBACK_TOKEN missing" && exit 1)
 
-      - name: Validate current model is Schema v3 DMI Expert
+      - name: Validate current model is Schema v3 DMI Expert v2 ADX Step
         shell: bash
         run: |
           python3 - <<'PY'
@@ -51,8 +51,8 @@ jobs:
               raise SystemExit("model_id missing")
           if schema != 3:
               raise SystemExit(f"Refusing ACTIVE publish: expected schema_version=3, got {schema}")
-          if dmi_version != "DMI-EXPERT-v1":
-              raise SystemExit(f"Refusing ACTIVE publish: expected DMI-EXPERT-v1, got {dmi_version!r}")
+          if dmi_version != "DMI-EXPERT-v2-ADX-STEP":
+              raise SystemExit(f"Refusing ACTIVE publish: expected DMI-EXPERT-v2-ADX-STEP, got {dmi_version!r}")
           if str(report.get("model_id") or "") != model_id:
               raise SystemExit("training_report model_id does not match probability_model")
           if int(report.get("schema_version") or 0) != schema:
@@ -94,7 +94,7 @@ jobs:
             -o /tmp/publish-report.json
           cat /tmp/publish-report.json
 
-      - name: Publish Schema v3 DMI Expert as ACTIVE now
+      - name: Publish Schema v3 DMI Expert v2 ADX Step as ACTIVE now
         shell: bash
         run: |
           BASE="${WORKER_BASE_URL%/}"
@@ -119,7 +119,7 @@ jobs:
           set -e
           echo "CHALLENGER_HTTP=$CHALLENGER_HTTP" >> "$GITHUB_ENV"
 
-      - name: Verify R2 Active is Schema v3 DMI Expert
+      - name: Verify R2 Active is Schema v3 DMI Expert v2 ADX Step
         shell: bash
         run: |
           python3 - <<'PY'
@@ -167,7 +167,7 @@ jobs:
         shell: bash
         run: |
           {
-            echo "## Schema v3 DMI Expert is ACTIVE"
+            echo "## Schema v3 DMI Expert v2 ADX Step is ACTIVE"
             echo ""
             echo "- Active Model ID: \`$MODEL_ID\`"
             echo "- Schema: \`$MODEL_SCHEMA\`"
