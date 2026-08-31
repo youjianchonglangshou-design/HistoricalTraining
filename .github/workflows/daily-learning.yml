@@ -1,6 +1,9 @@
-name: Daily S-state Learning
+name: Daily S-state Learning v3 ADX 1DP Sticky
 
 on:
+  push:
+    paths:
+      - ".retrain/ADX-1DP-STICKY-v3"
   workflow_dispatch:
     inputs:
       run_id:
@@ -53,7 +56,7 @@ jobs:
             "run_id": os.environ["LEARNING_RUN_ID"],
             "status": "RUNNING",
             "percent": 5,
-            "message": "HistoricalTraining Daily S-state Learning started",
+            "message": "HistoricalTraining Daily S-state Learning v3 ADX 1DP Sticky started",
             "github_run_id": os.environ.get("GITHUB_RUN_ID"),
           }))
           PY
@@ -271,7 +274,7 @@ jobs:
             "status": "FAILED",
             "percent": 0,
             "model_id": os.environ.get("MODEL_ID"),
-            "message": "Daily S-state Learning failed. Check GitHub Actions logs.",
+            "message": "Daily S-state Learning v3 ADX 1DP Sticky failed. Check GitHub Actions logs.",
             "github_run_id": os.environ.get("GITHUB_RUN_ID"),
           }))
           PY
