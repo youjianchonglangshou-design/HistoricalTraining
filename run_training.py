@@ -11,7 +11,7 @@ from engine.scoring_rules import ENGINE_API_VERSION, OPPORTUNITY_ENGINE_VERSION,
 from engine.symbols_config import EXAM_SYMBOLS
 from training.io_utils import write_jsonl_gz
 from training.model_builder import build_model, save_json
-from training.pionex_history import update_symbol_cache
+from training.pionex_history import load_csv, update_symbol_cache
 from training.replay import DEFAULT_HORIZONS, replay_symbol
 
 ROOT = Path(__file__).resolve().parent
@@ -109,6 +109,7 @@ def main() -> int:
     parser.add_argument("--full-refresh", action="store_true", help="Refetch full configured history instead of latest-page merge")
     parser.add_argument("--step-bars", type=int, default=1, help="Replay every N 4H bars; production default 1")
     parser.add_argument("--min-samples", type=int, default=50, help="Minimum cases for a conditional probability rule")
+    parser.add_argument("--cache-only", action="store_true", help="Use existing local 4H cache only; do not call Pionex API")
     args = parser.parse_args()
 
     symbols = parse_symbols(args.symbols)
@@ -122,7 +123,7 @@ def main() -> int:
     for pos, symbol in enumerate(symbols, start=1):
         print(f"[{pos}/{len(symbols)}] {symbol}: update Pionex 4H cache ...", flush=True)
         try:
-            rows = update_symbol_cache(symbol, CACHE_DIR, max_records=max_records, full_refresh=args.full_refresh)
+            rows = load_csv(CACHE_DIR / f"{symbol}.csv")[-max_records:] if args.cache_only else update_symbol_cache(symbol, CACHE_DIR, max_records=max_records, full_refresh=args.full_refresh)
             print(f"[{pos}/{len(symbols)}] {symbol}: {len(rows)} bars; replay ...", flush=True)
             quiz_timeline: list[dict] = []
             cases = replay_symbol(

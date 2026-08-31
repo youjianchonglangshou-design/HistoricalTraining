@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "champion_model_id": "a9a998d93ea396e4",
+  "generation": 1,
+  "settled_72h": 0,
+  "minimum_settled_72h": 200,
+  "evolution_due": false,
+  "next_action": "keep_collecting_frozen_settlements"
+}

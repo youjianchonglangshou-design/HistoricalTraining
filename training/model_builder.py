@@ -598,9 +598,7 @@ def _features_for_model_version(model: dict[str, Any], features: dict[str, Any])
     """Select the ADX Step semantic contract expected by the model.
 
     Newly replayed v3 cases carry generic 1dp-sticky fields plus explicit
-    *_legacy v2 fields. This lets Champion/Challenger evaluation score the
-    still-active v2 Champion with the exact feature semantics it was trained
-    on, while the v3 Challenger uses the new generic fields.
+    *_legacy v2 fields. This preserves exact legacy feature semantics for any archived v2 model while new v3 models use the generic 1dp Sticky fields.
     """
     output = dict(features or {})
     version = str((model.get("dmi_expert_contract") or {}).get("version") or "")

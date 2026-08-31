@@ -1,0 +1,8 @@
+請從 HistoricalTraining-main 刪除以下舊 Challenger 檔案：
+
+.github/workflows/initialize-challenger.yml
+.retrain/ADX-1DP-STICKY-v3
+evaluate_challenger.py
+tests/test_challenger_policy.py
+
+注意：不要上傳任何 __pycache__ 或 .pyc 檔案。

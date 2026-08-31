@@ -1,0 +1,9 @@
+{
+  "version": "3.2.0",
+  "label": "Champion Frozen Settlement",
+  "champion_baseline": "a9a998d93ea396e4",
+  "daily_review_taiwan": "08:25",
+  "daily_review_cron_utc": "25 0 * * *",
+  "evolution_min_settled_72h": 200,
+  "challenger_flow": false
+}

@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "generation": 1,
+  "champion_model_id": "a9a998d93ea396e4",
+  "started_at": null,
+  "evolution_min_settled_72h": 200,
+  "note": "Generation 001 baseline chosen by user. First scheduled Champion review run sets started_at and begins frozen live tracking."
+}

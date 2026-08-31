@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "status": "WAITING_FIRST_FROZEN_SNAPSHOT",
+  "champion": {
+    "generation": 1,
+    "model_id": "a9a998d93ea396e4"
+  }
+}

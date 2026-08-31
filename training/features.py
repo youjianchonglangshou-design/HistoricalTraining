@@ -339,8 +339,7 @@ def _dmi_features(
         "adx_slope_3d": round(adx_slope, 8) if adx_slope is not None else None,
         "adx_axis_zone": _adx_axis_zone(adx),
         **step,
-        # Compatibility snapshot for the currently-active v2 model while the
-        # new v3 candidate gathers evidence. New models train on the generic
+        # Compatibility snapshot for archived v2 models. New v3 models train on the generic
         # fields above; old v2 consumers may explicitly select these legacy
         # exact-value categories.
         "adx_step_direction_legacy": legacy_step.get("adx_step_direction"),

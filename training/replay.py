@@ -12,7 +12,7 @@ DEFAULT_HORIZONS = (3, 6, 12, 18)  # 12H / 24H / 48H / 72H
 LATE_SUCCESS_END_BAR = 42  # optional diagnostic: day 4-7 after the 72H capital-efficiency window
 
 
-def _target_name(state: str) -> str:
+def target_name(state: str) -> str:
     if state == "S0.5":
         return "S1_OR_HIGHER"
     if state == "S2":
@@ -58,6 +58,7 @@ def replay_symbol(
     horizons: tuple[int, ...] = DEFAULT_HORIZONS,
     step_bars: int = 1,
     daily_timeline: list[dict[str, Any]] | None = None,
+    allow_partial_horizons: bool = False,
 ) -> list[dict[str, Any]]:
     """Replay the real S-state engine at each historical 4H cutoff without look-ahead.
 
@@ -140,6 +141,8 @@ def replay_symbol(
                         "day_time": int(day_key),
                         "cutoff_time": int(row["time"]),
                         "state": state,
+                        "price": float(record["_price"]),
+                        "bandpos": bandpos,
                         "features": {
                             "midline_state": features.get("midline_state"),
                             "bandpos": features.get("bandpos"),
@@ -187,17 +190,23 @@ def replay_symbol(
         if snapshot is None or idx % step_bars != 0:
             continue
         state = str(snapshot["state"])
-        if state not in TARGET_STATES or idx + max_h >= len(rows):
+        if state not in TARGET_STATES:
+            continue
+        available_horizons = tuple(h for h in horizons if idx + h < len(rows)) if allow_partial_horizons else tuple(horizons)
+        if not allow_partial_horizons and idx + max_h >= len(rows):
+            continue
+        if not available_horizons:
             continue
 
         labels: dict[str, Any] = {}
-        for horizon in horizons:
+        for horizon in available_horizons:
             hit_bar = None
             max_bandpos = float(snapshot["bandpos"])
             max_return = 0.0
             min_return = 0.0
             entry_price = float(snapshot["price"])
             future_slice: list[dict[str, Any] | None] = []
+            state_path = [state]
             for future_idx in range(idx + 1, idx + horizon + 1):
                 future = snapshots[future_idx]
                 future_slice.append(future)
@@ -206,6 +215,8 @@ def replay_symbol(
                 future_state = str(future["state"])
                 future_bandpos = float(future["bandpos"])
                 future_price = float(future["price"])
+                if future_state and future_state != state_path[-1]:
+                    state_path.append(future_state)
                 max_bandpos = max(max_bandpos, future_bandpos)
                 ret = (future_price / entry_price - 1.0) if entry_price else 0.0
                 max_return = max(max_return, ret)
@@ -224,6 +235,7 @@ def replay_symbol(
                 "max_bandpos": round(max_bandpos, 8),
                 "max_return": round(max_return, 8),
                 "max_drawdown": round(min_return, 8),
+                "state_path": state_path,
                 **outcome_info,
             }
 
@@ -253,7 +265,7 @@ def replay_symbol(
                 "time": int(rows[idx]["time"]),
                 "time_tw": iso_tw(int(rows[idx]["time"])),
                 "state": state,
-                "target": _target_name(state),
+                "target": target_name(state),
                 "entry_price": float(snapshot["price"]),
                 "features": snapshot["features"],
                 "labels": labels,

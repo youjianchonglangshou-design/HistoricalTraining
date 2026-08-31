@@ -1,4 +1,4 @@
-# Crypto S-state Learning Engine v3.1 — DMI Expert v3 / ADX 1DP Sticky
+# Crypto S-state Learning Engine v3.2 — Champion Frozen Settlement / ADX 1DP Sticky
 
 這個儲存庫用 Pionex 歷史 4H K 線逐根重播正式 S-state 引擎，然後把每個歷史決策點的未來結果結算成 JSON 參數，供 Crypto Monitor / HTML 使用。
 
@@ -9,6 +9,56 @@
 - Replay 與即時系統必須使用同版 S-state 引擎。
 - LLM 不發明機率；機率來自已結算歷史樣本。
 
+
+
+## v3.2：改成 Champion → Frozen Snapshot → Settlement → Evolution
+
+這一版正式移除 Champion / Challenger 競賽主流程。系統只追蹤目前正式 Champion。
+
+目前基準世代：
+
+```text
+Generation 001
+Champion = a9a998d93ea396e4
+```
+
+每天台灣時間 **08:25**，GitHub Actions 會執行 `Daily Champion Settlement & Evolution`（cron `25 0 * * *`，GitHub cron 為 UTC）：
+
+```text
+下載 R2 Active Champion
+→ 更新 Pionex 4H cache
+→ 把今天 Champion 對 S0.5 / S1 / S2 / S3 的正式預測凍結
+→ 回頭結算之前凍結快照的 12H / 24H / 48H / 72H 真實路徑
+→ 更新 data/champion/performance.json
+→ 累積足夠 72H 正式結算後觸發 Evolution Review
+→ 重訓下一代模型
+→ 直接發布為新的 Champion / Active
+```
+
+### Frozen Snapshot 契約
+
+凍結後永遠不回算。每筆至少保存：
+
+- Champion model id / Generation
+- 標的、決策時間、S-state、目標
+- 當時成功率、慢速存活率、結構存活率、真失敗率、其他率
+- 當時 ADX / DI / DMI regime 等 features
+- 之後逐步追加 12H / 24H / 48H / 72H settlement
+- 72H 實際 state path，例如 `S2 → S3`
+
+歷史 Replay 仍可因模型公式升級而重新計算；`data/champion/ledger.jsonl` 的 Frozen Prediction 不允許被新模型改寫。
+
+### 戰績輸出
+
+`data/champion/performance.json` 會直接提供後續 SStateMarketTerminal「近期戰績」頁需要的資料：
+
+- 近 7 / 14 / 30 / 90 日 / 全部
+- S0.5 / S1 / S2 / S3 分別的成功、存活、真失敗、其他
+- 成功率、結構存活率、真失敗率
+- 預估成功率 ≥60% / ≥65% / ≥70% 的實際成功率
+- 最近逐筆凍結紀錄與 72H 實際 state path
+
+預設當本代 Champion 累積 **200 筆 72H 正式結算** 時觸發一次 Evolution Review。門檻保存在 `data/champion/generation.json`，可再調整。
 
 ## DMI Expert v3：ADX 1 位小數 + 同值延續正式進入歷史學習
 
@@ -221,17 +271,11 @@ v2 起同時保留：
 - `models/probability_model.json` → `dmi_expert_contract.version` 應為 `DMI-EXPERT-v3-ADX-1DP-STICKY`
 - `reports/training_report.json` → 應有 `primary_72h_outcomes`、`dmi_expert_72h` 與 `adx_step_regime_72h`
 
-## Daily S-state Learning
+## Daily Champion Settlement & Evolution
 
-後續 `Daily S-state Learning` 不需要另外換邏輯，它會直接呼叫同一個 v3：
+日常流程不再每天無條件重建一個 Challenger。每天 08:25 的工作只有兩件主事：
 
-```text
-最新 Pionex 4H
-→ 合併既有 cache
-→ 同一顆 S-state 引擎 Replay
-→ v2 四分類 Settlement
-→ 重建 probability_model.json
-→ GitHub commit / push
-```
+1. **考試**：凍結當日 Champion 的正式預測，回頭結算先前的真實路徑。
+2. **進化**：只有本代累積到指定 72H 正式結算門檻時，才重訓並直接發布下一代 Champion。
 
-所以仍是：**引擎固定，JSON 參數持續進化。**
+因此「每天新增 6 根 4H 就建立一個幾乎一樣的 Challenger」的流程已取消。
