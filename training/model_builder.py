@@ -27,7 +27,7 @@ FEATURE_LEVELS = [
     ["midline_state", "bandpos_bin", "trigger_stage", "bandwidth_trend", "state_age_bin"],
 ]
 
-DMI_EXPERT_VERSION = "DMI-EXPERT-v2-ADX-STEP"
+DMI_EXPERT_VERSION = "DMI-EXPERT-v3-ADX-1DP-STICKY"
 DMI_QUANTILE_FIELDS = {
     "di_abs_gap": "di_abs_gap_q",
     "di_axis_distance": "di_axis_distance_q",
@@ -506,7 +506,7 @@ def build_model(
             "source_formula": "Pine-equivalent period14 recursive TR/DM smoothing; DI+/DI-; DX; ADX=SMA14(DX)",
             "axis": 20,
             "binning": "Per-state terciles learned from historical raw DMI values; no fixed bullish/bearish magnitude threshold.",
-            "adx_step_definition": "Terminal parity: ADX > previous daily ADX = RISING/green; ADX < previous daily ADX = FALLING/red; equal = FLAT. The current daily candle may be partial at a 4H replay cutoff, never future-complete.",
+            "adx_step_definition": "Terminal/Pine parity v3: round each daily ADX to 1 decimal first; rounded increase = RISING/green, rounded decrease = FALLING/red, rounded equality keeps the previous effective red/green direction. The current daily candle may be partial at a 4H replay cutoff, never future-complete.",
             "adx_step_semantics": "DI controller and ADX step direction are learned jointly per S-state. Green/red is not hard-coded bullish/bearish; PLUS_RISING, PLUS_FALLING, MINUS_RISING and MINUS_FALLING may have different outcomes in S0.5/S1/S2/S3.",
             "facets": DMI_EXPERT_FACETS,
             "adx_step_facets": sorted(ADX_STEP_FACET_NAMES),
@@ -594,7 +594,32 @@ def build_model(
     return model
 
 
+def _features_for_model_version(model: dict[str, Any], features: dict[str, Any]) -> dict[str, Any]:
+    """Select the ADX Step semantic contract expected by the model.
+
+    Newly replayed v3 cases carry generic 1dp-sticky fields plus explicit
+    *_legacy v2 fields. This lets Champion/Challenger evaluation score the
+    still-active v2 Champion with the exact feature semantics it was trained
+    on, while the v3 Challenger uses the new generic fields.
+    """
+    output = dict(features or {})
+    version = str((model.get("dmi_expert_contract") or {}).get("version") or "")
+    if version == "DMI-EXPERT-v2-ADX-STEP" and output.get("adx_step_direction_legacy"):
+        mapping = {
+            "adx_step_direction": "adx_step_direction_legacy",
+            "adx_step_age_days": "adx_step_age_days_legacy",
+            "adx_step_age_bin": "adx_step_age_bin_legacy",
+            "adx_turn_event": "adx_turn_event_legacy",
+            "dmi_adx_regime": "dmi_adx_regime_legacy",
+        }
+        for target, source in mapping.items():
+            if output.get(source) is not None:
+                output[target] = output.get(source)
+    return output
+
+
 def lookup_probability(model: dict[str, Any], state: str, horizon: int, features: dict[str, Any]) -> dict[str, Any]:
+    model_features = _features_for_model_version(model, features)
     state_node = model.get("states", {}).get(state)
     if not state_node:
         return {"available": False, "reason": "state_missing"}
@@ -603,10 +628,10 @@ def lookup_probability(model: dict[str, Any], state: str, horizon: int, features
         return {"available": False, "reason": "horizon_missing"}
 
     min_samples = int(model.get("default_min_samples", 50))
-    base_node, base_meta = _lookup_base_rule(hnode, features, min_samples)
+    base_node, base_meta = _lookup_base_rule(hnode, model_features, min_samples)
 
     # Schema v1/v2 and any model without DMI remain exactly backward-compatible.
-    dmi_matches = _lookup_dmi_facets(state_node, hnode, features, min_samples)
+    dmi_matches = _lookup_dmi_facets(state_node, hnode, model_features, min_samples)
     if not dmi_matches:
         return {
             "available": True,

@@ -3,7 +3,8 @@ import unittest
 from engine.runtime_core import aggregate_4h_to_daily, build_live_compatible_record, calculate_adx_dmi
 from engine.scoring_rules import build_long_opportunity
 from training.features import extract_features
-from training.model_builder import build_model, lookup_probability
+from training.model_builder import _features_for_model_version, build_model, lookup_probability
+from training.features import _adx_step_features, _adx_step_features_legacy
 from training.outcomes import (
     OUTCOME_ALIVE,
     OUTCOME_FAIL,
@@ -190,6 +191,47 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(features["adx_axis_zone"], "BELOW_20")
         self.assertEqual(features["dmi_adx_regime"], "PLUS_RISING")
 
+    def test_adx_1dp_sticky_suppresses_micro_flip(self):
+        # AMD example: both final displayed values round to 10.5. The old
+        # full-precision rule flips red, while v3 keeps the preceding green.
+        values = [10.4, 10.496955, 10.454547]
+        sticky = _adx_step_features(values)
+        legacy = _adx_step_features_legacy(values)
+        self.assertEqual(sticky["adx_step_direction"], "RISING")
+        self.assertEqual(sticky["adx_step_age_days"], 2)
+        self.assertEqual(sticky["adx_turn_event"], "NONE")
+        self.assertEqual(legacy["adx_step_direction"], "FALLING")
+        self.assertEqual(legacy["adx_turn_event"], "GREEN_TO_RED")
+
+    def test_adx_1dp_sticky_keeps_red_when_equal_after_fall(self):
+        values = [10.6, 10.496955, 10.454547]
+        sticky = _adx_step_features(values)
+        self.assertEqual(sticky["adx_step_direction"], "FALLING")
+        self.assertEqual(sticky["adx_step_age_days"], 2)
+        self.assertEqual(sticky["adx_turn_event"], "NONE")
+
+    def test_model_version_bridge_keeps_v2_champion_on_legacy_adx_semantics(self):
+        features = {
+            "adx_step_direction": "RISING",
+            "adx_step_age_days": 2,
+            "adx_step_age_bin": "2_3",
+            "adx_turn_event": "NONE",
+            "dmi_adx_regime": "PLUS_RISING",
+            "adx_step_direction_legacy": "FALLING",
+            "adx_step_age_days_legacy": 1,
+            "adx_step_age_bin_legacy": "1",
+            "adx_turn_event_legacy": "GREEN_TO_RED",
+            "dmi_adx_regime_legacy": "PLUS_FALLING",
+        }
+        v2 = {"dmi_expert_contract": {"version": "DMI-EXPERT-v2-ADX-STEP"}}
+        v3 = {"dmi_expert_contract": {"version": "DMI-EXPERT-v3-ADX-1DP-STICKY"}}
+        old = _features_for_model_version(v2, features)
+        new = _features_for_model_version(v3, features)
+        self.assertEqual(old["adx_step_direction"], "FALLING")
+        self.assertEqual(old["dmi_adx_regime"], "PLUS_FALLING")
+        self.assertEqual(new["adx_step_direction"], "RISING")
+        self.assertEqual(new["dmi_adx_regime"], "PLUS_RISING")
+
     def test_dmi_expert_v2_learns_adx_step_regime_per_state(self):
         cases = []
         regimes = [
@@ -240,7 +282,7 @@ class CoreTests(unittest.TestCase):
 
         model = build_model(cases, DEFAULT_HORIZONS, min_samples=20)
         self.assertEqual(model["schema_version"], 3)
-        self.assertEqual((model.get("dmi_expert_contract") or {}).get("version"), "DMI-EXPERT-v2-ADX-STEP")
+        self.assertEqual((model.get("dmi_expert_contract") or {}).get("version"), "DMI-EXPERT-v3-ADX-1DP-STICKY")
         facet_names = {f["name"] for f in model["states"]["S0.5"]["horizons"]["18"]["dmi_expert"]["facets"]}
         self.assertTrue({"adx_step_regime", "adx_step_persistence", "adx_turn_handover"}.issubset(facet_names))
         plus_rising = lookup_probability(model, "S0.5", 18, cases[0]["features"])

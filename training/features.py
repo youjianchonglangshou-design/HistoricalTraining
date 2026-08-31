@@ -138,7 +138,16 @@ def _adx_axis_zone(adx: float | None) -> str:
     return "TOUCHING_20"
 
 
+def _round_adx_1dp(value: float | None) -> float | None:
+    if value is None:
+        return None
+    # Pine parity for non-negative ADX: math.round(ADX * 10.0) / 10.0.
+    # Avoid Python's bankers-rounding at exact x.x5 boundaries.
+    return math.floor(float(value) * 10.0 + 0.5) / 10.0
+
+
 def _adx_step_direction(previous: float | None, current: float | None) -> str:
+    """Legacy exact-value direction retained only for v2 compatibility."""
     if previous is None or current is None:
         return "UNKNOWN"
     if current > previous:
@@ -148,11 +157,66 @@ def _adx_step_direction(previous: float | None, current: float | None) -> str:
     return "FLAT"
 
 
+def _adx_step_features_legacy(values: list[Any]) -> dict[str, Any]:
+    """Old DMI Expert v2 semantics: compare full-precision ADX directly."""
+    series = [_safe_float(value) for value in values]
+    if len(series) < 2:
+        return {
+            "adx_step_direction": "UNKNOWN",
+            "adx_step_age_days": 0,
+            "adx_step_age_bin": "UNKNOWN",
+            "adx_turn_event": "UNKNOWN",
+            "adx_step_delta": None,
+        }
+    directions = [_adx_step_direction(series[i - 1], series[i]) for i in range(1, len(series))]
+    current_direction = directions[-1]
+    if current_direction == "UNKNOWN":
+        return {
+            "adx_step_direction": "UNKNOWN",
+            "adx_step_age_days": 0,
+            "adx_step_age_bin": "UNKNOWN",
+            "adx_turn_event": "UNKNOWN",
+            "adx_step_delta": None,
+        }
+    age = 1
+    for direction in reversed(directions[:-1]):
+        if direction != current_direction:
+            break
+        age += 1
+    previous_direction = directions[-2] if len(directions) >= 2 else "UNKNOWN"
+    if previous_direction == "FALLING" and current_direction == "RISING":
+        turn = "RED_TO_GREEN"
+    elif previous_direction == "RISING" and current_direction == "FALLING":
+        turn = "GREEN_TO_RED"
+    elif previous_direction in {"RISING", "FALLING", "FLAT"} and previous_direction != current_direction:
+        turn = "OTHER_TURN"
+    elif previous_direction == current_direction:
+        turn = "NONE"
+    else:
+        turn = "UNKNOWN"
+    previous_value = series[-2]
+    current_value = series[-1]
+    delta = (current_value - previous_value) if previous_value is not None and current_value is not None else None
+    return {
+        "adx_step_direction": current_direction,
+        "adx_step_age_days": int(age),
+        "adx_step_age_bin": _bin_age(int(age)),
+        "adx_turn_event": turn,
+        "adx_step_delta": round(delta, 8) if delta is not None else None,
+    }
+
+
 def _adx_step_features(values: list[Any]) -> dict[str, Any]:
-    # The live chart colors each DAILY ADX stepline segment by comparing the
-    # current daily ADX with the previous daily ADX. Historical 4H replay uses
-    # the partial daily candle visible at that cutoff, so this is no-lookahead
-    # and matches what the Terminal would have shown at that moment.
+    """DMI Expert v3 ADX stepline semantics.
+
+    1) Round each DAILY ADX to one decimal exactly like Pine/Terminal.
+    2) Compare rounded values.
+    3) If equal, keep the previous effective RISING/FALLING direction instead
+       of creating a FLAT/gray step.
+
+    Historical 4H replay still uses only the partial daily candle visible at
+    that cutoff, so the change removes display-scale noise without lookahead.
+    """
     series = [_safe_float(value) for value in values]
     if len(series) < 2:
         return {
@@ -163,8 +227,25 @@ def _adx_step_features(values: list[Any]) -> dict[str, Any]:
             "adx_step_delta": None,
         }
 
-    current_direction = _adx_step_direction(series[-2], series[-1])
-    if current_direction == "UNKNOWN":
+    directions: list[str] = []
+    sticky_direction = "UNKNOWN"
+    for i in range(1, len(series)):
+        previous = _round_adx_1dp(series[i - 1])
+        current = _round_adx_1dp(series[i])
+        if previous is None or current is None:
+            direction = sticky_direction if sticky_direction in {"RISING", "FALLING"} else "UNKNOWN"
+        elif current > previous:
+            direction = "RISING"
+            sticky_direction = direction
+        elif current < previous:
+            direction = "FALLING"
+            sticky_direction = direction
+        else:
+            direction = sticky_direction if sticky_direction in {"RISING", "FALLING"} else "UNKNOWN"
+        directions.append(direction)
+
+    current_direction = directions[-1]
+    if current_direction not in {"RISING", "FALLING"}:
         return {
             "adx_step_direction": "UNKNOWN",
             "adx_step_age_days": 0,
@@ -173,10 +254,6 @@ def _adx_step_features(values: list[Any]) -> dict[str, Any]:
             "adx_step_delta": None,
         }
 
-    directions = [
-        _adx_step_direction(series[i - 1], series[i])
-        for i in range(1, len(series))
-    ]
     age = 1
     for direction in reversed(directions[:-1]):
         if direction != current_direction:
@@ -188,8 +265,6 @@ def _adx_step_features(values: list[Any]) -> dict[str, Any]:
         turn = "RED_TO_GREEN"
     elif previous_direction == "RISING" and current_direction == "FALLING":
         turn = "GREEN_TO_RED"
-    elif previous_direction in {"RISING", "FALLING", "FLAT"} and previous_direction != current_direction:
-        turn = "OTHER_TURN"
     elif previous_direction == current_direction:
         turn = "NONE"
     else:
@@ -247,6 +322,7 @@ def _dmi_features(
     gap_slope = _slope_last3(gap_series)
     adx_slope = _slope_last3(adx_series)
     step = _adx_step_features(adx_series)
+    legacy_step = _adx_step_features_legacy(adx_series)
 
     return {
         # Raw values are kept in every historical case so later research can
@@ -263,8 +339,17 @@ def _dmi_features(
         "adx_slope_3d": round(adx_slope, 8) if adx_slope is not None else None,
         "adx_axis_zone": _adx_axis_zone(adx),
         **step,
+        # Compatibility snapshot for the currently-active v2 model while the
+        # new v3 candidate gathers evidence. New models train on the generic
+        # fields above; old v2 consumers may explicitly select these legacy
+        # exact-value categories.
+        "adx_step_direction_legacy": legacy_step.get("adx_step_direction"),
+        "adx_step_age_days_legacy": legacy_step.get("adx_step_age_days"),
+        "adx_step_age_bin_legacy": legacy_step.get("adx_step_age_bin"),
+        "adx_turn_event_legacy": legacy_step.get("adx_turn_event"),
         "dmi_relation": relation,
         "dmi_adx_regime": _dmi_adx_regime(relation, str(step.get("adx_step_direction") or "UNKNOWN")),
+        "dmi_adx_regime_legacy": _dmi_adx_regime(relation, str(legacy_step.get("adx_step_direction") or "UNKNOWN")),
         "dmi_axis_zone": _dmi_axis_zone(di_plus, di_minus),
         "dmi_cross_event": _cross_event(previous_dmi_relation, relation),
         "dmi_cross_age_bars": int(max(1, dmi_relation_age_bars)),

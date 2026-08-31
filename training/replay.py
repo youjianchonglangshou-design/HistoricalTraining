@@ -169,6 +169,11 @@ def replay_symbol(
                             "adx_turn_event": features.get("adx_turn_event"),
                             "adx_step_delta": features.get("adx_step_delta"),
                             "dmi_adx_regime": features.get("dmi_adx_regime"),
+                            "adx_step_direction_legacy": features.get("adx_step_direction_legacy"),
+                            "adx_step_age_days_legacy": features.get("adx_step_age_days_legacy"),
+                            "adx_step_age_bin_legacy": features.get("adx_step_age_bin_legacy"),
+                            "adx_turn_event_legacy": features.get("adx_turn_event_legacy"),
+                            "dmi_adx_regime_legacy": features.get("dmi_adx_regime_legacy"),
                         },
                     }
                 )

@@ -674,20 +674,37 @@
     $('modelHint').textContent = `3日成功 ${fmtModelPct(pred.success)}｜${dmiText}｜${featureSummary(timeline.features || {})}`;
   }
 
+  function featuresForModelVersion(model, features) {
+    const out = { ...(features || {}) };
+    const version = String(((model && model.dmi_expert_contract) || {}).version || '');
+    // During the v2 -> v3 migration the regenerated quiz timeline stores both
+    // semantics. Keep R2 Active v2 mathematically compatible until a v3 model
+    // is actually promoted.
+    if (version === 'DMI-EXPERT-v2-ADX-STEP' && out.adx_step_direction_legacy) {
+      out.adx_step_direction = out.adx_step_direction_legacy;
+      out.adx_step_age_days = out.adx_step_age_days_legacy;
+      out.adx_step_age_bin = out.adx_step_age_bin_legacy;
+      out.adx_turn_event = out.adx_turn_event_legacy;
+      out.dmi_adx_regime = out.dmi_adx_regime_legacy;
+    }
+    return out;
+  }
+
   function lookupProbability(model, marketState, horizon, features) {
+    const modelFeatures = featuresForModelVersion(model, features);
     const stateNode = (model.states || {})[marketState];
     if (!stateNode) return { available:false, reason:'state_missing' };
     const hnode = (stateNode.horizons || {})[String(horizon)];
     if (!hnode) return { available:false, reason:'horizon_missing' };
     const minSamples = Number(model.default_min_samples || 50);
 
-    const base = lookupBaseRule(hnode, features, minSamples, MAX_MODEL_LEVEL);
+    const base = lookupBaseRule(hnode, modelFeatures, minSamples, MAX_MODEL_LEVEL);
     if (!base || !base.node) return { available:false, reason:'baseline_missing' };
     const basePred = normalizePrediction(base.node, base.level, base.fallback);
 
     // Schema v1/v2 remains backward compatible. Schema v3 DMI Expert is an
     // independent correction layer on top of the legacy BB/HA Level 1-5 rule.
-    const dmi = lookupDmiFacets(stateNode, hnode, features, minSamples);
+    const dmi = lookupDmiFacets(stateNode, hnode, modelFeatures, minSamples);
     const dmiVersion = String(((model.dmi_expert_contract || {}).version) || '');
     if (!dmi.matches.length || !hnode.baseline) {
       return {
@@ -937,14 +954,34 @@
     };
   }
 
-  function adxDominanceStateFromPoint(point) {
+  function roundedAdx1(v) {
+    return Number.isFinite(Number(v)) ? Math.round(Number(v) * 10) / 10 : NaN;
+  }
+
+  function stickyRoundedStepDirection(points, index) {
+    if (!Array.isArray(points) || index <= 0 || index >= points.length) return 'UNKNOWN';
+    // Pine/Terminal v3 semantics: when 1dp values are equal, scan backward to
+    // the last effective rounded movement and keep that red/green direction.
+    for (let i=index; i>=1; i--) {
+      const prev = points[i-1], curr = points[i];
+      if (!prev || !curr) continue;
+      const a = roundedAdx1(prev.adx), b = roundedAdx1(curr.adx);
+      if (!Number.isFinite(a) || !Number.isFinite(b)) continue;
+      if (b > a) return 'RISING';
+      if (b < a) return 'FALLING';
+    }
+    return 'UNKNOWN';
+  }
+
+  function adxDominanceStateFromPoint(point, stepOverride='') {
     if (!point || !Number.isFinite(point.diPlus) || !Number.isFinite(point.diMinus) || point.diPlus === point.diMinus) {
       return { text:'方向膠著｜ADX待確認', controllerClass:'adx-controller-neutral', trendClass:'adx-trend-neutral' };
     }
     const plus = point.diPlus > point.diMinus;
     const controllerClass = plus ? 'adx-controller-plus' : 'adx-controller-minus';
-    const rising = point.stepDirection === 'RISING';
-    const falling = point.stepDirection === 'FALLING';
+    const effectiveStep = stepOverride || point.stepDirection;
+    const rising = effectiveStep === 'RISING';
+    const falling = effectiveStep === 'FALLING';
     if (!rising && !falling) {
       return { text:`${plus?'多方':'空方'}控制｜力道持平 ←→`, controllerClass, trendClass:'adx-trend-neutral' };
     }
@@ -959,12 +996,15 @@
     if (!hud || !Array.isArray(rows) || !rows.length) return;
     const index = state.hoverIndex !== null && state.hoverIndex >= 0 && state.hoverIndex < rows.length ? state.hoverIndex : rows.length - 1;
     const point = dmiPointForRow(rows[index]);
+    const allPoints = rows.map(r => dmiPointForRow(r));
+    const derivedStep = stickyRoundedStepDirection(allPoints, index);
+    const displayStep = (derivedStep === 'RISING' || derivedStep === 'FALLING') ? derivedStep : point.stepDirection;
     if (!point || (!Number.isFinite(point.diPlus) && !Number.isFinite(point.diMinus) && !Number.isFinite(point.adx))) {
       hud.classList.add('hidden');
       return;
     }
     hud.classList.remove('hidden');
-    const dominance = adxDominanceStateFromPoint(point);
+    const dominance = adxDominanceStateFromPoint(point, displayStep);
     const statePill = $('adxStatePill');
     statePill.className = `adx-state-pill ${dominance.controllerClass} ${dominance.trendClass}`;
     $('adxStateText').textContent = dominance.text;
@@ -1170,7 +1210,8 @@
     for (let i=1;i<points.length;i++) {
       const prev=points[i-1], curr=points[i];
       if (!prev || !curr || !Number.isFinite(prev.adx) || !Number.isFinite(curr.adx)) continue;
-      const step = curr.stepDirection || (curr.adx>prev.adx?'RISING':curr.adx<prev.adx?'FALLING':'FLAT');
+      const derivedStep = stickyRoundedStepDirection(points, i);
+      const step = (derivedStep === 'RISING' || derivedStep === 'FALLING') ? derivedStep : curr.stepDirection;
       ctx.strokeStyle = step==='RISING' ? '#26A69A' : step==='FALLING' ? '#EF5350' : '#64748b';
       ctx.lineWidth=2; ctx.lineJoin='miter';
       ctx.beginPath(); ctx.moveTo(xAt(i-1),y(prev.adx)); ctx.lineTo(xAt(i),y(prev.adx)); ctx.lineTo(xAt(i),y(curr.adx)); ctx.stroke();

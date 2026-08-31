@@ -1,4 +1,4 @@
-# Crypto S-state Learning Engine v3 — DMI Expert v2 / ADX Step Regime
+# Crypto S-state Learning Engine v3.1 — DMI Expert v3 / ADX 1DP Sticky
 
 這個儲存庫用 Pionex 歷史 4H K 線逐根重播正式 S-state 引擎，然後把每個歷史決策點的未來結果結算成 JSON 參數，供 Crypto Monitor / HTML 使用。
 
@@ -10,14 +10,15 @@
 - LLM 不發明機率；機率來自已結算歷史樣本。
 
 
-## DMI Expert v2：ADX 紅綠階梯正式進入歷史學習
+## DMI Expert v3：ADX 1 位小數 + 同值延續正式進入歷史學習
 
 Terminal 的 ADX 階梯定義直接照 Pine / 前端顯示：
 
 ```text
-ADX > 前一個日 ADX  → RISING / 綠色階梯
-ADX < 前一個日 ADX  → FALLING / 紅色階梯
-ADX = 前一個日 ADX  → FLAT
+先將 ADX 四捨五入到小數 1 位
+目前 1dp > 前一個日 1dp  → RISING / 綠色階梯
+目前 1dp < 前一個日 1dp  → FALLING / 紅色階梯
+目前 1dp = 前一個日 1dp  → 延續上一個有效 RISING / FALLING，不建立灰色 FLAT
 ```
 
 **綠色不等於多方、紅色不等於空方。** 多空方向仍由 `DI+ / DI-` 誰主導決定。因此歷史案例會形成：
@@ -34,7 +35,7 @@ MINUS_FALLING  DI- 主導 + ADX 衰退
 新增的歷史特徵包括：
 
 ```text
-adx_step_direction    RISING / FALLING / FLAT
+adx_step_direction    RISING / FALLING（1dp 相等時延續上一方向）
 adx_step_age_days     目前紅/綠階梯連續幾個日階
 adx_step_age_bin      1 / 2_3 / 4_6 / 7_PLUS
 adx_turn_event        RED_TO_GREEN / GREEN_TO_RED / OTHER_TURN / NONE
@@ -52,7 +53,9 @@ dmi_adx_regime        PLUS_RISING / PLUS_FALLING / MINUS_RISING / MINUS_FALLING
 
 ### 時間語意
 
-HistoricalTraining 每 4H 建立 decision case，但 ADX 階梯顏色仍比較「當時可見的當日日 ADX」與「前一日日 ADX」，因此與 Terminal 30 日 ADX 圖的紅綠 stepline 語意一致。當日日 K 在歷史 cutoff 仍是 partial candle，不會偷看當天未來尚未發生的 4H。
+HistoricalTraining 每 4H 建立 decision case；ADX 階梯會先把「當時可見的當日日 ADX」與「前一日日 ADX」各自四捨五入到小數 1 位再比較，若相同則延續上一個有效紅／綠方向，因此與 Terminal / Pine 的新版 stepline 語意一致。當日日 K 在歷史 cutoff 仍是 partial candle，不會偷看當天未來尚未發生的 4H。
+
+遷移期間每筆 replay 也保留 `*_legacy` 的 v2 完整小數 ADX 階梯特徵，讓尚未升級的 R2 Active v2 模型仍可用原語意匹配；新 v3 模型只使用新版 generic ADX Step 特徵。
 
 ## v3：DMI Expert 不改 S-state，只修正「這個 S-state 能不能真的走上去」
 
@@ -215,7 +218,7 @@ v2 起同時保留：
 
 - `models/probability_model.json` → `schema_version` 應為 `3`
 - `models/probability_model.json` → 應有 `dmi_expert_contract`
-- `models/probability_model.json` → `dmi_expert_contract.version` 應為 `DMI-EXPERT-v2-ADX-STEP`
+- `models/probability_model.json` → `dmi_expert_contract.version` 應為 `DMI-EXPERT-v3-ADX-1DP-STICKY`
 - `reports/training_report.json` → 應有 `primary_72h_outcomes`、`dmi_expert_72h` 與 `adx_step_regime_72h`
 
 ## Daily S-state Learning
