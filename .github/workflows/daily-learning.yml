@@ -121,6 +121,7 @@ jobs:
             --max-records 20000 \
             --step-bars 1 \
             --min-samples 50 \
+            --frozen-reinforcement 10 \
             --cache-only
 
       - name: Resolve next Champion model id
@@ -217,6 +218,9 @@ jobs:
           print('Success rate        :', a.get('success_rate'))
           print('Survival rate       :', a.get('structural_survival_rate'))
           print('True fail rate      :', a.get('true_fail_rate'))
+          markets=p.get('by_market') or {}
+          print('Crypto settled      :', ((markets.get('CRYPTO') or {}).get('all') or {}).get('settled_72h'))
+          print('US-stock settled    :', ((markets.get('US_STOCK') or {}).get('all') or {}).get('settled_72h'))
           print('Evolution due       :', r.get('evolution_due'))
           PY
       - name: Report Champion review completed
