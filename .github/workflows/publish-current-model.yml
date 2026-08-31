@@ -2,6 +2,11 @@ name: Publish Current Model as ACTIVE
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - "Daily S-state Learning v3 ADX 1DP Sticky"
+    types:
+      - completed
 
 permissions:
   contents: read
@@ -12,6 +17,7 @@ concurrency:
 
 jobs:
   publish-active:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     env:
       WORKER_BASE_URL: ${{ secrets.WORKER_BASE_URL }}
