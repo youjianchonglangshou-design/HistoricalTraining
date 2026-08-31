@@ -73,7 +73,8 @@ def ensure_generation(
             "generation": 1,
             "champion_model_id": active_model_id,
             "started_at": now_iso,
-            "evolution_min_settled_72h": int(manifest.get("evolution_min_settled_72h") or 200),
+            "evolution_min_settled_72h": int(manifest.get("evolution_min_settled_72h") or 120),
+            "frozen_live_reinforcement_weight": int(manifest.get("frozen_live_reinforcement_weight") or 10),
         }
         changed = True
     elif current_id != active_model_id:
@@ -86,7 +87,8 @@ def ensure_generation(
             "generation": int(manifest.get("generation") or 1) + 1,
             "champion_model_id": active_model_id,
             "started_at": now_iso,
-            "evolution_min_settled_72h": int(manifest.get("evolution_min_settled_72h") or 200),
+            "evolution_min_settled_72h": int(manifest.get("evolution_min_settled_72h") or 120),
+            "frozen_live_reinforcement_weight": int(manifest.get("frozen_live_reinforcement_weight") or 10),
         }
         changed = True
     elif not manifest.get("started_at"):
@@ -113,8 +115,10 @@ def make_frozen_record(
     target: str,
     frozen_at_iso: str,
     generation: int,
+    market_type: str = "CRYPTO",
 ) -> dict[str, Any]:
     cutoff = int(timeline_row["cutoff_time"])
+    market_type = str(market_type or "CRYPTO").upper()
     success = float(prediction.get("probability", 0.0) or 0.0)
     survival = float(prediction.get("structural_survival_probability", success) or success)
     fail = float(prediction.get("true_fail_probability", 0.0) or 0.0)
@@ -124,8 +128,9 @@ def make_frozen_record(
         alive = max(0.0, survival - success)
     return {
         "schema_version": 1,
-        "snapshot_id": f"{model.get('model_id')}:{symbol}:{cutoff}",
+        "snapshot_id": f"{model.get('model_id')}:{market_type}:{symbol}:{cutoff}",
         "generation": int(generation),
+        "market_type": market_type,
         "champion_model_id": str(model.get("model_id") or ""),
         "frozen_at": frozen_at_iso,
         "symbol": symbol,
@@ -246,6 +251,14 @@ def build_performance(
     for state in ("S0.5", "S1", "S2", "S3"):
         by_state[state] = _summary_from_rows([r for r in current if r.get("state") == state])
 
+    by_market: dict[str, Any] = {}
+    for market_type in ("CRYPTO", "US_STOCK"):
+        market_rows = [r for r in current if str(r.get("market_type") or "CRYPTO") == market_type]
+        by_market[market_type] = {
+            "all": _summary_from_rows(market_rows),
+            "by_state": {state: _summary_from_rows([r for r in market_rows if r.get("state") == state]) for state in ("S0.5", "S1", "S2", "S3")},
+        }
+
     thresholds: dict[str, Any] = {}
     settled = [r for r in current if ((r.get("settlements") or {}).get("72H") or {}).get("status") == "SETTLED"]
     for threshold in (0.60, 0.65, 0.70):
@@ -278,6 +291,7 @@ def build_performance(
             "snapshot_id": r.get("snapshot_id"),
             "decision_time_tw": r.get("decision_time_tw"),
             "symbol": r.get("symbol"),
+            "market_type": str(r.get("market_type") or "CRYPTO"),
             "state": r.get("state"),
             "target": r.get("target"),
             "success_probability": (r.get("prediction") or {}).get("success_probability"),
@@ -298,10 +312,11 @@ def build_performance(
             "generation": generation,
             "model_id": model_id,
             "started_at": manifest.get("started_at"),
-            "evolution_min_settled_72h": int(manifest.get("evolution_min_settled_72h") or 200),
+            "evolution_min_settled_72h": int(manifest.get("evolution_min_settled_72h") or 120),
         },
         "windows": windows,
         "by_state": by_state,
+        "by_market": by_market,
         "probability_validation": thresholds,
         "daily": daily,
         "recent_records": recent,
@@ -309,15 +324,82 @@ def build_performance(
     }
 
 
+
+def frozen_record_to_case(record: dict[str, Any]) -> dict[str, Any] | None:
+    """Convert one settled Frozen Champion snapshot into a training case.
+
+    This is the live feedback loop. The original frozen prediction is never
+    rewritten; only its observed settlements are converted into labels for the
+    next generation training pass.
+    """
+    if not isinstance(record, dict) or not record.get("final_settled"):
+        return None
+    settlements = record.get("settlements") or {}
+    labels: dict[str, Any] = {}
+    for bars, hours in HORIZON_BARS_TO_HOURS.items():
+        node = settlements.get(f"{hours}H") or {}
+        if node.get("status") != "SETTLED":
+            continue
+        labels[str(bars)] = {
+            "outcome": node.get("outcome"),
+            "hit": bool(node.get("hit")),
+            "bars_to_hit": node.get("bars_to_hit"),
+            "max_return": node.get("max_return"),
+            "max_drawdown": node.get("max_drawdown"),
+            "max_bandpos": node.get("max_bandpos"),
+            "hard_invalidated": bool(node.get("hard_invalidated", False)),
+            "end_state": node.get("end_state"),
+            "end_bandpos": node.get("end_bandpos"),
+            "state_path": node.get("state_path") or [],
+            "reason": node.get("reason"),
+        }
+    if "18" not in labels:
+        return None
+    market_type = str(record.get("market_type") or "CRYPTO").upper()
+    features = dict(record.get("features") or {})
+    features["market_type"] = market_type
+    return {
+        "symbol": str(record.get("symbol") or ""),
+        "market_type": market_type,
+        "time": int(record.get("decision_time", 0) or 0),
+        "time_tw": record.get("decision_time_tw"),
+        "state": str(record.get("state") or ""),
+        "target": str(record.get("target") or ""),
+        "entry_price": float(record.get("entry_price", 0.0) or 0.0),
+        "features": features,
+        "labels": labels,
+        "source": "champion_frozen_live",
+        "generation": int(record.get("generation", 0) or 0),
+        "champion_model_id": str(record.get("champion_model_id") or ""),
+    }
+
+
+def current_generation_frozen_cases(rows: list[dict[str, Any]], manifest: dict[str, Any]) -> list[dict[str, Any]]:
+    model_id = str(manifest.get("champion_model_id") or "")
+    generation = int(manifest.get("generation") or 1)
+    output: list[dict[str, Any]] = []
+    for row in rows:
+        if str(row.get("champion_model_id") or "") != model_id or int(row.get("generation") or 0) != generation:
+            continue
+        case = frozen_record_to_case(row)
+        if case is not None:
+            output.append(case)
+    output.sort(key=lambda c: (int(c.get("time", 0)), str(c.get("market_type", "")), str(c.get("symbol", ""))))
+    return output
+
 def build_evolution_review(rows: list[dict[str, Any]], manifest: dict[str, Any]) -> dict[str, Any]:
     model_id = str(manifest.get("champion_model_id") or "")
     generation = int(manifest.get("generation") or 1)
-    threshold = int(manifest.get("evolution_min_settled_72h") or 200)
+    threshold = int(manifest.get("evolution_min_settled_72h") or 120)
     current = [r for r in rows if str(r.get("champion_model_id") or "") == model_id and int(r.get("generation") or 0) == generation]
     settled = [r for r in current if r.get("final_outcome") in OUTCOME_KEYS]
     due = len(settled) >= threshold
 
     state_stats = {state: _summary_from_rows([r for r in current if r.get("state") == state]) for state in ("S0.5", "S1", "S2", "S3")}
+    market_stats = {
+        market_type: _summary_from_rows([r for r in current if str(r.get("market_type") or "CRYPTO") == market_type])
+        for market_type in ("CRYPTO", "US_STOCK")
+    }
     regime_groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for r in settled:
         regime = str((r.get("features") or {}).get("dmi_adx_regime") or "UNKNOWN")
@@ -349,6 +431,7 @@ def build_evolution_review(rows: list[dict[str, Any]], manifest: dict[str, Any])
         "minimum_settled_72h": threshold,
         "evolution_due": due,
         "state_review": state_stats,
+        "market_review": market_stats,
         "adx_regime_review": regime_stats,
         "overconfident_failures": overconfident_failures[:50],
         "next_action": "retrain_and_publish_next_champion" if due else "keep_collecting_frozen_settlements",

@@ -59,6 +59,7 @@ def replay_symbol(
     step_bars: int = 1,
     daily_timeline: list[dict[str, Any]] | None = None,
     allow_partial_horizons: bool = False,
+    market_type: str = "CRYPTO",
 ) -> list[dict[str, Any]]:
     """Replay the real S-state engine at each historical 4H cutoff without look-ahead.
 
@@ -67,6 +68,7 @@ def replay_symbol(
     """
     if not rows_4h:
         return []
+    market_type = str(market_type or "CRYPTO").upper()
     rows = sorted(rows_4h, key=lambda x: int(x["time"]))
     max_h = max(horizons)
     snapshots: list[dict[str, Any] | None] = [None] * len(rows)
@@ -117,6 +119,7 @@ def replay_symbol(
             previous_dmi_relation=previous_dmi_relation,
             dmi_relation_age_bars=dmi_relation_age,
         )
+        features["market_type"] = market_type
         bandpos = float((opportunity.get("current") or {}).get("ha_band_position", 0.5) or 0.5)
         snapshots[idx] = {
             "state": state,
@@ -144,6 +147,7 @@ def replay_symbol(
                         "price": float(record["_price"]),
                         "bandpos": bandpos,
                         "features": {
+                            "market_type": market_type,
                             "midline_state": features.get("midline_state"),
                             "bandpos": features.get("bandpos"),
                             "bandpos_bin": features.get("bandpos_bin"),
@@ -262,6 +266,7 @@ def replay_symbol(
         cases.append(
             {
                 "symbol": symbol,
+                "market_type": market_type,
                 "time": int(rows[idx]["time"]),
                 "time_tw": iso_tw(int(rows[idx]["time"])),
                 "state": state,

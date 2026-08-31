@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from engine.symbols_config import EXAM_SYMBOLS
+from engine.symbols_config import EXAM_SYMBOLS, get_unlocked_rwa_symbols, is_rwa_symbol
 from training.champion_learning import (
     apply_case_settlement,
     build_evolution_review,
@@ -33,11 +33,21 @@ EVOLUTION_REVIEW_PATH = ROOT / "reports" / "evolution_review.json"
 TARGET_STATES = {"S0.5", "S1", "S2", "S3"}
 
 
+def champion_symbols() -> list[str]:
+    return list(dict.fromkeys([*EXAM_SYMBOLS, *get_unlocked_rwa_symbols()]))
+
+
 def parse_symbols(text: str) -> list[str]:
-    if not text or text.upper() == "ALL":
+    key = str(text or "ALL").strip().upper()
+    if key == "ALL":
+        return champion_symbols()
+    if key in {"CRYPTO", "CRYPTO_ONLY"}:
         return list(EXAM_SYMBOLS)
+    if key in {"US_STOCK", "US-STOCK", "RWA"}:
+        return list(get_unlocked_rwa_symbols())
+    allowed = set(champion_symbols())
     requested = [x.strip().upper() for x in text.split(",") if x.strip()]
-    unknown = [x for x in requested if x not in EXAM_SYMBOLS]
+    unknown = [x for x in requested if x not in allowed]
     if unknown:
         raise SystemExit(f"Unknown symbols: {', '.join(unknown)}")
     return requested
@@ -61,13 +71,13 @@ def main() -> int:
     now_iso = now.isoformat()
     now_ms = int(now.timestamp() * 1000)
 
-    manifest = load_json(GENERATION_PATH, {"schema_version": 1, "generation": 1, "champion_model_id": "", "evolution_min_settled_72h": 200})
+    manifest = load_json(GENERATION_PATH, {"schema_version": 1, "generation": 1, "champion_model_id": "", "evolution_min_settled_72h": 120})
     history = load_json(GENERATIONS_PATH, [])
     manifest, history, _ = ensure_generation(manifest, history, active_model_id, now_iso)
     ledger = load_ledger(LEDGER_PATH)
     by_snapshot_id = {str(r.get("snapshot_id")): r for r in ledger}
-    by_symbol_time: dict[tuple[str, int], dict[str, Any]] = {
-        (str(r.get("symbol") or ""), int(r.get("decision_time", 0))): r for r in ledger
+    by_symbol_time: dict[tuple[str, str, int], dict[str, Any]] = {
+        (str(r.get("market_type") or "CRYPTO"), str(r.get("symbol") or ""), int(r.get("decision_time", 0))): r for r in ledger
     }
 
     symbols = parse_symbols(args.symbols)
@@ -77,8 +87,12 @@ def main() -> int:
     settled_updates = 0
 
     for pos, symbol in enumerate(symbols, start=1):
-        print(f"[{pos}/{len(symbols)}] {symbol}: update cache + replay", flush=True)
-        rows = load_csv(CACHE_DIR / f"{symbol}.csv")[-max_records:] if args.cache_only else update_symbol_cache(symbol, CACHE_DIR, max_records=max_records, full_refresh=False)
+        market_type = "US_STOCK" if is_rwa_symbol(symbol) else "CRYPTO"
+        print(f"[{pos}/{len(symbols)}] {market_type}/{symbol}: update cache + replay", flush=True)
+        # RWA has no deep historical backfill requirement. Keep only enough live
+        # bars for current feature calculation and future 72H settlement.
+        symbol_max_records = min(max_records, replay_bars) if market_type == "US_STOCK" else max_records
+        rows = load_csv(CACHE_DIR / f"{symbol}.csv")[-symbol_max_records:] if args.cache_only else update_symbol_cache(symbol, CACHE_DIR, max_records=symbol_max_records, full_refresh=False)
         review_rows = rows[-replay_bars:]
         timeline: list[dict[str, Any]] = []
         cases = replay_symbol(
@@ -88,11 +102,12 @@ def main() -> int:
             step_bars=1,
             daily_timeline=timeline,
             allow_partial_horizons=True,
+            market_type=market_type,
         )
 
         case_index = {int(c.get("time", 0)): c for c in cases}
-        for (row_symbol, decision_time), frozen in list(by_symbol_time.items()):
-            if row_symbol != symbol:
+        for (row_market, row_symbol, decision_time), frozen in list(by_symbol_time.items()):
+            if row_market != market_type or row_symbol != symbol:
                 continue
             case = case_index.get(decision_time)
             if case and apply_case_settlement(frozen, case):
@@ -104,10 +119,14 @@ def main() -> int:
         state = str(latest.get("state") or "")
         if state not in TARGET_STATES:
             continue
-        prediction = lookup_probability(active_model, state, 18, latest.get("features") or {})
+        features = dict(latest.get("features") or {})
+        features["market_type"] = market_type
+        latest = dict(latest)
+        latest["features"] = features
+        prediction = lookup_probability(active_model, state, 18, features)
         if not prediction.get("available"):
             continue
-        snapshot_id = f"{active_model_id}:{symbol}:{int(latest['cutoff_time'])}"
+        snapshot_id = f"{active_model_id}:{market_type}:{symbol}:{int(latest['cutoff_time'])}"
         if snapshot_id in by_snapshot_id:
             continue
         frozen = make_frozen_record(
@@ -118,10 +137,11 @@ def main() -> int:
             target=target_name(state),
             frozen_at_iso=now_iso,
             generation=int(manifest.get("generation") or 1),
+            market_type=market_type,
         )
         ledger.append(frozen)
         by_snapshot_id[snapshot_id] = frozen
-        by_symbol_time[(symbol, int(latest["cutoff_time"]))] = frozen
+        by_symbol_time[(market_type, symbol, int(latest["cutoff_time"]))] = frozen
         new_snapshots += 1
 
     performance = build_performance(ledger, manifest, history, now_ms=now_ms)

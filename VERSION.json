@@ -1,9 +1,16 @@
 {
-  "version": "3.2.0",
-  "label": "Champion Frozen Settlement",
+  "version": "3.3.0",
+  "label": "Champion 120-Cycle + US-Stock Live Learning",
   "champion_baseline": "a9a998d93ea396e4",
   "daily_review_taiwan": "08:25",
   "daily_review_cron_utc": "25 0 * * *",
-  "evolution_min_settled_72h": 200,
-  "challenger_flow": false
+  "evolution_min_settled_72h": 120,
+  "challenger_flow": false,
+  "frozen_live_reinforcement_weight": 10,
+  "markets": [
+    "CRYPTO",
+    "US_STOCK"
+  ],
+  "generation_rule": "Each Champion evolves once after 120 new 72H Frozen settlements; next Champion starts a fresh generation counter.",
+  "schedule_owner": "Cloudflare Worker"
 }

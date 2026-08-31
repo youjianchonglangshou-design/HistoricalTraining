@@ -1,0 +1,19 @@
+HistoricalTraining v3.3.0｜120-CYCLE + US-STOCK-LIVE
+
+覆蓋以下 9 個檔案：
+.github/workflows/daily-learning.yml
+README.md
+VERSION.json
+champion_daily.py
+data/champion/generation.json
+run_training.py
+tests/test_champion_learning.py
+training/champion_learning.py
+training/replay.py
+
+不需要刪除其他檔案。
+Cloudflare 台灣 08:25 排程不變；沒有新增 GitHub cron。
+本代 Champion a9a998d93ea396e4 的進化門檻改為 120 筆 72H 正式結算。
+每一代只進化一次；新 Champion 上線後下一代重新從 0/120 累積。
+Crypto + 已解鎖 Pionex 美股/RWA 都會建立 Frozen Snapshot 並進行 72H 結算。
+本代 Frozen settled cases 會以 10x live reinforcement 加入下一代訓練。

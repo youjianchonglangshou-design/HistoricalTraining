@@ -10,6 +10,7 @@ from pathlib import Path
 from engine.scoring_rules import ENGINE_API_VERSION, OPPORTUNITY_ENGINE_VERSION, PURPLE2_RULE_VERSION
 from engine.symbols_config import EXAM_SYMBOLS
 from training.io_utils import write_jsonl_gz
+from training.champion_learning import current_generation_frozen_cases, load_json as load_champion_json, load_ledger
 from training.model_builder import build_model, save_json
 from training.pionex_history import load_csv, update_symbol_cache
 from training.replay import DEFAULT_HORIZONS, replay_symbol
@@ -21,6 +22,8 @@ MODEL_PATH = ROOT / "models" / "probability_model.json"
 REPORT_PATH = ROOT / "reports" / "training_report.json"
 META_PATH = ROOT / "data" / "learning_meta.json"
 QUIZ_TIMELINE_DIR = ROOT / "quiz" / "model_timeline"
+CHAMPION_LEDGER_PATH = ROOT / "data" / "champion" / "ledger.jsonl"
+CHAMPION_GENERATION_PATH = ROOT / "data" / "champion" / "generation.json"
 
 
 
@@ -110,6 +113,7 @@ def main() -> int:
     parser.add_argument("--step-bars", type=int, default=1, help="Replay every N 4H bars; production default 1")
     parser.add_argument("--min-samples", type=int, default=50, help="Minimum cases for a conditional probability rule")
     parser.add_argument("--cache-only", action="store_true", help="Use existing local 4H cache only; do not call Pionex API")
+    parser.add_argument("--frozen-reinforcement", type=int, default=10, help="Effective training weight for each settled Frozen Champion case in the current generation")
     args = parser.parse_args()
 
     symbols = parse_symbols(args.symbols)
@@ -132,6 +136,7 @@ def main() -> int:
                 horizons=DEFAULT_HORIZONS,
                 step_bars=max(1, args.step_bars),
                 daily_timeline=quiz_timeline,
+                market_type="CRYPTO",
             )
             save_json(
                 QUIZ_TIMELINE_DIR / f"{symbol}.json",
@@ -156,8 +161,20 @@ def main() -> int:
         print("No training cases were produced.", file=sys.stderr)
         return 2
 
-    all_cases.sort(key=lambda x: (int(x["time"]), x["symbol"]))
-    print(f"write {len(all_cases)} cases -> {CASES_PATH}")
+    base_replay_cases = list(all_cases)
+    generation_manifest = load_champion_json(CHAMPION_GENERATION_PATH, {})
+    frozen_live_cases = current_generation_frozen_cases(load_ledger(CHAMPION_LEDGER_PATH), generation_manifest)
+    reinforcement = max(1, min(50, int(args.frozen_reinforcement)))
+
+    # Audit dataset keeps each Frozen result once. The actual model receives a
+    # configurable reinforcement weight so 120 new live exam results can matter
+    # against the much larger historical crypto baseline instead of being diluted.
+    audit_cases = base_replay_cases + frozen_live_cases
+    training_cases = base_replay_cases + [case for case in frozen_live_cases for _ in range(reinforcement)]
+    all_cases = audit_cases
+    all_cases.sort(key=lambda x: (int(x["time"]), str(x.get("market_type", "")), x["symbol"]))
+    print(f"write {len(all_cases)} unique/audit cases -> {CASES_PATH}")
+    print(f"Frozen live feedback: unique={len(frozen_live_cases)} reinforcement={reinforcement} effective={len(frozen_live_cases) * reinforcement}")
     write_jsonl_gz(CASES_PATH, all_cases)
 
     # Freeze the first historical/live boundary once. It is not reset by later retraining.
@@ -180,9 +197,18 @@ def main() -> int:
     historical_cases = [c for c in all_cases if live_since_ms is None or int(c["time"]) <= int(live_since_ms)]
     live_cases = [c for c in all_cases if live_since_ms is not None and int(c["time"]) > int(live_since_ms)]
 
-    model = build_model(all_cases, DEFAULT_HORIZONS, min_samples=max(10, args.min_samples))
+    model = build_model(training_cases, DEFAULT_HORIZONS, min_samples=max(10, args.min_samples))
     model["training"] = {
-        "case_count": len(all_cases),
+        "case_count": len(training_cases),
+        "audit_case_count": len(all_cases),
+        "base_replay_case_count": len(base_replay_cases),
+        "frozen_live_unique_case_count": len(frozen_live_cases),
+        "frozen_live_reinforcement_weight": reinforcement,
+        "frozen_live_effective_case_count": len(frozen_live_cases) * reinforcement,
+        "frozen_live_market_counts": {
+            "CRYPTO": sum(1 for c in frozen_live_cases if str(c.get("market_type") or "CRYPTO") == "CRYPTO"),
+            "US_STOCK": sum(1 for c in frozen_live_cases if str(c.get("market_type") or "CRYPTO") == "US_STOCK"),
+        },
         "symbols_requested": symbols,
         "max_records_per_symbol": max_records,
         "step_bars": max(1, args.step_bars),
@@ -200,7 +226,12 @@ def main() -> int:
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "model_id": model.get("model_id"),
         "schema_version": model.get("schema_version"),
-        "total_cases": len(all_cases),
+        "total_cases": len(training_cases),
+        "audit_case_count": len(all_cases),
+        "base_replay_case_count": len(base_replay_cases),
+        "frozen_live_unique_case_count": len(frozen_live_cases),
+        "frozen_live_reinforcement_weight": reinforcement,
+        "frozen_live_effective_case_count": len(frozen_live_cases) * reinforcement,
         "historical_case_count": len(historical_cases),
         "live_case_count": len(live_cases),
         "live_since_ms": live_since_ms,

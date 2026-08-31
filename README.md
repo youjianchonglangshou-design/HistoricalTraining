@@ -58,7 +58,7 @@ Champion = a9a998d93ea396e4
 - 預估成功率 ≥60% / ≥65% / ≥70% 的實際成功率
 - 最近逐筆凍結紀錄與 72H 實際 state path
 
-預設當本代 Champion 累積 **200 筆 72H 正式結算** 時觸發一次 Evolution Review。門檻保存在 `data/champion/generation.json`，可再調整。
+預設當本代 Champion 累積 **120 筆 72H 正式結算** 時觸發一次 Evolution Review。新 Champion 上線後會建立下一代，計數重新從 0/120 開始；不會變成 120 筆之後每天多幾筆就重訓。門檻保存在 `data/champion/generation.json`，可再調整。
 
 ## DMI Expert v3：ADX 1 位小數 + 同值延續正式進入歷史學習
 
@@ -279,3 +279,12 @@ v2 起同時保留：
 2. **進化**：只有本代累積到指定 72H 正式結算門檻時，才重訓並直接發布下一代 Champion。
 
 因此「每天新增 6 根 4H 就建立一個幾乎一樣的 Challenger」的流程已取消。
+
+
+## v3.3.0｜120 筆世代循環 + 美股 Live Learning
+
+- 每一代 Champion 只使用「本代新產生」的 Frozen Snapshot 計數；滿 **120 筆正式 72H 結算**才觸發一次 Evolution。新 Champion 上線後，下一代從 0/120 重新累積，不會每天少量重訓。
+- 每日 08:25 Cloudflare 觸發不變。`champion_daily.py --symbols ALL` 現在同時追蹤 Crypto 與已解鎖的 Pionex 美股/RWA 標的。
+- 美股不做深度歷史 backfill；只維護足以計算當下 S-state/ADX/DI 與後續 72H 結算的近期 4H cache。
+- Frozen Snapshot 永久保存 `market_type=CRYPTO/US_STOCK`，戰績 JSON 同時提供整體與分市場成績。
+- 進化時，本代已結算 Frozen cases 會以預設 **10x live reinforcement** 加入下一代訓練，使 120 筆真實考卷不會被約 20 萬筆歷史樣本完全稀釋。美股 Frozen cases 因此也會正式參與下一代模型學習。
