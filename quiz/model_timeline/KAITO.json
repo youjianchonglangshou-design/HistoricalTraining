@@ -20369,11 +20369,11 @@
       "state": "OTHER",
       "features": {
         "midline_state": "falling",
-        "bandpos": 0.203384,
+        "bandpos": 0.204466,
         "bandpos_bin": "LT_025",
         "trigger_stage": "T0",
         "bandwidth_trend": "CONTRACTING",
-        "bandwidth_delta_3d": -66.44382666,
+        "bandwidth_delta_3d": -66.54714526,
         "state_age_bars": 52,
         "state_age_bin": "7_PLUS",
         "di_plus": 13.55942549,

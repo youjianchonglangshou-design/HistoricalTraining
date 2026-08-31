@@ -39449,11 +39449,11 @@
       "state": "OTHER",
       "features": {
         "midline_state": "rising",
-        "bandpos": 0.413107,
+        "bandpos": 0.414254,
         "bandpos_bin": "025_050",
         "trigger_stage": "T0",
         "bandwidth_trend": "CONTRACTING",
-        "bandwidth_delta_3d": -0.7333018,
+        "bandwidth_delta_3d": -0.7518041,
         "state_age_bars": 5,
         "state_age_bin": "4_6",
         "di_plus": 19.57608064,

@@ -54569,11 +54569,11 @@
       "state": "OTHER",
       "features": {
         "midline_state": "falling",
-        "bandpos": 0.218837,
+        "bandpos": 0.219714,
         "bandpos_bin": "LT_025",
         "trigger_stage": "T0",
         "bandwidth_trend": "EXPANDING",
-        "bandwidth_delta_3d": 2.45792429,
+        "bandwidth_delta_3d": 2.41528263,
         "state_age_bars": 34,
         "state_age_bin": "7_PLUS",
         "di_plus": 21.68606834,

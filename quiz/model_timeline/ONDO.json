@@ -33649,11 +33649,11 @@
       "state": "OTHER",
       "features": {
         "midline_state": "flat",
-        "bandpos": 0.40634,
+        "bandpos": 0.412244,
         "bandpos_bin": "025_050",
         "trigger_stage": "T0",
         "bandwidth_trend": "CONTRACTING",
-        "bandwidth_delta_3d": -0.39851773,
+        "bandwidth_delta_3d": -0.46821298,
         "state_age_bars": 5,
         "state_age_bin": "4_6",
         "di_plus": 21.13329147,

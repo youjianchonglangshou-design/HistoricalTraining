@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "generated_at": "2026-08-31T14:07:50.357486+00:00",
+  "generated_at": "2026-08-31T15:55:18.530946+00:00",
   "engine_contract": "S-state rules fixed; probability/outcome parameters evolve in JSON",
   "settlement_contract": "Each horizon is decomposed into SUCCESS_WITHIN_HORIZON + ALIVE_SLOW + TRUE_FAIL + OTHER = 100%.",
   "outcome_keys": [

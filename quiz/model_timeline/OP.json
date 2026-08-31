@@ -60169,11 +60169,11 @@
       "state": "OTHER",
       "features": {
         "midline_state": "flat",
-        "bandpos": 0.322427,
+        "bandpos": 0.323351,
         "bandpos_bin": "025_050",
         "trigger_stage": "T0",
         "bandwidth_trend": "EXPANDING",
-        "bandwidth_delta_3d": 1.18407287,
+        "bandwidth_delta_3d": 1.14853534,
         "state_age_bars": 18,
         "state_age_bin": "7_PLUS",
         "di_plus": 23.10070276,

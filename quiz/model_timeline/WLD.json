@@ -43449,11 +43449,11 @@
       "state": "OTHER",
       "features": {
         "midline_state": "rising",
-        "bandpos": 0.402987,
+        "bandpos": 0.407272,
         "bandpos_bin": "025_050",
         "trigger_stage": "T0",
         "bandwidth_trend": "CONTRACTING",
-        "bandwidth_delta_3d": -4.46378835,
+        "bandwidth_delta_3d": -4.53953427,
         "state_age_bars": 4,
         "state_age_bin": "4_6",
         "di_plus": 20.36324822,

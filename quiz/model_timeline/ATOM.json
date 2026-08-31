@@ -64769,11 +64769,11 @@
       "state": "OTHER",
       "features": {
         "midline_state": "rising",
-        "bandpos": 0.353715,
+        "bandpos": 0.358649,
         "bandpos_bin": "025_050",
         "trigger_stage": "T0",
         "bandwidth_trend": "CONTRACTING",
-        "bandwidth_delta_3d": -2.77332768,
+        "bandwidth_delta_3d": -2.82055091,
         "state_age_bars": 10,
         "state_age_bin": "7_PLUS",
         "di_plus": 18.74189928,

@@ -50929,11 +50929,11 @@
       "state": "S2",
       "features": {
         "midline_state": "rising",
-        "bandpos": 0.572443,
+        "bandpos": 0.568912,
         "bandpos_bin": "050_060",
         "trigger_stage": "T0",
         "bandwidth_trend": "CONTRACTING",
-        "bandwidth_delta_3d": -0.44233361,
+        "bandwidth_delta_3d": -0.47793341,
         "state_age_bars": 21,
         "state_age_bin": "7_PLUS",
         "di_plus": 21.66174614,

@@ -38009,11 +38009,11 @@
       "state": "OTHER",
       "features": {
         "midline_state": "falling",
-        "bandpos": -0.008063,
+        "bandpos": -0.00828,
         "bandpos_bin": "LT_025",
         "trigger_stage": "T0",
         "bandwidth_trend": "EXPANDING",
-        "bandwidth_delta_3d": 11.34856345,
+        "bandwidth_delta_3d": 11.16104456,
         "state_age_bars": 36,
         "state_age_bin": "7_PLUS",
         "di_plus": 13.06679017,

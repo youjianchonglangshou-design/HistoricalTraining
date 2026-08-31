@@ -46729,11 +46729,11 @@
       "state": "OTHER",
       "features": {
         "midline_state": "rising",
-        "bandpos": 0.42134,
+        "bandpos": 0.422697,
         "bandpos_bin": "025_050",
         "trigger_stage": "T0",
         "bandwidth_trend": "CONTRACTING",
-        "bandwidth_delta_3d": -1.43202955,
+        "bandwidth_delta_3d": -1.44723306,
         "state_age_bars": 5,
         "state_age_bin": "4_6",
         "di_plus": 23.46656196,

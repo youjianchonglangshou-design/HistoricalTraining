@@ -33009,11 +33009,11 @@
       "state": "S2",
       "features": {
         "midline_state": "rising",
-        "bandpos": 0.592523,
+        "bandpos": 0.589902,
         "bandpos_bin": "050_060",
         "trigger_stage": "T0",
         "bandwidth_trend": "CONTRACTING",
-        "bandwidth_delta_3d": -1.51816086,
+        "bandwidth_delta_3d": -1.5325941,
         "state_age_bars": 19,
         "state_age_bin": "7_PLUS",
         "di_plus": 20.9461358,

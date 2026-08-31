@@ -61009,11 +61009,11 @@
       "state": "S2",
       "features": {
         "midline_state": "rising",
-        "bandpos": 0.58408,
+        "bandpos": 0.595348,
         "bandpos_bin": "050_060",
         "trigger_stage": "T0",
         "bandwidth_trend": "CONTRACTING",
-        "bandwidth_delta_3d": -5.38962787,
+        "bandwidth_delta_3d": -5.29740971,
         "state_age_bars": 5,
         "state_age_bin": "4_6",
         "di_plus": 23.66834185,
