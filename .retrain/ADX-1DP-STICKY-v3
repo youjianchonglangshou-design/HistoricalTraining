@@ -1,5 +1,6 @@
 ADX 1DP Sticky semantic migration
 Created: 2026-08-31
-Purpose: trigger one full Daily S-state Learning run after v3 code lands.
+Purpose: trigger full Daily S-state Learning after v3 deployment is complete.
 Training: ALL symbols, max_records=20000, step_bars=1, min_samples=50.
 Output: new DMI-EXPERT-v3-ADX-1DP-STICKY candidate + regenerated quiz/model_timeline.
+Trigger: post-deployment retrain request 2026-08-31.
