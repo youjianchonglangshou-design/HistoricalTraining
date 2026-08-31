@@ -261,7 +261,9 @@ jobs:
             exit 0
           fi
           git commit -m "learning: append market history and build candidate model"
-          git push
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
 
       - name: Report learning failure
         if: ${{ failure() }}
