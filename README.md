@@ -1,3 +1,13 @@
+## v3.4.0｜04:01 Terminal 真實 Champion Checkpoint → 08:25 結算
+
+- 正式 Frozen Snapshot 不再由 08:25 HistoricalTraining 重新計算預測。
+- Terminal 每天台灣 **04:01** 的 Crypto + 美股分析會保存到 R2 `runs/champion/YYYY-MM-DD_0401/`。
+- 08:25 由 Cloudflare Worker 觸發 HistoricalTraining，先讀取當天 04:01 checkpoint，再把「04:01 當時真正顯示過的 Champion 機率／S-state／ADX／DI」凍結進 ledger。
+- 08:25 仍會更新 Pionex 4H cache，但只用來回頭結算舊 Frozen Snapshot 的 12H / 24H / 48H / 72H 路徑；不再拿 08:25 的 partial Daily 狀態建立新預測。
+- 04:01 checkpoint 的 `generated_at_taiwan` 會向下對齊到真正的 4H candle cutoff（04:00）作為 settlement key，同時保留 `checkpoint_time_tw` 顯示實際 04:01 分析時間。
+- 若 04:01 checkpoint 的 model_id 與 08:25 Active Champion 不一致，該 checkpoint 不會被錯掛到另一個 Generation。
+- 120 筆世代門檻、Crypto + 美股、10x live reinforcement 規則維持不變。
+
 # Crypto S-state Learning Engine v3.2 — Champion Frozen Settlement / ADX 1DP Sticky
 
 這個儲存庫用 Pionex 歷史 4H K 線逐根重播正式 S-state 引擎，然後把每個歷史決策點的未來結果結算成 JSON 參數，供 Crypto Monitor / HTML 使用。
@@ -22,7 +32,7 @@ Generation 001
 Champion = a9a998d93ea396e4
 ```
 
-每天台灣時間 **08:25**，GitHub Actions 會執行 `Daily Champion Settlement & Evolution`（cron `25 0 * * *`，GitHub cron 為 UTC）：
+每天台灣時間 **08:25** 由 **Cloudflare Worker** 觸發 GitHub Actions 的 `Daily Champion Settlement & Evolution`；HistoricalTraining 本身不另外建立 08:25 cron：
 
 ```text
 下載 R2 Active Champion

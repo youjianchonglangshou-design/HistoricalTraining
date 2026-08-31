@@ -1,6 +1,6 @@
 {
-  "version": "3.3.0",
-  "label": "Champion 120-Cycle + US-Stock Live Learning",
+  "version": "3.4.0",
+  "label": "Champion 04:01 Terminal Checkpoint + 08:25 Settlement",
   "champion_baseline": "a9a998d93ea396e4",
   "daily_review_taiwan": "08:25",
   "daily_review_cron_utc": "25 0 * * *",
@@ -12,5 +12,8 @@
     "US_STOCK"
   ],
   "generation_rule": "Each Champion evolves once after 120 new 72H Frozen settlements; next Champion starts a fresh generation counter.",
-  "schedule_owner": "Cloudflare Worker"
+  "schedule_owner": "Cloudflare Worker",
+  "checkpoint_taiwan": "04:01",
+  "checkpoint_source": "SStateMarketTerminal R2 runs/champion/YYYY-MM-DD_0401",
+  "freeze_contract": "Only the real Terminal 04:01 Champion prediction is frozen; 08:25 market refresh is settlement-only."
 }

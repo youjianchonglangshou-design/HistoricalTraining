@@ -290,6 +290,8 @@ def build_performance(
         recent.append({
             "snapshot_id": r.get("snapshot_id"),
             "decision_time_tw": r.get("decision_time_tw"),
+            "checkpoint_time_tw": r.get("checkpoint_time_tw"),
+            "frozen_source": r.get("frozen_source"),
             "symbol": r.get("symbol"),
             "market_type": str(r.get("market_type") or "CRYPTO"),
             "state": r.get("state"),

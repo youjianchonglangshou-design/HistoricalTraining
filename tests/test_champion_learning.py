@@ -14,6 +14,8 @@ from training.champion_learning import (
 )
 
 
+from champion_daily import checkpoint_cutoff_ms, frozen_from_terminal_checkpoint
+
 class ChampionLearningTests(unittest.TestCase):
     def test_generation_changes_only_when_active_model_changes(self):
         manifest = {"generation": 1, "champion_model_id": "A", "started_at": "t0", "evolution_min_settled_72h": 120}
@@ -105,6 +107,89 @@ class ChampionLearningTests(unittest.TestCase):
         p = build_performance(rows, manifest, [], now_ms=10_000)
         self.assertEqual(p["by_market"]["CRYPTO"]["all"]["success"], 1)
         self.assertEqual(p["by_market"]["US_STOCK"]["all"]["true_fail"], 1)
+
+    def test_terminal_0401_checkpoint_uses_4h_cutoff_and_exact_frozen_prediction(self):
+        payload = {
+            "batch": {
+                "generated_at_taiwan": "2026-09-01T04:01:08+08:00",
+                "snapshot_hash": "abc",
+                "probability_model": {"model_id": "MODEL001"},
+            },
+            "records": [],
+        }
+        # 04:01 TW = 20:01 UTC previous day -> 4H decision bar starts 20:00 UTC.
+        expected_ms = int(__import__("datetime").datetime(2026, 8, 31, 20, 0, tzinfo=__import__("datetime").timezone.utc).timestamp() * 1000)
+        self.assertEqual(checkpoint_cutoff_ms(payload), expected_ms)
+
+        payload["_checkpoint_cutoff_ms"] = expected_ms
+        payload["_checkpoint_generated_at"] = "2026-09-01T04:01:08+08:00"
+        row = {
+            "symbol": "BTC",
+            "price": 100.0,
+            "opportunity_long": {
+                "market_state_id": "S2",
+                "current": {"ha_band_position": 0.56},
+            },
+            "historical_probability": {
+                "available": True,
+                "model_id": "MODEL001",
+                "state": "S2",
+                "target": "S3",
+                "features": {"adx": 18.4, "dmi_relation": "PLUS"},
+                "72h": {
+                    "available": True,
+                    "success_probability": 0.67,
+                    "alive_slow_probability": 0.12,
+                    "structural_survival_probability": 0.79,
+                    "true_fail_probability": 0.14,
+                    "other_probability": 0.07,
+                    "matched_samples": 321,
+                    "level": 5,
+                },
+            },
+        }
+        frozen = frozen_from_terminal_checkpoint(
+            row=row,
+            payload=payload,
+            market_type="CRYPTO",
+            generation=1,
+            active_model_id="MODEL001",
+            frozen_at_iso="2026-09-01T00:25:00+00:00",
+        )
+        self.assertIsNotNone(frozen)
+        self.assertEqual(frozen["frozen_source"], "TERMINAL_0401_CHECKPOINT")
+        self.assertEqual(frozen["decision_time"], expected_ms)
+        self.assertEqual(frozen["prediction"]["success_probability"], 0.67)
+        self.assertEqual(frozen["prediction"]["true_fail_probability"], 0.14)
+        self.assertEqual(frozen["checkpoint_time_tw"], "2026-09-01T04:01:08+08:00")
+
+    def test_checkpoint_from_wrong_model_is_not_misattributed(self):
+        payload = {
+            "batch": {
+                "generated_at_taiwan": "2026-09-01T04:01:00+08:00",
+                "probability_model": {"model_id": "OLDMODEL1"},
+            },
+            "_checkpoint_cutoff_ms": 1000,
+            "_checkpoint_generated_at": "2026-09-01T04:01:00+08:00",
+        }
+        row = {
+            "symbol": "BTC",
+            "price": 100,
+            "opportunity_long": {"market_state_id": "S2", "current": {"ha_band_position": 0.5}},
+            "historical_probability": {
+                "available": True,
+                "model_id": "OLDMODEL1",
+                "state": "S2",
+                "target": "S3",
+                "features": {},
+                "72h": {"available": True, "success_probability": 0.5},
+            },
+        }
+        frozen = frozen_from_terminal_checkpoint(
+            row=row, payload=payload, market_type="CRYPTO", generation=2,
+            active_model_id="NEWMODEL2", frozen_at_iso="now",
+        )
+        self.assertIsNone(frozen)
 
 
 if __name__ == "__main__":
