@@ -56635,7 +56635,7 @@
     },
     {
       "day_time": 1788048000000,
-      "cutoff_time": 1788091200000,
+      "cutoff_time": 1788120000000,
       "state": "S2",
       "features": {
         "midline_state": "rising",
@@ -56644,7 +56644,7 @@
         "trigger_stage": "T0",
         "bandwidth_trend": "EXPANDING",
         "bandwidth_delta_3d": 0.62104265,
-        "state_age_bars": 16,
+        "state_age_bars": 18,
         "state_age_bin": "7_PLUS",
         "di_plus": 25.92476832,
         "di_minus": 11.55642099,
@@ -56652,7 +56652,7 @@
         "dmi_relation": "PLUS",
         "dmi_axis_zone": "PLUS_ONLY_ABOVE_20",
         "dmi_cross_event": "NO_NEW_CROSS",
-        "dmi_cross_age_bars": 65,
+        "dmi_cross_age_bars": 67,
         "dmi_cross_age_bin": "7_PLUS",
         "di_plus_slope_3d": 0.0,
         "di_minus_slope_3d": 0.0,
@@ -56665,6 +56665,41 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.96866937,
+        "dmi_adx_regime": "PLUS_RISING"
+      }
+    },
+    {
+      "day_time": 1788134400000,
+      "cutoff_time": 1788134400000,
+      "state": "S2",
+      "features": {
+        "midline_state": "rising",
+        "bandpos": 0.634643,
+        "bandpos_bin": "060_075",
+        "trigger_stage": "T0",
+        "bandwidth_trend": "FLAT",
+        "bandwidth_delta_3d": 0.02667662,
+        "state_age_bars": 19,
+        "state_age_bin": "7_PLUS",
+        "di_plus": 25.92497337,
+        "di_minus": 11.55637812,
+        "di_gap": 14.36859524,
+        "dmi_relation": "PLUS",
+        "dmi_axis_zone": "PLUS_ONLY_ABOVE_20",
+        "dmi_cross_event": "NO_NEW_CROSS",
+        "dmi_cross_age_bars": 68,
+        "dmi_cross_age_bin": "7_PLUS",
+        "di_plus_slope_3d": 0.0,
+        "di_minus_slope_3d": -0.0,
+        "di_gap_slope_3d": 0.0,
+        "adx": 37.92212164,
+        "adx_slope_3d": 1.9688902,
+        "adx_axis_zone": "ABOVE_20",
+        "adx_step_direction": "RISING",
+        "adx_step_age_days": 12,
+        "adx_step_age_bin": "7_PLUS",
+        "adx_turn_event": "NONE",
+        "adx_step_delta": 1.9688902,
         "dmi_adx_regime": "PLUS_RISING"
       }
     }
