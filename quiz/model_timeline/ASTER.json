@@ -35,7 +35,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.95921939,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -70,7 +75,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.90063137,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -105,7 +115,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.50895849,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 8,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -140,7 +155,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.57197195,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 9,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -175,7 +195,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.58698199,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 10,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -210,7 +235,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.39962591,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 11,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -245,7 +275,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.66400584,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 12,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -280,7 +315,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.86602731,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 13,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -315,7 +355,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.44220267,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 14,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -350,7 +395,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 1.46743148,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -385,7 +435,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.26287723,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -420,7 +475,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.70214848,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -455,7 +515,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.20611641,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -490,7 +555,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.722171,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -525,7 +595,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.42990616,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -560,7 +635,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.42990616,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -595,7 +675,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.36330866,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -630,7 +715,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.69293252,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -665,7 +755,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.36072043,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -700,7 +795,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.72139711,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -735,7 +835,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.10697167,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -770,7 +875,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.23080433,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -805,7 +915,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.28986872,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -840,7 +955,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.66961916,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -875,7 +995,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.51319916,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -910,7 +1035,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.09650365,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -945,7 +1075,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.82840582,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -980,7 +1115,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.37529392,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1015,7 +1155,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.01969763,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1050,7 +1195,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.29761597,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1085,7 +1235,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.64598347,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1120,7 +1275,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.64598347,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1155,7 +1315,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.20099565,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1190,7 +1355,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.13712855,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1225,7 +1395,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.4150333,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 8,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1260,7 +1435,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.01724194,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 9,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1295,7 +1475,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.40958062,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 10,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1330,7 +1515,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.7418951,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 11,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1365,7 +1555,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.62362716,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 12,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1400,7 +1595,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.80531652,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 13,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1435,7 +1635,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.6739455,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 14,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1470,7 +1675,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.92066288,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 15,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1505,7 +1715,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.04006344,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 16,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1540,7 +1755,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.7621451,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 17,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1575,7 +1795,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.37641751,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 18,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1610,7 +1835,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.37641751,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 19,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1645,7 +1875,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.6977315,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 20,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1680,7 +1915,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.6977315,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 21,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1715,7 +1955,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.18766512,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 22,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1750,7 +1995,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.29869445,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 23,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1785,7 +2035,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.18043324,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 24,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1820,7 +2075,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.65696792,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 25,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -1855,7 +2115,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.28664565,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -1890,7 +2155,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.44547435,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -1925,7 +2195,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.512549,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -1960,7 +2235,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.24555495,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -1995,7 +2275,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.25520301,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2030,7 +2315,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.4002491,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2065,7 +2355,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -3.30070347,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2100,7 +2395,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -3.7942382,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 8,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2135,7 +2435,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -3.76652829,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 9,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2170,7 +2475,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -3.52956852,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 10,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2205,7 +2515,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.61549275,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 11,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2240,7 +2555,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.46448526,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 12,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2275,7 +2595,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.66316369,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 13,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2310,7 +2635,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.39740063,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 14,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2345,7 +2675,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.11674125,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 15,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2380,7 +2715,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.55271573,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 16,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2415,7 +2755,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -3.19077481,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 17,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -2450,7 +2795,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -3.14545999,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 18,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2485,7 +2835,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.4195966,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 19,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2520,7 +2875,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.39373708,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 20,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -2555,7 +2915,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.01293201,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 21,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2590,7 +2955,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 2.62156334,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -2625,7 +2995,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.38531517,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -2660,7 +3035,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.14835541,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -2695,7 +3075,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.40214379,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -2730,7 +3115,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.16689451,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -2765,7 +3155,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.51306479,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -2800,7 +3195,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.07298734,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -2835,7 +3235,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.54068454,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 8,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -2870,7 +3275,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.15777396,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2905,7 +3315,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.30557563,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -2940,7 +3355,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 1.20037662,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -2975,7 +3395,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.36705991,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -3010,7 +3435,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.59446819,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -3045,7 +3475,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.94469242,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -3080,7 +3515,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.62871648,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -3115,7 +3555,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.20337386,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -3150,7 +3595,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.10660696,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -3180,12 +3630,17 @@
         "adx": 24.79089455,
         "adx_slope_3d": -0.54650989,
         "adx_axis_zone": "ABOVE_20",
-        "adx_step_direction": "RISING",
-        "adx_step_age_days": 1,
-        "adx_step_age_bin": "1",
-        "adx_turn_event": "RED_TO_GREEN",
+        "adx_step_direction": "FALLING",
+        "adx_step_age_days": 4,
+        "adx_step_age_bin": "4_6",
+        "adx_turn_event": "NONE",
         "adx_step_delta": 0.01358718,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -3216,11 +3671,16 @@
         "adx_slope_3d": 0.91480467,
         "adx_axis_zone": "ABOVE_20",
         "adx_step_direction": "RISING",
-        "adx_step_age_days": 2,
-        "adx_step_age_bin": "2_3",
-        "adx_turn_event": "NONE",
+        "adx_step_age_days": 1,
+        "adx_step_age_bin": "1",
+        "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 1.81602216,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -3251,11 +3711,16 @@
         "adx_slope_3d": 1.88635722,
         "adx_axis_zone": "ABOVE_20",
         "adx_step_direction": "RISING",
-        "adx_step_age_days": 3,
+        "adx_step_age_days": 2,
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.95669228,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -3290,7 +3755,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.68242155,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -3325,7 +3795,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.68242155,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -3355,12 +3830,17 @@
         "adx": 27.21217915,
         "adx_slope_3d": -0.33450414,
         "adx_axis_zone": "ABOVE_20",
-        "adx_step_direction": "RISING",
-        "adx_step_age_days": 1,
-        "adx_step_age_bin": "1",
-        "adx_turn_event": "RED_TO_GREEN",
+        "adx_step_direction": "FALLING",
+        "adx_step_age_days": 3,
+        "adx_step_age_bin": "2_3",
+        "adx_turn_event": "NONE",
         "adx_step_delta": 0.01341327,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -3391,11 +3871,16 @@
         "adx_slope_3d": -0.10290078,
         "adx_axis_zone": "ABOVE_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 1,
-        "adx_step_age_bin": "1",
-        "adx_turn_event": "GREEN_TO_RED",
+        "adx_step_age_days": 4,
+        "adx_step_age_bin": "4_6",
+        "adx_turn_event": "NONE",
         "adx_step_delta": -0.21921484,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -3426,11 +3911,16 @@
         "adx_slope_3d": -0.40313211,
         "adx_axis_zone": "ABOVE_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 2,
-        "adx_step_age_bin": "2_3",
+        "adx_step_age_days": 5,
+        "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.58704938,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -3461,11 +3951,16 @@
         "adx_slope_3d": -0.72166985,
         "adx_axis_zone": "ABOVE_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 3,
-        "adx_step_age_bin": "2_3",
+        "adx_step_age_days": 6,
+        "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.85629032,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -3496,11 +3991,16 @@
         "adx_slope_3d": -1.41040117,
         "adx_axis_zone": "ABOVE_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 4,
-        "adx_step_age_bin": "4_6",
+        "adx_step_age_days": 7,
+        "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.96451203,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -3531,11 +4031,16 @@
         "adx_slope_3d": -1.91947724,
         "adx_axis_zone": "ABOVE_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 5,
-        "adx_step_age_bin": "4_6",
+        "adx_step_age_days": 8,
+        "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.87444246,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -3566,11 +4071,16 @@
         "adx_slope_3d": -1.43587754,
         "adx_axis_zone": "ABOVE_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 6,
-        "adx_step_age_bin": "4_6",
+        "adx_step_age_days": 9,
+        "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.99731262,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -3601,11 +4111,16 @@
         "adx_slope_3d": -0.70979916,
         "adx_axis_zone": "ABOVE_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 7,
+        "adx_step_age_days": 10,
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.42247987,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -3636,11 +4151,16 @@
         "adx_slope_3d": -0.60313049,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 8,
+        "adx_step_age_days": 11,
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.78357144,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 8,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -3671,11 +4191,16 @@
         "adx_slope_3d": -1.41861821,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 9,
+        "adx_step_age_days": 12,
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.05385568,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 9,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -3706,11 +4231,16 @@
         "adx_slope_3d": -2.17573248,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 10,
+        "adx_step_age_days": 13,
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.29785586,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 10,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -3741,11 +4271,16 @@
         "adx_slope_3d": -2.20601914,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 11,
+        "adx_step_age_days": 14,
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.11448842,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 11,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -3776,11 +4311,16 @@
         "adx_slope_3d": -1.46428748,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 12,
+        "adx_step_age_days": 15,
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.81406675,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 12,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -3811,11 +4351,16 @@
         "adx_slope_3d": -0.98470021,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 13,
+        "adx_step_age_days": 16,
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.15550574,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 13,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -3846,11 +4391,16 @@
         "adx_slope_3d": -0.9476235,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 14,
+        "adx_step_age_days": 17,
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.73976597,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 14,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -3885,7 +4435,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.55142958,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -3920,7 +4475,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.23412245,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -3955,7 +4515,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.3270028,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -3990,7 +4555,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.5424362,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -4025,7 +4595,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.5453725,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -4060,7 +4635,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.81421848,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -4095,7 +4675,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.81456932,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -4130,7 +4715,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.56324491,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -4165,7 +4755,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.51476524,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -4200,7 +4795,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.36833223,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -4235,7 +4835,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.49781763,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -4270,7 +4875,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.23197555,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -4305,7 +4915,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.58478184,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -4340,7 +4955,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.61437296,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -4370,12 +4990,17 @@
         "adx": 7.66154795,
         "adx_slope_3d": 0.30232594,
         "adx_axis_zone": "BELOW_20",
-        "adx_step_direction": "FALLING",
-        "adx_step_age_days": 1,
-        "adx_step_age_bin": "1",
-        "adx_turn_event": "GREEN_TO_RED",
+        "adx_step_direction": "RISING",
+        "adx_step_age_days": 3,
+        "adx_step_age_bin": "2_3",
+        "adx_turn_event": "NONE",
         "adx_step_delta": -0.00992106,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -4406,11 +5031,16 @@
         "adx_slope_3d": 0.19661916,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "RISING",
-        "adx_step_age_days": 1,
-        "adx_step_age_bin": "1",
-        "adx_turn_event": "RED_TO_GREEN",
+        "adx_step_age_days": 4,
+        "adx_step_age_bin": "4_6",
+        "adx_turn_event": "NONE",
         "adx_step_delta": 0.40322537,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -4441,11 +5071,16 @@
         "adx_slope_3d": 0.57718737,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "RISING",
-        "adx_step_age_days": 2,
-        "adx_step_age_bin": "2_3",
+        "adx_step_age_days": 5,
+        "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.75126087,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -4476,11 +5111,16 @@
         "adx_slope_3d": 0.79356306,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "RISING",
-        "adx_step_age_days": 3,
-        "adx_step_age_bin": "2_3",
+        "adx_step_age_days": 6,
+        "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.83586046,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -4511,11 +5151,16 @@
         "adx_slope_3d": 0.89439965,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "RISING",
-        "adx_step_age_days": 4,
-        "adx_step_age_bin": "4_6",
+        "adx_step_age_days": 7,
+        "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.9525074,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -4546,11 +5191,16 @@
         "adx_slope_3d": 1.28266724,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "RISING",
-        "adx_step_age_days": 5,
-        "adx_step_age_bin": "4_6",
+        "adx_step_age_days": 8,
+        "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.6128593,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -4581,11 +5231,16 @@
         "adx_slope_3d": 2.12637904,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "RISING",
-        "adx_step_age_days": 6,
-        "adx_step_age_bin": "4_6",
+        "adx_step_age_days": 9,
+        "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.63970065,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -4616,11 +5271,16 @@
         "adx_slope_3d": 1.76870714,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "RISING",
-        "adx_step_age_days": 7,
+        "adx_step_age_days": 10,
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.8975442,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -4655,7 +5315,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.17853637,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -4690,7 +5355,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.38168387,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -4725,7 +5395,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.28154991,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -4760,7 +5435,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.08900745,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -4795,7 +5475,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.65077227,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -4825,12 +5510,17 @@
         "adx": 15.14568569,
         "adx_slope_3d": -0.31558204,
         "adx_axis_zone": "BELOW_20",
-        "adx_step_direction": "RISING",
-        "adx_step_age_days": 1,
-        "adx_step_age_bin": "1",
-        "adx_turn_event": "RED_TO_GREEN",
+        "adx_step_direction": "FALLING",
+        "adx_step_age_days": 2,
+        "adx_step_age_bin": "2_3",
+        "adx_turn_event": "NONE",
         "adx_step_delta": 0.01976504,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -4861,11 +5551,16 @@
         "adx_slope_3d": -0.04279683,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 1,
-        "adx_step_age_bin": "1",
-        "adx_turn_event": "GREEN_TO_RED",
+        "adx_step_age_days": 3,
+        "adx_step_age_bin": "2_3",
+        "adx_turn_event": "NONE",
         "adx_step_delta": -0.10510617,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -4896,11 +5591,16 @@
         "adx_slope_3d": -0.22020613,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 2,
-        "adx_step_age_bin": "2_3",
+        "adx_step_age_days": 4,
+        "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.33516195,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -4931,11 +5631,16 @@
         "adx_slope_3d": -0.34946362,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 3,
-        "adx_step_age_bin": "2_3",
+        "adx_step_age_days": 5,
+        "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.36359844,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -4970,7 +5675,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.2299707,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -5005,7 +5715,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.32989428,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -5040,7 +5755,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.65872917,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -5075,7 +5795,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.84640201,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -5110,7 +5835,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.97669152,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 8,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -5145,7 +5875,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.01457934,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 9,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -5180,7 +5915,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.92836171,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 10,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -5215,7 +5955,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.40726073,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 11,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -5250,7 +5995,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.33828156,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 12,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -5285,7 +6035,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.28439109,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -5320,7 +6075,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.46256623,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -5355,7 +6115,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.10869245,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -5390,7 +6155,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.37954844,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -5425,7 +6195,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.60622652,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -5460,7 +6235,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.37586474,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -5495,7 +6275,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.1296887,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -5530,7 +6315,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.82497122,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -5565,7 +6355,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.70561463,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -5600,7 +6395,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.30099282,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -5635,7 +6435,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.24946934,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -5670,7 +6475,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.48636452,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -5705,7 +6515,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.76573757,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -5740,7 +6555,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.76579283,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -5775,7 +6595,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.67103208,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 8,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -5810,7 +6635,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.84404841,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 9,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -5845,7 +6675,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.33416183,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 10,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -5880,7 +6715,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.9356028,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 11,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -5915,7 +6755,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.93535981,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 12,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -5950,7 +6795,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -1.01225152,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -5985,7 +6835,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.61380548,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -6020,7 +6875,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.62791867,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -6055,7 +6915,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.55489895,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -6090,7 +6955,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.53453015,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -6125,7 +6995,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.22952598,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -6160,7 +7035,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.66236792,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -6195,7 +7075,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.49863308,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 8,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -6230,7 +7115,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.4987628,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 9,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -6265,7 +7155,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.75832816,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 10,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -6300,7 +7195,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.88806823,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 11,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -6335,7 +7235,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.6779337,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 12,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -6370,7 +7275,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.27043037,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 13,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -6405,7 +7315,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.50830533,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 14,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -6440,7 +7355,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 2.49707672,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -6475,7 +7395,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.55695603,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -6510,7 +7435,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.10386592,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -6545,7 +7475,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.51494346,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -6580,7 +7515,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.74752387,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -6615,7 +7555,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.74755308,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -6650,7 +7595,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.12223831,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -6685,7 +7635,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -1.17938486,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -6720,7 +7675,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.27204469,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -6755,7 +7715,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.27216714,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -6790,7 +7755,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.46423593,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -6825,7 +7795,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.79313972,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -6860,7 +7835,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 1.77839116,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -6895,7 +7875,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.04271246,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -6930,7 +7915,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -1.17756481,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -6965,7 +7955,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.02162736,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -7000,7 +7995,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.98471479,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -7035,7 +8035,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.42191272,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -7070,7 +8075,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.42179178,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -7105,7 +8115,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.62737643,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -7140,7 +8155,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.36374517,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -7175,7 +8195,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 3.45405037,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -7210,7 +8235,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.62132791,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -7245,7 +8275,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.22376214,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 8,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -7280,7 +8315,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.54179372,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 9,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -7315,7 +8355,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.32579377,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 10,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -7350,7 +8395,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -1.75050197,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -7385,7 +8435,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.94671166,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -7420,7 +8475,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.73878189,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -7455,7 +8515,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.4939561,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -7490,7 +8555,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.49403011,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -7525,7 +8595,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.64146726,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -7560,7 +8635,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.40409228,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -7595,7 +8675,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.74767623,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 8,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -7630,7 +8715,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.74778343,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 9,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -7665,7 +8755,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -3.14010583,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 10,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -7700,7 +8795,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.91500004,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 11,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -7735,7 +8835,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.13441055,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 12,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -7770,7 +8875,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.80644853,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 13,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -7805,7 +8915,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 1.59199471,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -7840,7 +8955,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.40538558,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -7875,7 +8995,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.12780089,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -7910,7 +9035,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.50822861,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -7945,7 +9075,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.04796049,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -7980,7 +9115,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.71677831,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -8015,7 +9155,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.82742663,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -8050,7 +9195,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.14833159,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8085,7 +9235,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.01040175,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8115,12 +9270,17 @@
         "adx": 19.1195956,
         "adx_slope_3d": 0.00292881,
         "adx_axis_zone": "BELOW_20",
-        "adx_step_direction": "RISING",
-        "adx_step_age_days": 1,
-        "adx_step_age_bin": "1",
-        "adx_turn_event": "RED_TO_GREEN",
+        "adx_step_direction": "FALLING",
+        "adx_step_age_days": 3,
+        "adx_step_age_bin": "2_3",
+        "adx_turn_event": "NONE",
         "adx_step_delta": 0.0161582,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -8151,11 +9311,16 @@
         "adx_slope_3d": 0.18151368,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "RISING",
-        "adx_step_age_days": 2,
-        "adx_step_age_bin": "2_3",
-        "adx_turn_event": "NONE",
+        "adx_step_age_days": 1,
+        "adx_step_age_bin": "1",
+        "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.34672616,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -8190,7 +9355,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.09903836,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8225,7 +9395,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.85957589,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -8260,7 +9435,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.24042134,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -8295,7 +9475,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -2.14809367,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8330,7 +9515,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.80528918,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8365,7 +9555,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.17104657,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8400,7 +9595,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.57464828,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8435,7 +9635,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.79177165,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8470,7 +9675,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.73635512,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8505,7 +9715,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.6413323,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8540,7 +9755,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.53381564,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 8,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8575,7 +9795,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.53383074,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 9,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8610,7 +9835,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.20730434,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 10,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8645,7 +9875,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.18442773,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 11,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8680,7 +9915,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.5213382,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 12,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8715,7 +9955,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.52427121,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 13,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8745,12 +9990,17 @@
         "adx": 12.12496235,
         "adx_slope_3d": -0.25171897,
         "adx_axis_zone": "BELOW_20",
-        "adx_step_direction": "RISING",
-        "adx_step_age_days": 1,
-        "adx_step_age_bin": "1",
-        "adx_turn_event": "RED_TO_GREEN",
+        "adx_step_direction": "FALLING",
+        "adx_step_age_days": 14,
+        "adx_step_age_bin": "7_PLUS",
+        "adx_turn_event": "NONE",
         "adx_step_delta": 0.02085992,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -8781,11 +10031,16 @@
         "adx_slope_3d": -0.06266052,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 1,
-        "adx_step_age_bin": "1",
-        "adx_turn_event": "GREEN_TO_RED",
+        "adx_step_age_days": 15,
+        "adx_step_age_bin": "7_PLUS",
+        "adx_turn_event": "NONE",
         "adx_step_delta": -0.14614569,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8816,11 +10071,16 @@
         "adx_slope_3d": -0.76391596,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 2,
-        "adx_step_age_bin": "2_3",
+        "adx_step_age_days": 16,
+        "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.38167247,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -8851,11 +10111,16 @@
         "adx_slope_3d": -1.34004656,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 3,
-        "adx_step_age_bin": "2_3",
+        "adx_step_age_days": 17,
+        "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.29839458,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -8886,11 +10151,16 @@
         "adx_slope_3d": -1.33319231,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 4,
-        "adx_step_age_bin": "4_6",
+        "adx_step_age_days": 18,
+        "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.36783585,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -8921,11 +10191,16 @@
         "adx_slope_3d": -1.16000657,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 5,
-        "adx_step_age_bin": "4_6",
+        "adx_step_age_days": 19,
+        "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.95203607,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -8956,11 +10231,16 @@
         "adx_slope_3d": -0.85354904,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 6,
-        "adx_step_age_bin": "4_6",
+        "adx_step_age_days": 20,
+        "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.75490572,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -8991,11 +10271,16 @@
         "adx_slope_3d": -0.72199303,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 7,
+        "adx_step_age_days": 21,
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.68888389,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -9026,11 +10311,16 @@
         "adx_slope_3d": -0.35844099,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 8,
+        "adx_step_age_days": 22,
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.02793074,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 8,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -9061,11 +10351,16 @@
         "adx_slope_3d": -0.02809026,
         "adx_axis_zone": "BELOW_20",
         "adx_step_direction": "FALLING",
-        "adx_step_age_days": 9,
+        "adx_step_age_days": 23,
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.02809026,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 9,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -9100,7 +10395,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.0811875,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -9135,7 +10435,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.03000475,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -9170,7 +10475,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.5151015,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -9205,7 +10515,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.40778431,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -9240,7 +10555,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.02318964,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -9275,7 +10595,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 1.0042413,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -9310,7 +10635,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.10225641,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -9345,7 +10675,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.83571674,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -9380,7 +10715,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.90504613,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -9415,7 +10755,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.22452142,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -9450,7 +10795,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.45015452,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -9485,7 +10835,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.10165309,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -9520,7 +10875,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.07418215,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 8,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -9555,7 +10915,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.50482607,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 9,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -9590,7 +10955,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.20602882,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 10,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -9625,7 +10995,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.16343706,
-        "dmi_adx_regime": "MINUS_RISING"
+        "dmi_adx_regime": "MINUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 11,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_RISING"
       }
     },
     {
@@ -9660,7 +11035,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.61945468,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -9695,7 +11075,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 0.15043023,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -9730,7 +11115,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "GREEN_TO_RED",
         "adx_step_delta": -0.73014651,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "GREEN_TO_RED",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -9765,7 +11155,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.41879764,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -9800,7 +11195,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.89317407,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -9835,7 +11235,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.02595066,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -9870,7 +11275,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -2.02600566,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -9905,7 +11315,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.57289264,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -9940,7 +11355,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -1.71978348,
-        "dmi_adx_regime": "MINUS_FALLING"
+        "dmi_adx_regime": "MINUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "MINUS_FALLING"
       }
     },
     {
@@ -9975,7 +11395,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": -0.48487256,
-        "dmi_adx_regime": "PLUS_FALLING"
+        "dmi_adx_regime": "PLUS_FALLING",
+        "adx_step_direction_legacy": "FALLING",
+        "adx_step_age_days_legacy": 8,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_FALLING"
       }
     },
     {
@@ -10010,7 +11435,12 @@
         "adx_step_age_bin": "1",
         "adx_turn_event": "RED_TO_GREEN",
         "adx_step_delta": 1.83104677,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 1,
+        "adx_step_age_bin_legacy": "1",
+        "adx_turn_event_legacy": "RED_TO_GREEN",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -10045,7 +11475,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 3.06419158,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 2,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -10080,7 +11515,12 @@
         "adx_step_age_bin": "2_3",
         "adx_turn_event": "NONE",
         "adx_step_delta": 3.82967513,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 3,
+        "adx_step_age_bin_legacy": "2_3",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -10115,7 +11555,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.98861708,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 4,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -10150,7 +11595,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.77118764,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 5,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -10185,7 +11635,12 @@
         "adx_step_age_bin": "4_6",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.90582361,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 6,
+        "adx_step_age_bin_legacy": "4_6",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -10220,7 +11675,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 3.02013592,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 7,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -10255,7 +11715,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 2.9778401,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 8,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -10290,7 +11755,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 3.12836487,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 9,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -10325,7 +11795,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.25461806,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 10,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -10360,7 +11835,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 1.2543238,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 11,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
@@ -10395,33 +11875,38 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.6579058,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 12,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     },
     {
       "day_time": 1788134400000,
-      "cutoff_time": 1788134400000,
+      "cutoff_time": 1788177600000,
       "state": "S2",
       "features": {
         "midline_state": "rising",
-        "bandpos": 0.655681,
+        "bandpos": 0.67703,
         "bandpos_bin": "060_075",
         "trigger_stage": "T0",
         "bandwidth_trend": "CONTRACTING",
-        "bandwidth_delta_3d": -0.83199577,
-        "state_age_bars": 2,
-        "state_age_bin": "2_3",
-        "di_plus": 19.77227633,
-        "di_minus": 15.85054698,
-        "di_gap": 3.92172935,
+        "bandwidth_delta_3d": -0.72813407,
+        "state_age_bars": 5,
+        "state_age_bin": "4_6",
+        "di_plus": 19.26954051,
+        "di_minus": 15.44752623,
+        "di_gap": 3.82201428,
         "dmi_relation": "PLUS",
         "dmi_axis_zone": "BOTH_BELOW_20",
         "dmi_cross_event": "NO_NEW_CROSS",
-        "dmi_cross_age_bars": 78,
+        "dmi_cross_age_bars": 81,
         "dmi_cross_age_bin": "7_PLUS",
-        "di_plus_slope_3d": -1.00276207,
-        "di_minus_slope_3d": 0.64148133,
-        "di_gap_slope_3d": -1.64424341,
+        "di_plus_slope_3d": -1.25412998,
+        "di_minus_slope_3d": 0.43997096,
+        "di_gap_slope_3d": -1.69410094,
         "adx": 37.23917218,
         "adx_slope_3d": 0.65827153,
         "adx_axis_zone": "ABOVE_20",
@@ -10430,7 +11915,12 @@
         "adx_step_age_bin": "7_PLUS",
         "adx_turn_event": "NONE",
         "adx_step_delta": 0.65827153,
-        "dmi_adx_regime": "PLUS_RISING"
+        "dmi_adx_regime": "PLUS_RISING",
+        "adx_step_direction_legacy": "RISING",
+        "adx_step_age_days_legacy": 13,
+        "adx_step_age_bin_legacy": "7_PLUS",
+        "adx_turn_event_legacy": "NONE",
+        "dmi_adx_regime_legacy": "PLUS_RISING"
       }
     }
   ]
