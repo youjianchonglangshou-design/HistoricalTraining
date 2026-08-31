@@ -1,4 +1,4 @@
-name: Daily Champion Settlement & Evolution
+name: Daily Champion 04:01 Checkpoint Settlement & Evolution
 
 on:
   workflow_dispatch:
@@ -53,7 +53,7 @@ jobs:
             "run_id": os.environ["LEARNING_RUN_ID"],
             "status": "RUNNING",
             "percent": 5,
-            "message": "Champion frozen-snapshot settlement started",
+            "message": "04:01 Terminal Champion checkpoint settlement started",
             "github_run_id": os.environ.get("GITHUB_RUN_ID"),
           }))
           PY
@@ -92,12 +92,44 @@ jobs:
               raise SystemExit('R2 Active model_id missing')
           PY
 
-      - name: Freeze today Champion snapshot and settle previous paths
+      - name: Download today 04:01 Terminal Champion checkpoints
+        shell: bash
         run: |
-          python champion_daily.py \
-            --active-model /tmp/active-model.json \
-            --symbols ALL \
+          BASE="${WORKER_BASE_URL%/}"
+          CHECKPOINT_DATE_TW=$(TZ=Asia/Taipei date '+%Y-%m-%d')
+          echo "CHECKPOINT_DATE_TW=$CHECKPOINT_DATE_TW" >> "$GITHUB_ENV"
+
+          rm -f /tmp/checkpoint-crypto.json /tmp/checkpoint-us-stock.json
+
+          if curl --fail --silent --show-error             "$BASE/api/champion/checkpoint?market=crypto&date=$CHECKPOINT_DATE_TW"             -o /tmp/checkpoint-crypto.json; then
+            echo "Crypto 04:01 checkpoint downloaded."
+          else
+            rm -f /tmp/checkpoint-crypto.json
+            echo "::warning::Crypto 04:01 checkpoint missing for $CHECKPOINT_DATE_TW; previous settlements will still run."
+          fi
+
+          if curl --fail --silent --show-error             "$BASE/api/champion/checkpoint?market=us-stock&date=$CHECKPOINT_DATE_TW"             -o /tmp/checkpoint-us-stock.json; then
+            echo "US-stock 04:01 checkpoint downloaded."
+          else
+            rm -f /tmp/checkpoint-us-stock.json
+            echo "::warning::US-stock 04:01 checkpoint missing for $CHECKPOINT_DATE_TW; previous settlements will still run."
+          fi
+
+      - name: Freeze 04:01 Terminal Champion checkpoint and settle previous paths
+        shell: bash
+        run: |
+          ARGS=(
+            --active-model /tmp/active-model.json
+            --symbols ALL
             --max-records 20000
+          )
+          if [ -s /tmp/checkpoint-crypto.json ]; then
+            ARGS+=(--checkpoint-crypto /tmp/checkpoint-crypto.json)
+          fi
+          if [ -s /tmp/checkpoint-us-stock.json ]; then
+            ARGS+=(--checkpoint-us-stock /tmp/checkpoint-us-stock.json)
+          fi
+          python champion_daily.py "${ARGS[@]}"
 
       - name: Read evolution gate
         shell: bash
@@ -243,7 +275,7 @@ jobs:
             "success_rate": a.get("success_rate"),
             "true_fail_rate": a.get("true_fail_rate"),
             "evolution_due": r.get("evolution_due"),
-            "message": "Champion frozen snapshots settled and performance updated.",
+            "message": "04:01 Terminal Champion checkpoints frozen; previous paths settled and performance updated.",
             "github_run_id": os.environ.get("GITHUB_RUN_ID"),
           }))
           PY
@@ -265,7 +297,7 @@ jobs:
             "run_id": os.environ.get("LEARNING_RUN_ID", "champion_review_failed"),
             "status": "FAILED",
             "percent": 0,
-            "message": "Champion frozen-snapshot settlement failed. Check GitHub Actions logs.",
+            "message": "04:01 Terminal Champion checkpoint settlement failed. Check GitHub Actions logs.",
             "github_run_id": os.environ.get("GITHUB_RUN_ID"),
           }))
           PY
