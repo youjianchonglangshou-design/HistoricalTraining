@@ -1,9 +1,6 @@
-name: Daily S-state Learning v3 ADX 1DP Sticky
+name: Daily Champion Settlement & Evolution
 
 on:
-  push:
-    paths:
-      - ".retrain/ADX-1DP-STICKY-v3"
   workflow_dispatch:
     inputs:
       run_id:
@@ -16,11 +13,11 @@ permissions:
   contents: write
 
 concurrency:
-  group: crypto-state-learning
+  group: champion-settlement-evolution
   cancel-in-progress: false
 
 jobs:
-  update:
+  review:
     runs-on: ubuntu-latest
     timeout-minutes: 330
     env:
@@ -38,7 +35,7 @@ jobs:
         shell: bash
         run: |
           if [ -z "$LEARNING_RUN_ID" ]; then
-            echo "LEARNING_RUN_ID=manual_learning_${GITHUB_RUN_ID}_${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
+            echo "LEARNING_RUN_ID=manual_champion_${GITHUB_RUN_ID}_${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
           fi
 
       - name: Validate Cloudflare bridge secrets
@@ -47,7 +44,7 @@ jobs:
           test -n "$WORKER_BASE_URL" || (echo "WORKER_BASE_URL missing" && exit 1)
           test -n "$WORKER_CALLBACK_TOKEN" || (echo "WORKER_CALLBACK_TOKEN missing" && exit 1)
 
-      - name: Report learning started
+      - name: Report Champion review started
         shell: bash
         run: |
           BODY=$(python - <<'PY'
@@ -56,7 +53,7 @@ jobs:
             "run_id": os.environ["LEARNING_RUN_ID"],
             "status": "RUNNING",
             "percent": 5,
-            "message": "HistoricalTraining Daily S-state Learning v3 ADX 1DP Sticky started",
+            "message": "Champion frozen-snapshot settlement started",
             "github_run_id": os.environ.get("GITHUB_RUN_ID"),
           }))
           PY
@@ -80,155 +77,169 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
 
-      - name: Update history and retrain 4-way outcome JSON
+      - name: Download current Champion from R2
+        shell: bash
+        run: |
+          BASE="${WORKER_BASE_URL%/}"
+          curl --fail --silent --show-error \
+            "$BASE/api/model/active" \
+            -o /tmp/active-model.json
+          python - <<'PY'
+          import json
+          m=json.load(open('/tmp/active-model.json', encoding='utf-8'))
+          print('Champion:', m.get('model_id'))
+          if not m.get('model_id'):
+              raise SystemExit('R2 Active model_id missing')
+          PY
+
+      - name: Freeze today Champion snapshot and settle previous paths
+        run: |
+          python champion_daily.py \
+            --active-model /tmp/active-model.json \
+            --symbols ALL \
+            --max-records 20000
+
+      - name: Read evolution gate
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os
+          d=json.load(open('reports/evolution_review.json', encoding='utf-8'))
+          due=bool(d.get('evolution_due'))
+          print('settled_72h =', d.get('settled_72h'))
+          print('minimum     =', d.get('minimum_settled_72h'))
+          print('evolution   =', due)
+          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
+              f.write('EVOLUTION_DUE=' + ('true' if due else 'false') + '\n')
+          PY
+
+      - name: Evolution review reached threshold - train next Champion
+        if: ${{ env.EVOLUTION_DUE == 'true' }}
         run: |
           python run_training.py \
             --symbols ALL \
             --max-records 20000 \
             --step-bars 1 \
-            --min-samples 50
+            --min-samples 50 \
+            --cache-only
 
-      - name: Resolve candidate model id
+      - name: Resolve next Champion model id
+        if: ${{ env.EVOLUTION_DUE == 'true' }}
         shell: bash
         run: |
-          MODEL_ID=$(python - <<'PY'
+          NEXT_MODEL_ID=$(python - <<'PY'
           import json
-          print(json.load(open("models/probability_model.json", encoding="utf-8"))["model_id"])
+          print(json.load(open('models/probability_model.json', encoding='utf-8')).get('model_id') or '')
           PY
           )
-          test -n "$MODEL_ID" || (echo "candidate model_id missing" && exit 1)
-          echo "MODEL_ID=$MODEL_ID" >> "$GITHUB_ENV"
-          echo "Candidate model: $MODEL_ID"
+          test -n "$NEXT_MODEL_ID" || (echo "next Champion model_id missing" && exit 1)
+          echo "NEXT_MODEL_ID=$NEXT_MODEL_ID" >> "$GITHUB_ENV"
+          echo "Next Champion: $NEXT_MODEL_ID"
 
-      - name: Upload candidate model to R2
+      - name: Commit frozen settlement / performance / optional evolved model
         shell: bash
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/cache/4h data/champion reports/evolution_review.json
+          if [ "$EVOLUTION_DUE" = "true" ]; then
+            git add data/learning_meta.json models/probability_model.json reports/training_report.json quiz/model_timeline
+          fi
+          if git diff --cached --quiet; then
+            echo "No Champion settlement changes."
+            exit 0
+          fi
+          git commit -m "champion: freeze predictions, settle paths and update performance"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
+
+      - name: Publish evolved model directly as next Champion
+        if: ${{ env.EVOLUTION_DUE == 'true' }}
+        shell: bash
+        run: |
+          BASE="${WORKER_BASE_URL%/}"
           curl --fail --silent --show-error \
             -X PUT \
             -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
             -H "Content-Type: application/json" \
             --data-binary "@models/probability_model.json" \
-            "$WORKER_BASE_URL/api/internal/model/candidate"
-
-      - name: Upload candidate training report to R2
-        shell: bash
-        run: |
+            "$BASE/api/internal/model/active" \
+            -o /tmp/publish-active.json
+          cat /tmp/publish-active.json
           curl --fail --silent --show-error \
             -X PUT \
             -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
             -H "Content-Type: application/json" \
             --data-binary "@reports/training_report.json" \
-            "$WORKER_BASE_URL/api/internal/learning/report?model_id=$MODEL_ID"
-
-      - name: Upload learning meta to R2
-        shell: bash
-        run: |
+            "$BASE/api/internal/learning/report?model_id=$NEXT_MODEL_ID" \
+            -o /tmp/publish-report.json
+          cat /tmp/publish-report.json
           curl --fail --silent --show-error \
             -X PUT \
             -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
             -H "Content-Type: application/json" \
             --data-binary "@data/learning_meta.json" \
-            "$WORKER_BASE_URL/api/internal/learning/meta?model_id=$MODEL_ID"
+            "$BASE/api/internal/learning/meta?model_id=$NEXT_MODEL_ID" \
+            -o /tmp/publish-meta.json
+          cat /tmp/publish-meta.json
 
-      - name: Ensure a shadow Challenger exists
+      - name: Verify next Champion after evolution
+        if: ${{ env.EVOLUTION_DUE == 'true' }}
         shell: bash
         run: |
-          curl --fail --silent --show-error \
-            -X POST \
-            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
-            "$WORKER_BASE_URL/api/internal/model/challenger/ensure" \
-            -o /tmp/challenger-ensure.json
-          cat /tmp/challenger-ensure.json
+          BASE="${WORKER_BASE_URL%/}"
+          curl --fail --silent --show-error "$BASE/api/model/active" -o /tmp/verify-active.json
+          python - <<'PY'
+          import json, os
+          active=json.load(open('/tmp/verify-active.json', encoding='utf-8'))
+          got=str(active.get('model_id') or '')
+          expected=os.environ['NEXT_MODEL_ID']
+          print('Expected:', expected)
+          print('Active  :', got)
+          if got != expected:
+              raise SystemExit('Next Champion publish verification failed')
+          PY
 
-      - name: Download Champion and current Challenger
+      - name: Daily summary
         shell: bash
         run: |
-          curl --fail --silent --show-error \
-            -o /tmp/active-model.json \
-            "$WORKER_BASE_URL/api/model/active"
-          curl --fail --silent --show-error \
-            -o /tmp/challenger-manifest.json \
-            "$WORKER_BASE_URL/api/model/challenger/current"
-          curl --fail --silent --show-error \
-            -o /tmp/challenger-model.json \
-            "$WORKER_BASE_URL/api/model/challenger/model"
-
-      - name: Evaluate Champion vs Challenger on future settled OOS cases
-        shell: bash
-        run: |
-          python evaluate_challenger.py \
-            --cases data/cases/history_cases.jsonl.gz \
-            --active /tmp/active-model.json \
-            --challenger /tmp/challenger-model.json \
-            --manifest /tmp/challenger-manifest.json \
-            --out reports/champion_challenger_evaluation.json
-
-          EVAL_DECISION=$(python - <<'PY2'
+          python - <<'PY'
           import json
-          d=json.load(open("reports/champion_challenger_evaluation.json", encoding="utf-8"))
-          print(d["decision"])
-          PY2
-          )
-          EVAL_MODEL_ID=$(python - <<'PY2'
-          import json
-          d=json.load(open("reports/champion_challenger_evaluation.json", encoding="utf-8"))
-          print(d["challenger_model_id"])
-          PY2
-          )
-          echo "EVAL_DECISION=$EVAL_DECISION" >> "$GITHUB_ENV"
-          echo "EVAL_MODEL_ID=$EVAL_MODEL_ID" >> "$GITHUB_ENV"
-
-      - name: Store Champion vs Challenger evaluation in R2
-        shell: bash
-        run: |
-          curl --fail --silent --show-error \
-            -X PUT \
-            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
-            -H "Content-Type: application/json" \
-            --data-binary "@reports/champion_challenger_evaluation.json" \
-            "$WORKER_BASE_URL/api/internal/model/evaluation?model_id=$EVAL_MODEL_ID"
-
-      - name: Promote Challenger when all OOS gates pass
-        if: ${{ env.EVAL_DECISION == 'PROMOTE' }}
-        shell: bash
-        run: |
-          curl --fail --silent --show-error \
-            -X POST \
-            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d "{\"model_id\":\"$EVAL_MODEL_ID\"}" \
-            "$WORKER_BASE_URL/api/internal/model/promote"
-
-      - name: Reject Challenger when OOS evidence is clearly worse or expires
-        if: ${{ env.EVAL_DECISION == 'REJECT' }}
-        shell: bash
-        run: |
-          curl --fail --silent --show-error \
-            -X POST \
-            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d "{\"model_id\":\"$EVAL_MODEL_ID\"}" \
-            "$WORKER_BASE_URL/api/internal/model/reject"
-
-      - name: Report candidate ready
+          p=json.load(open('data/champion/performance.json', encoding='utf-8'))
+          r=json.load(open('reports/evolution_review.json', encoding='utf-8'))
+          c=p.get('champion') or {}
+          a=(p.get('windows') or {}).get('all') or {}
+          print('Champion generation:', c.get('generation'))
+          print('Champion model_id   :', c.get('model_id'))
+          print('72H settled         :', a.get('settled_72h'))
+          print('72H pending         :', a.get('pending_72h'))
+          print('Success rate        :', a.get('success_rate'))
+          print('Survival rate       :', a.get('structural_survival_rate'))
+          print('True fail rate      :', a.get('true_fail_rate'))
+          print('Evolution due       :', r.get('evolution_due'))
+          PY
+      - name: Report Champion review completed
+        if: ${{ success() }}
         shell: bash
         run: |
           BODY=$(python - <<'PY'
           import json, os
-          decision = os.environ.get("EVAL_DECISION", "NOT_EVALUATED")
-          status = "CANDIDATE_READY"
-          if decision == "PROMOTE":
-              status = "MODEL_PROMOTED"
-          elif decision == "REJECT":
-              status = "CHALLENGER_REJECTED"
+          p=json.load(open('data/champion/performance.json', encoding='utf-8'))
+          r=json.load(open('reports/evolution_review.json', encoding='utf-8'))
+          c=p.get('champion') or {}
+          a=(p.get('windows') or {}).get('all') or {}
           print(json.dumps({
             "run_id": os.environ["LEARNING_RUN_ID"],
-            "status": status,
+            "status": "COMPLETED",
             "percent": 100,
-            "model_id": os.environ["MODEL_ID"],
-            "challenger_model_id": os.environ.get("EVAL_MODEL_ID"),
-            "evaluation_decision": decision,
-            "message": "Daily model stored as candidate. Champion/Challenger decision uses future settled out-of-sample evidence; Active changes only after PROMOTE.",
+            "model_id": c.get("model_id"),
+            "settled_72h": a.get("settled_72h"),
+            "pending_72h": a.get("pending_72h"),
+            "success_rate": a.get("success_rate"),
+            "true_fail_rate": a.get("true_fail_rate"),
+            "evolution_due": r.get("evolution_due"),
+            "message": "Champion frozen snapshots settled and performance updated.",
             "github_run_id": os.environ.get("GITHUB_RUN_ID"),
           }))
           PY
@@ -240,43 +251,17 @@ jobs:
             -d "$BODY" \
             "$WORKER_BASE_URL/api/internal/learning/status"
 
-      - name: Upload audit cases
-        uses: actions/upload-artifact@v4
-        with:
-          name: daily-cases-${{ github.run_number }}
-          path: |
-            data/cases/history_cases.jsonl.gz
-            reports/champion_challenger_evaluation.json
-          retention-days: 3
-          if-no-files-found: warn
-
-      - name: Commit new candles and candidate probability JSON
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/cache/4h data/learning_meta.json models/probability_model.json reports/training_report.json quiz/model_timeline
-          if git diff --cached --quiet; then
-            echo "No new candle/model changes."
-            exit 0
-          fi
-          git commit -m "learning: append market history and build candidate model"
-          git fetch origin main
-          git rebase origin/main
-          git push origin HEAD:main
-
-      - name: Report learning failure
+      - name: Report Champion review failure
         if: ${{ failure() }}
         shell: bash
         run: |
           BODY=$(python - <<'PY'
           import json, os
           print(json.dumps({
-            "run_id": os.environ.get("LEARNING_RUN_ID", "manual_learning_failed"),
+            "run_id": os.environ.get("LEARNING_RUN_ID", "champion_review_failed"),
             "status": "FAILED",
             "percent": 0,
-            "model_id": os.environ.get("MODEL_ID"),
-            "message": "Daily S-state Learning v3 ADX 1DP Sticky failed. Check GitHub Actions logs.",
+            "message": "Champion frozen-snapshot settlement failed. Check GitHub Actions logs.",
             "github_run_id": os.environ.get("GITHUB_RUN_ID"),
           }))
           PY
@@ -287,3 +272,4 @@ jobs:
             -H "Content-Type: application/json" \
             -d "$BODY" \
             "$WORKER_BASE_URL/api/internal/learning/status" || true
+

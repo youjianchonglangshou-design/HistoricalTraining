@@ -1,80 +1,46 @@
-name: Publish Current Model as ACTIVE
+name: Publish Current Model as Champion
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows:
-      - "Daily S-state Learning v3 ADX 1DP Sticky"
-    types:
-      - completed
 
 permissions:
   contents: read
 
-concurrency:
-  group: publish-current-model-active
-  cancel-in-progress: false
-
 jobs:
-  publish-active:
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+  publish-champion:
     runs-on: ubuntu-latest
     env:
       WORKER_BASE_URL: ${{ secrets.WORKER_BASE_URL }}
       WORKER_CALLBACK_TOKEN: ${{ secrets.WORKER_CALLBACK_TOKEN }}
-
     steps:
-      - name: Checkout current trained model
+      - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Validate Cloudflare bridge secrets
+      - name: Validate bridge secrets
         shell: bash
         run: |
           test -n "$WORKER_BASE_URL" || (echo "WORKER_BASE_URL missing" && exit 1)
           test -n "$WORKER_CALLBACK_TOKEN" || (echo "WORKER_CALLBACK_TOKEN missing" && exit 1)
 
-      - name: Validate current model is Schema v3 DMI Expert v3 ADX 1DP Sticky
+      - name: Validate current model
         shell: bash
         run: |
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-
-          model_path = Path("models/probability_model.json")
-          report_path = Path("reports/training_report.json")
-          if not model_path.exists():
-              raise SystemExit("models/probability_model.json missing")
-          if not report_path.exists():
-              raise SystemExit("reports/training_report.json missing")
-
-          model = json.loads(model_path.read_text(encoding="utf-8"))
-          report = json.loads(report_path.read_text(encoding="utf-8"))
-          model_id = str(model.get("model_id") or "").strip()
-          schema = int(model.get("schema_version") or 0)
-          dmi_version = str((model.get("dmi_expert_contract") or {}).get("version") or "").strip()
-
+          python - <<'PY'
+          import json, os
+          m=json.load(open('models/probability_model.json', encoding='utf-8'))
+          model_id=str(m.get('model_id') or '')
           if not model_id:
-              raise SystemExit("model_id missing")
-          if schema != 3:
-              raise SystemExit(f"Refusing ACTIVE publish: expected schema_version=3, got {schema}")
-          if dmi_version != "DMI-EXPERT-v3-ADX-1DP-STICKY":
-              raise SystemExit(f"Refusing ACTIVE publish: expected DMI-EXPERT-v3-ADX-1DP-STICKY, got {dmi_version!r}")
-          if str(report.get("model_id") or "") != model_id:
-              raise SystemExit("training_report model_id does not match probability_model")
-          if int(report.get("schema_version") or 0) != schema:
-              raise SystemExit("training_report schema_version does not match probability_model")
-
-          print(f"Validated model_id={model_id}")
-          print(f"schema_version={schema}")
-          print(f"dmi_expert_version={dmi_version}")
-          with open("/tmp/model-meta.env", "w", encoding="utf-8") as f:
-              f.write(f"MODEL_ID={model_id}\n")
-              f.write(f"MODEL_SCHEMA={schema}\n")
-              f.write(f"DMI_EXPERT_VERSION={dmi_version}\n")
+              raise SystemExit('model_id missing')
+          if int(m.get('schema_version') or 0) != 3:
+              raise SystemExit('schema_version must be 3')
+          if str((m.get('dmi_expert_contract') or {}).get('version') or '') != 'DMI-EXPERT-v3-ADX-1DP-STICKY':
+              raise SystemExit('DMI Expert contract mismatch')
+          print('Champion to publish:', model_id)
+          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
+              f.write('MODEL_ID=' + model_id + '\n')
           PY
-          cat /tmp/model-meta.env >> "$GITHUB_ENV"
 
-      - name: Preserve model in Candidate history
+      - name: Publish directly as Champion / Active
         shell: bash
         run: |
           BASE="${WORKER_BASE_URL%/}"
@@ -83,102 +49,20 @@ jobs:
             -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
             -H "Content-Type: application/json" \
             --data-binary "@models/probability_model.json" \
-            "$BASE/api/internal/model/candidate" \
-            -o /tmp/publish-candidate.json
-          cat /tmp/publish-candidate.json
+            "$BASE/api/internal/model/active"
+          echo
 
-      - name: Publish matching training report
+      - name: Verify Active
         shell: bash
         run: |
           BASE="${WORKER_BASE_URL%/}"
-          curl --fail --silent --show-error \
-            -X PUT \
-            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
-            -H "Content-Type: application/json" \
-            --data-binary "@reports/training_report.json" \
-            "$BASE/api/internal/learning/report?model_id=$MODEL_ID" \
-            -o /tmp/publish-report.json
-          cat /tmp/publish-report.json
-
-      - name: Publish Schema v3 DMI Expert v3 ADX 1DP Sticky as ACTIVE now
-        shell: bash
-        run: |
-          BASE="${WORKER_BASE_URL%/}"
-          curl --fail --silent --show-error \
-            -X PUT \
-            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
-            -H "Content-Type: application/json" \
-            --data-binary "@models/probability_model.json" \
-            "$BASE/api/internal/model/active" \
-            -o /tmp/publish-active.json
-          cat /tmp/publish-active.json
-
-      - name: Read Active model back from R2
-        shell: bash
-        run: |
-          BASE="${WORKER_BASE_URL%/}"
-          curl --fail --silent --show-error "$BASE/api/model/active" -o /tmp/active-model.json
-
-          # Challenger is allowed to be absent after the same model becomes Active.
-          set +e
-          CHALLENGER_HTTP=$(curl --silent --show-error -o /tmp/challenger-current.json -w "%{http_code}" "$BASE/api/model/challenger/current")
-          set -e
-          echo "CHALLENGER_HTTP=$CHALLENGER_HTTP" >> "$GITHUB_ENV"
-
-      - name: Verify R2 Active is Schema v3 DMI Expert v3 ADX 1DP Sticky
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          expected_id = os.environ["MODEL_ID"]
-          expected_schema = int(os.environ["MODEL_SCHEMA"])
-          expected_dmi = os.environ["DMI_EXPERT_VERSION"]
-
-          active = json.load(open("/tmp/active-model.json", encoding="utf-8"))
-          checks = {
-              "active.model_id": active.get("model_id") == expected_id,
-              "active.schema_version": int(active.get("schema_version") or 0) == expected_schema,
-              "active.dmi_expert_contract": (active.get("dmi_expert_contract") or {}).get("version") == expected_dmi,
-          }
-
-          for name, ok in checks.items():
-              print(("PASS" if ok else "FAIL"), name)
-          failed = [name for name, ok in checks.items() if not ok]
-          if failed:
-              raise SystemExit("ACTIVE publish verification failed: " + ", ".join(failed))
-
-          http = os.environ.get("CHALLENGER_HTTP", "")
-          if http == "200" and Path("/tmp/challenger-current.json").exists():
-              current = json.load(open("/tmp/challenger-current.json", encoding="utf-8"))
-              if current.get("model_id") == expected_id:
-                  raise SystemExit("Same model is still both Active and Challenger; deploy Worker v0.1.58 first")
-              print("PASS challenger is a different model:", current.get("model_id"))
-          elif http == "404":
-              print("PASS duplicate Challenger cleared after Active publication")
-          else:
-              print("INFO Challenger HTTP status:", http)
-
-          print()
-          print("ACTIVE MODEL VERIFIED")
-          print(" model_id           =", expected_id)
-          print(" schema_version     =", expected_schema)
-          print(" dmi_expert_version =", expected_dmi)
-          print(" next_step          = run SStateMarketTerminal Full Analysis once")
+          curl --fail --silent --show-error "$BASE/api/model/active" -o /tmp/active.json
+          python - <<'PY'
+          import json, os
+          got=str(json.load(open('/tmp/active.json', encoding='utf-8')).get('model_id') or '')
+          expected=os.environ['MODEL_ID']
+          print('Expected:', expected)
+          print('Active  :', got)
+          if got != expected:
+              raise SystemExit('Active Champion verification failed')
           PY
-
-      - name: Write publish summary
-        shell: bash
-        run: |
-          {
-            echo "## Schema v3 DMI Expert v3 ADX 1DP Sticky is ACTIVE"
-            echo ""
-            echo "- Active Model ID: \`$MODEL_ID\`"
-            echo "- Schema: \`$MODEL_SCHEMA\`"
-            echo "- DMI Expert: \`$DMI_EXPERT_VERSION\`"
-            echo "- Historical replay: not rerun"
-            echo "- Challenger waiting period: bypassed by explicit Active publication"
-            echo "- Next step: run SStateMarketTerminal Full Analysis once so snapshots are recalculated with DMI Expert"
-          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,4 +1,4 @@
-name: Historical S-state Training v3 DMI Expert v3 ADX 1DP Sticky
+name: Manual Historical S-state Full Rebuild v3.2
 
 on:
   workflow_dispatch:
@@ -9,9 +9,9 @@ on:
         default: "ALL"
         type: string
       max_records:
-        description: "本地歷史保留上限；目前已有完整 cache 請維持 10000"
+        description: "本地歷史保留上限；既有 cache 可逐日累積超過 Pionex 初始 10000 上限"
         required: true
-        default: "10000"
+        default: "20000"
         type: string
       step_bars:
         description: "每幾根 4H 建一筆決策樣本；1=完整"
@@ -88,4 +88,6 @@ jobs:
             exit 0
           fi
           git commit -m "training: update historical S-state DMI Expert v3 ADX 1DP Sticky model"
-          git push
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
