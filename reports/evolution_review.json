@@ -3,7 +3,97 @@
   "champion_model_id": "a9a998d93ea396e4",
   "generation": 1,
   "settled_72h": 0,
-  "minimum_settled_72h": 200,
+  "minimum_settled_72h": 120,
   "evolution_due": false,
+  "state_review": {
+    "S0.5": {
+      "snapshots": 8,
+      "settled_72h": 0,
+      "pending_72h": 8,
+      "success": 0,
+      "alive_slow": 0,
+      "true_fail": 0,
+      "other": 0,
+      "success_rate": null,
+      "alive_slow_rate": null,
+      "structural_survival_rate": null,
+      "true_fail_rate": null,
+      "other_rate": null
+    },
+    "S1": {
+      "snapshots": 1,
+      "settled_72h": 0,
+      "pending_72h": 1,
+      "success": 0,
+      "alive_slow": 0,
+      "true_fail": 0,
+      "other": 0,
+      "success_rate": null,
+      "alive_slow_rate": null,
+      "structural_survival_rate": null,
+      "true_fail_rate": null,
+      "other_rate": null
+    },
+    "S2": {
+      "snapshots": 29,
+      "settled_72h": 0,
+      "pending_72h": 29,
+      "success": 0,
+      "alive_slow": 0,
+      "true_fail": 0,
+      "other": 0,
+      "success_rate": null,
+      "alive_slow_rate": null,
+      "structural_survival_rate": null,
+      "true_fail_rate": null,
+      "other_rate": null
+    },
+    "S3": {
+      "snapshots": 10,
+      "settled_72h": 0,
+      "pending_72h": 10,
+      "success": 0,
+      "alive_slow": 0,
+      "true_fail": 0,
+      "other": 0,
+      "success_rate": null,
+      "alive_slow_rate": null,
+      "structural_survival_rate": null,
+      "true_fail_rate": null,
+      "other_rate": null
+    }
+  },
+  "market_review": {
+    "CRYPTO": {
+      "snapshots": 19,
+      "settled_72h": 0,
+      "pending_72h": 19,
+      "success": 0,
+      "alive_slow": 0,
+      "true_fail": 0,
+      "other": 0,
+      "success_rate": null,
+      "alive_slow_rate": null,
+      "structural_survival_rate": null,
+      "true_fail_rate": null,
+      "other_rate": null
+    },
+    "US_STOCK": {
+      "snapshots": 29,
+      "settled_72h": 0,
+      "pending_72h": 29,
+      "success": 0,
+      "alive_slow": 0,
+      "true_fail": 0,
+      "other": 0,
+      "success_rate": null,
+      "alive_slow_rate": null,
+      "structural_survival_rate": null,
+      "true_fail_rate": null,
+      "other_rate": null
+    }
+  },
+  "adx_regime_review": {},
+  "overconfident_failures": [],
   "next_action": "keep_collecting_frozen_settlements"
 }
