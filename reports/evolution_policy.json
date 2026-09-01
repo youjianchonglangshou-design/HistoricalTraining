@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "policy_version": "EVOLUTION-POLICY-v1",
+  "policy_id": "EVOLUTION-POLICY-v1-GEN001-0",
+  "active_for_next_training": false,
+  "source_review": {
+    "champion_model_id": "a9a998d93ea396e4",
+    "generation": 1,
+    "settled_72h": 0,
+    "minimum_settled_72h": 120
+  },
+  "objective": "Use this generation's real Frozen mistakes to change live-case reinforcement in the next model; reduce repeated high-confidence errors without rewriting fixed S-state rules.",
+  "minimum_group_samples": 5,
+  "case_error_multipliers": {
+    "overconfident_non_success_p65": 2.5,
+    "true_fail_p55": 2.0,
+    "underconfident_success_p45": 2.0,
+    "ordinary_non_success_p50": 1.4,
+    "default": 1.0
+  },
+  "group_rules": [],
+  "max_effective_case_weight": 50,
+  "overconfident_failures": []
+}

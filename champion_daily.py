@@ -9,14 +9,17 @@ from typing import Any
 from engine.symbols_config import EXAM_SYMBOLS, get_unlocked_rwa_symbols, is_rwa_symbol
 from training.champion_learning import (
     apply_case_settlement,
+    build_evolution_policy,
     build_evolution_review,
     build_performance,
     ensure_generation,
     load_json,
     load_ledger,
     make_frozen_record,
+    prune_rolling_ledger,
     save_json,
     save_ledger,
+    save_ledger_shards,
 )
 from training.pionex_history import load_csv, update_symbol_cache
 from training.replay import DEFAULT_HORIZONS, replay_symbol, target_name
@@ -29,6 +32,7 @@ GENERATIONS_PATH = CHAMPION_DIR / "generations.json"
 LEDGER_PATH = CHAMPION_DIR / "ledger.jsonl"
 PERFORMANCE_PATH = CHAMPION_DIR / "performance.json"
 EVOLUTION_REVIEW_PATH = ROOT / "reports" / "evolution_review.json"
+EVOLUTION_POLICY_PATH = ROOT / "reports" / "evolution_policy.json"
 TARGET_STATES = {"S0.5", "S1", "S2", "S3"}
 FOUR_HOUR_MS = 4 * 60 * 60 * 1000
 TW = timezone(timedelta(hours=8))
@@ -196,6 +200,9 @@ def main() -> int:
     ap.add_argument("--max-records", type=int, default=20000)
     ap.add_argument("--cache-only", action="store_true", help="Use existing local 4H cache; do not call Pionex")
     ap.add_argument("--replay-bars", type=int, default=1500, help="Recent 4H bars used only for path settlement replay")
+    ap.add_argument("--ledger-cache", default=str(LEDGER_PATH), help="Recent ledger cache loaded from R2 export; not the long-term source of truth")
+    ap.add_argument("--ledger-cache-days", type=int, default=3650, help="Temporary rolling ledger retention; workflow cache lives in /tmp, long-term truth is R2 shards")
+    ap.add_argument("--r2-shard-dir", default=str(ROOT / "data" / "champion" / "r2_shards"), help="Output directory for Generation/date R2 ledger shards")
     args = ap.parse_args()
 
     active_model = json.loads(Path(args.active_model).read_text(encoding="utf-8"))
@@ -233,7 +240,9 @@ def main() -> int:
     history = load_json(GENERATIONS_PATH, [])
     manifest, history, _ = ensure_generation(manifest, history, active_model_id, now_iso)
 
-    ledger = load_ledger(LEDGER_PATH)
+    ledger_path = Path(args.ledger_cache)
+    shard_dir = Path(args.r2_shard_dir)
+    ledger = load_ledger(ledger_path)
     by_snapshot_id = {str(r.get("snapshot_id")): r for r in ledger}
     by_symbol_time: dict[tuple[str, str, int], dict[str, Any]] = {
         (
@@ -320,12 +329,24 @@ def main() -> int:
 
     performance = build_performance(ledger, manifest, history, now_ms=now_ms)
     evolution_review = build_evolution_review(ledger, manifest)
+    evolution_policy = build_evolution_policy(evolution_review, ledger, manifest)
+
+    # R2 Generation/date shards are the authoritative long-term ledger.
+    # The local ledger is now only a bounded recent cache so Git history can
+    # never grow without limit.
+    rolling_ledger = prune_rolling_ledger(
+        ledger,
+        now_ms=now_ms,
+        keep_days=max(7, min(3650, int(args.ledger_cache_days))),
+    )
+    shard_manifest = save_ledger_shards(shard_dir, rolling_ledger)
 
     save_json(GENERATION_PATH, manifest)
     save_json(GENERATIONS_PATH, history)
-    save_ledger(LEDGER_PATH, ledger)
+    save_ledger(ledger_path, rolling_ledger)
     save_json(PERFORMANCE_PATH, performance)
     save_json(EVOLUTION_REVIEW_PATH, evolution_review)
+    save_json(EVOLUTION_POLICY_PATH, evolution_policy)
 
     print(f"Champion={active_model_id}")
     print(f"Generation={manifest.get('generation')}")
@@ -333,6 +354,8 @@ def main() -> int:
     print(f"Settlement updates={settled_updates}")
     print(f"Settled 72H={evolution_review.get('settled_72h')}")
     print(f"Evolution due={evolution_review.get('evolution_due')}")
+    print(f"Evolution policy={evolution_policy.get('policy_id')} active={evolution_policy.get('active_for_next_training')}")
+    print(f"R2 ledger shards prepared={len(shard_manifest)} in {shard_dir}")
     return 0
 
 

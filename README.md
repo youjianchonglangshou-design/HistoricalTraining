@@ -1,3 +1,63 @@
+## v3.5.0｜R2 Sharded Frozen Ledger + Error-Driven Evolution Engine
+
+### 1. Frozen Ledger 改為 R2 Generation / 日期分片
+
+`data/champion/ledger.jsonl` 不再是長期資料庫。第一次 v3.5 每日流程會在 R2 尚未有 ledger 時，使用舊 `ledger.jsonl` 做一次 migration seed；成功上傳 R2 後，workflow 會把 GitHub 的舊 ledger 移除。
+
+正式來源：
+
+```text
+champion/ledger/
+├─ GEN001/
+│  ├─ 2026-09-01.json
+│  ├─ 2026-09-02.json
+│  └─ ...
+├─ GEN002/
+│  └─ ...
+└─ ...
+```
+
+同一天的 shard 會隨 12H / 24H / 48H / 72H 結算更新同一個 R2 key，不建立重複考卷。
+
+08:25 HistoricalTraining 開始時，只從 R2 下載最近 90 日 rolling ledger 到 `/tmp`，用來追蹤尚未結算與本代學習；長期歷史由 R2 shards 永久保存。`performance.json` 與 Evolution review/policy 也會同步到 R2。
+
+### 2. evolution_review 正式成為下一代訓練輸入
+
+以前 120 筆到達後只是「同一套 10x live reinforcement 再跑一次」。v3.5 改成：
+
+```text
+Frozen 72H 真實考卷
+→ evolution_review.json
+→ 找出高信心失敗、低信心成功、State / 市場 / ADX regime / ADX turn 校準偏差
+→ evolution_policy.json
+→ 每一筆 live case 產生不同 reinforcement weight
+→ run_training.py
+→ 下一代 Champion
+```
+
+主要規則：
+
+- 預估成功 ≥65% 卻沒有成功：最高優先錯題。
+- TRUE_FAIL 且原本成功率偏高：提高錯題權重。
+- 預估 ≤45% 卻成功：保留被 Champion 低估的正面案例。
+- 同一 `S-state + DMI/ADX regime` 或 `S-state + ADX turn` 若反覆校準偏差，整組 live evidence 會提高學習權重。
+- 所有 adaptive weight 都有上限（50x），避免少數異常行情摧毀約 20 萬筆歷史基準。
+- `engine/scoring_rules.py` 仍禁止自動改寫；Evolution Engine 調整的是下一代模型如何吸收真實錯題，不會自行發明新的 S-state 定義。
+
+因此閉環現在是：
+
+```text
+Champion
+→ 04:01 Frozen
+→ 12/24/48/72H Settlement
+→ 120 筆
+→ Error Review
+→ Evolution Policy
+→ Adaptive Retraining
+→ Next Champion
+→ 0/120 重新考試
+```
+
 ## v3.4.0｜04:01 Terminal 真實 Champion Checkpoint → 08:25 結算
 
 - 正式 Frozen Snapshot 不再由 08:25 HistoricalTraining 重新計算預測。
@@ -56,7 +116,7 @@ Champion = a9a998d93ea396e4
 - 之後逐步追加 12H / 24H / 48H / 72H settlement
 - 72H 實際 state path，例如 `S2 → S3`
 
-歷史 Replay 仍可因模型公式升級而重新計算；`data/champion/ledger.jsonl` 的 Frozen Prediction 不允許被新模型改寫。
+歷史 Replay 仍可因模型公式升級而重新計算；R2 `champion/ledger/GENxxx/YYYY-MM-DD.json` 的 Frozen Prediction 不允許被新模型改寫。
 
 ### 戰績輸出
 

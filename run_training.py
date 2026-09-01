@@ -10,7 +10,7 @@ from pathlib import Path
 from engine.scoring_rules import ENGINE_API_VERSION, OPPORTUNITY_ENGINE_VERSION, PURPLE2_RULE_VERSION
 from engine.symbols_config import EXAM_SYMBOLS
 from training.io_utils import write_jsonl_gz
-from training.champion_learning import current_generation_frozen_cases, load_json as load_champion_json, load_ledger
+from training.champion_learning import adaptive_reinforcement_weight, current_generation_frozen_cases, load_json as load_champion_json, load_ledger
 from training.model_builder import build_model, save_json
 from training.pionex_history import load_csv, update_symbol_cache
 from training.replay import DEFAULT_HORIZONS, replay_symbol
@@ -23,6 +23,7 @@ REPORT_PATH = ROOT / "reports" / "training_report.json"
 META_PATH = ROOT / "data" / "learning_meta.json"
 QUIZ_TIMELINE_DIR = ROOT / "quiz" / "model_timeline"
 CHAMPION_LEDGER_PATH = ROOT / "data" / "champion" / "ledger.jsonl"
+EVOLUTION_POLICY_PATH = ROOT / "reports" / "evolution_policy.json"
 CHAMPION_GENERATION_PATH = ROOT / "data" / "champion" / "generation.json"
 
 
@@ -113,7 +114,9 @@ def main() -> int:
     parser.add_argument("--step-bars", type=int, default=1, help="Replay every N 4H bars; production default 1")
     parser.add_argument("--min-samples", type=int, default=50, help="Minimum cases for a conditional probability rule")
     parser.add_argument("--cache-only", action="store_true", help="Use existing local 4H cache only; do not call Pionex API")
-    parser.add_argument("--frozen-reinforcement", type=int, default=10, help="Effective training weight for each settled Frozen Champion case in the current generation")
+    parser.add_argument("--frozen-reinforcement", type=int, default=10, help="Base training weight for each settled Frozen Champion case in the current generation")
+    parser.add_argument("--ledger-cache", default=str(CHAMPION_LEDGER_PATH), help="Recent Champion ledger cache downloaded from R2")
+    parser.add_argument("--evolution-policy", default=str(EVOLUTION_POLICY_PATH), help="Machine-actionable policy generated from evolution_review.json")
     args = parser.parse_args()
 
     symbols = parse_symbols(args.symbols)
@@ -163,18 +166,38 @@ def main() -> int:
 
     base_replay_cases = list(all_cases)
     generation_manifest = load_champion_json(CHAMPION_GENERATION_PATH, {})
-    frozen_live_cases = current_generation_frozen_cases(load_ledger(CHAMPION_LEDGER_PATH), generation_manifest)
+    frozen_live_cases = current_generation_frozen_cases(load_ledger(Path(args.ledger_cache)), generation_manifest)
     reinforcement = max(1, min(50, int(args.frozen_reinforcement)))
+    evolution_policy = load_champion_json(Path(args.evolution_policy), {})
+    policy_active = bool(evolution_policy.get("active_for_next_training"))
 
-    # Audit dataset keeps each Frozen result once. The actual model receives a
-    # configurable reinforcement weight so 120 new live exam results can matter
-    # against the much larger historical crypto baseline instead of being diluted.
+    # The old loop gave every live case the same fixed 10x weight. The Evolution
+    # Engine now uses this Champion's actual error review to change each case's
+    # reinforcement: high-confidence misses and repeatedly miscalibrated
+    # state/regime/turn groups receive more learning weight, bounded at 50x.
+    weighted_live_cases: list[dict] = []
+    live_weight_audit = []
+    for case in frozen_live_cases:
+        weight = adaptive_reinforcement_weight(case, evolution_policy, reinforcement)
+        weighted_live_cases.extend([case] * weight)
+        live_weight_audit.append({
+            "symbol": case.get("symbol"),
+            "market_type": case.get("market_type"),
+            "state": case.get("state"),
+            "time": case.get("time"),
+            "weight": weight,
+            "actual_72h_outcome": (case.get("live_feedback") or {}).get("actual_72h_outcome"),
+            "predicted_success_probability": (case.get("live_feedback") or {}).get("predicted_success_probability"),
+        })
+
     audit_cases = base_replay_cases + frozen_live_cases
-    training_cases = base_replay_cases + [case for case in frozen_live_cases for _ in range(reinforcement)]
+    training_cases = base_replay_cases + weighted_live_cases
     all_cases = audit_cases
     all_cases.sort(key=lambda x: (int(x["time"]), str(x.get("market_type", "")), x["symbol"]))
+    effective_live = len(weighted_live_cases)
+    avg_live_weight = (effective_live / len(frozen_live_cases)) if frozen_live_cases else 0.0
     print(f"write {len(all_cases)} unique/audit cases -> {CASES_PATH}")
-    print(f"Frozen live feedback: unique={len(frozen_live_cases)} reinforcement={reinforcement} effective={len(frozen_live_cases) * reinforcement}")
+    print(f"Frozen live feedback: unique={len(frozen_live_cases)} base_weight={reinforcement} policy_active={policy_active} effective={effective_live} avg_weight={avg_live_weight:.2f}")
     write_jsonl_gz(CASES_PATH, all_cases)
 
     # Freeze the first historical/live boundary once. It is not reset by later retraining.
@@ -203,8 +226,12 @@ def main() -> int:
         "audit_case_count": len(all_cases),
         "base_replay_case_count": len(base_replay_cases),
         "frozen_live_unique_case_count": len(frozen_live_cases),
-        "frozen_live_reinforcement_weight": reinforcement,
-        "frozen_live_effective_case_count": len(frozen_live_cases) * reinforcement,
+        "frozen_live_base_reinforcement_weight": reinforcement,
+        "frozen_live_effective_case_count": effective_live,
+        "frozen_live_average_reinforcement_weight": round(avg_live_weight, 4),
+        "evolution_policy_id": evolution_policy.get("policy_id"),
+        "evolution_policy_active": policy_active,
+        "evolution_policy_group_rule_count": len(evolution_policy.get("group_rules") or []),
         "frozen_live_market_counts": {
             "CRYPTO": sum(1 for c in frozen_live_cases if str(c.get("market_type") or "CRYPTO") == "CRYPTO"),
             "US_STOCK": sum(1 for c in frozen_live_cases if str(c.get("market_type") or "CRYPTO") == "US_STOCK"),
@@ -230,8 +257,12 @@ def main() -> int:
         "audit_case_count": len(all_cases),
         "base_replay_case_count": len(base_replay_cases),
         "frozen_live_unique_case_count": len(frozen_live_cases),
-        "frozen_live_reinforcement_weight": reinforcement,
-        "frozen_live_effective_case_count": len(frozen_live_cases) * reinforcement,
+        "frozen_live_base_reinforcement_weight": reinforcement,
+        "frozen_live_effective_case_count": effective_live,
+        "frozen_live_average_reinforcement_weight": round(avg_live_weight, 4),
+        "evolution_policy_id": evolution_policy.get("policy_id"),
+        "evolution_policy_active": policy_active,
+        "evolution_policy_group_rule_count": len(evolution_policy.get("group_rules") or []),
         "historical_case_count": len(historical_cases),
         "live_case_count": len(live_cases),
         "live_since_ms": live_since_ms,
@@ -257,6 +288,14 @@ def main() -> int:
         "dmi_expert_contract": model.get("dmi_expert_contract") or {},
         "dmi_expert_72h": build_dmi_expert_report(model, primary_horizon),
         "adx_step_regime_72h": build_adx_step_report(model, primary_horizon),
+        "evolution_policy": {
+            "policy_id": evolution_policy.get("policy_id"),
+            "active": policy_active,
+            "group_rule_count": len(evolution_policy.get("group_rules") or []),
+            "effective_live_case_count": effective_live,
+            "average_live_case_weight": round(avg_live_weight, 4),
+            "highest_weight_cases": sorted(live_weight_audit, key=lambda x: int(x.get("weight", 0)), reverse=True)[:50],
+        },
     }
     save_json(REPORT_PATH, report)
     print(f"MODEL={MODEL_PATH}")

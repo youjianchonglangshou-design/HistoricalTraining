@@ -5,5 +5,8 @@
   "started_at": "2026-09-01T00:26:13.805005+00:00",
   "evolution_min_settled_72h": 120,
   "note": "Generation 001 baseline chosen by user. First scheduled Champion review run sets started_at and begins frozen live tracking.",
-  "frozen_live_reinforcement_weight": 10
+  "frozen_live_reinforcement_weight": 10,
+  "ledger_source": "R2_SHARDED_BY_GENERATION_DATE",
+  "ledger_recent_cache_days": 90,
+  "evolution_policy_version": "EVOLUTION-POLICY-v1"
 }

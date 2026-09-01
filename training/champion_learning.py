@@ -13,6 +13,8 @@ OUTCOME_OTHER = "OTHER"
 OUTCOME_KEYS = (OUTCOME_SUCCESS, OUTCOME_ALIVE, OUTCOME_FAIL, OUTCOME_OTHER)
 TW_TZ = timezone(timedelta(hours=8))
 HORIZON_BARS_TO_HOURS = {3: 12, 6: 24, 12: 48, 18: 72}
+ROLLING_LEDGER_CACHE_DAYS = 90
+EVOLUTION_POLICY_VERSION = "EVOLUTION-POLICY-v1"
 
 
 def load_json(path: Path, default: Any) -> Any:
@@ -373,6 +375,12 @@ def frozen_record_to_case(record: dict[str, Any]) -> dict[str, Any] | None:
         "source": "champion_frozen_live",
         "generation": int(record.get("generation", 0) or 0),
         "champion_model_id": str(record.get("champion_model_id") or ""),
+        "live_feedback": {
+            "predicted_success_probability": float((record.get("prediction") or {}).get("success_probability", 0.0) or 0.0),
+            "predicted_structural_survival_probability": float((record.get("prediction") or {}).get("structural_survival_probability", 0.0) or 0.0),
+            "predicted_true_fail_probability": float((record.get("prediction") or {}).get("true_fail_probability", 0.0) or 0.0),
+            "actual_72h_outcome": ((record.get("settlements") or {}).get("72H") or {}).get("outcome"),
+        },
     }
 
 
@@ -388,6 +396,121 @@ def current_generation_frozen_cases(rows: list[dict[str, Any]], manifest: dict[s
             output.append(case)
     output.sort(key=lambda c: (int(c.get("time", 0)), str(c.get("market_type", "")), str(c.get("symbol", ""))))
     return output
+
+
+def prune_rolling_ledger(
+    rows: list[dict[str, Any]],
+    *,
+    now_ms: int,
+    keep_days: int = ROLLING_LEDGER_CACHE_DAYS,
+) -> list[dict[str, Any]]:
+    """Keep only a bounded compatibility cache in Git/local workspace.
+
+    R2 date shards are the authoritative ledger. Pending rows are always kept
+    even if their timestamp somehow falls outside the normal retention window.
+    """
+    days = max(7, min(3650, int(keep_days)))
+    cutoff = int(now_ms) - days * 24 * 60 * 60 * 1000
+    kept = [
+        row for row in rows
+        if int(row.get("decision_time", 0) or 0) >= cutoff or not bool(row.get("final_settled"))
+    ]
+    kept.sort(key=lambda r: (int(r.get("decision_time", 0)), str(r.get("market_type", "")), str(r.get("symbol", ""))))
+    return kept
+
+
+def save_ledger_shards(base_dir: Path, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Write R2-ready Generation/date shards.
+
+    Existing remote shards are never deleted here. Rewriting the same date key
+    is intentional because 12H/24H/48H/72H settlements are appended later.
+    """
+    if base_dir.exists():
+        for child in sorted(base_dir.rglob("*"), reverse=True):
+            if child.is_file():
+                child.unlink()
+            elif child.is_dir():
+                try:
+                    child.rmdir()
+                except OSError:
+                    pass
+    base_dir.mkdir(parents=True, exist_ok=True)
+
+    grouped: dict[tuple[int, str], list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        generation = int(row.get("generation", 0) or 0)
+        date_tw = str(row.get("decision_date_tw") or "")
+        if generation <= 0 or not date_tw:
+            continue
+        grouped[(generation, date_tw)].append(row)
+
+    manifest: list[dict[str, Any]] = []
+    for (generation, date_tw), bucket in sorted(grouped.items()):
+        gen_name = f"GEN{generation:03d}"
+        rel = Path(gen_name) / f"{date_tw}.json"
+        path = base_dir / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "schema_version": 1,
+            "generation": generation,
+            "date_tw": date_tw,
+            "champion_model_id": str(bucket[0].get("champion_model_id") or ""),
+            "records": sorted(bucket, key=lambda r: (int(r.get("decision_time", 0)), str(r.get("market_type", "")), str(r.get("symbol", "")))),
+        }
+        save_json(path, payload)
+        manifest.append({
+            "generation": generation,
+            "date_tw": date_tw,
+            "file": str(path),
+            "relative_file": rel.as_posix(),
+            "r2_key": f"champion/ledger/{gen_name}/{date_tw}.json",
+            "records": len(bucket),
+        })
+    save_json(base_dir / "_upload_manifest.json", {"schema_version": 1, "shards": manifest})
+    return manifest
+
+
+def _calibration_stats(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    settled = [r for r in rows if r.get("final_outcome") in OUTCOME_KEYS]
+    n = len(settled)
+    if not n:
+        return {
+            "samples": 0,
+            "average_predicted_success": None,
+            "actual_success_rate": None,
+            "calibration_gap": None,
+            "overconfident_misses": 0,
+            "underconfident_successes": 0,
+            "true_fail": 0,
+        }
+    preds = [float((r.get("prediction") or {}).get("success_probability", 0.0) or 0.0) for r in settled]
+    actual = [1.0 if r.get("final_outcome") == OUTCOME_SUCCESS else 0.0 for r in settled]
+    avg_pred = sum(preds) / n
+    actual_rate = sum(actual) / n
+    return {
+        "samples": n,
+        "average_predicted_success": round(avg_pred, 6),
+        "actual_success_rate": round(actual_rate, 6),
+        "calibration_gap": round(actual_rate - avg_pred, 6),
+        "overconfident_misses": sum(1 for r, p in zip(settled, preds) if p >= 0.65 and r.get("final_outcome") != OUTCOME_SUCCESS),
+        "underconfident_successes": sum(1 for r, p in zip(settled, preds) if p <= 0.45 and r.get("final_outcome") == OUTCOME_SUCCESS),
+        "true_fail": sum(1 for r in settled if r.get("final_outcome") == OUTCOME_FAIL),
+    }
+
+
+def _group_calibration(
+    rows: list[dict[str, Any]],
+    key_fn,
+) -> dict[str, Any]:
+    groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for row in rows:
+        if row.get("final_outcome") not in OUTCOME_KEYS:
+            continue
+        key = str(key_fn(row) or "").strip()
+        if key and "UNKNOWN" not in key:
+            groups[key].append(row)
+    return {key: _calibration_stats(group) for key, group in sorted(groups.items())}
+
 
 def build_evolution_review(rows: list[dict[str, Any]], manifest: dict[str, Any]) -> dict[str, Any]:
     model_id = str(manifest.get("champion_model_id") or "")
@@ -415,26 +538,181 @@ def build_evolution_review(rows: list[dict[str, Any]], manifest: dict[str, Any])
             overconfident_failures.append({
                 "symbol": r.get("symbol"),
                 "decision_time_tw": r.get("decision_time_tw"),
+                "market_type": r.get("market_type"),
                 "state": r.get("state"),
                 "predicted_success": p,
                 "actual": r.get("final_outcome"),
                 "adx_regime": (r.get("features") or {}).get("dmi_adx_regime"),
+                "adx_turn_event": (r.get("features") or {}).get("adx_turn_event"),
                 "adx": (r.get("features") or {}).get("adx"),
                 "di_plus": (r.get("features") or {}).get("di_plus"),
                 "di_minus": (r.get("features") or {}).get("di_minus"),
             })
     overconfident_failures.sort(key=lambda x: x["predicted_success"], reverse=True)
 
+    error_groups = {
+        "state": _group_calibration(settled, lambda r: r.get("state")),
+        "market": _group_calibration(settled, lambda r: str(r.get("market_type") or "CRYPTO")),
+        "state_regime": _group_calibration(
+            settled,
+            lambda r: f"{r.get('state')}|{(r.get('features') or {}).get('dmi_adx_regime')}",
+        ),
+        "state_turn": _group_calibration(
+            settled,
+            lambda r: f"{r.get('state')}|{(r.get('features') or {}).get('adx_turn_event')}",
+        ),
+    }
+
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "champion_model_id": model_id,
         "generation": generation,
         "settled_72h": len(settled),
         "minimum_settled_72h": threshold,
         "evolution_due": due,
+        "overall_calibration": _calibration_stats(settled),
         "state_review": state_stats,
         "market_review": market_stats,
         "adx_regime_review": regime_stats,
+        "error_groups": error_groups,
         "overconfident_failures": overconfident_failures[:50],
-        "next_action": "retrain_and_publish_next_champion" if due else "keep_collecting_frozen_settlements",
+        "next_action": "build_error_driven_policy_then_retrain_next_champion" if due else "keep_collecting_frozen_settlements",
     }
+
+
+def build_evolution_policy(
+    review: dict[str, Any],
+    rows: list[dict[str, Any]],
+    manifest: dict[str, Any],
+) -> dict[str, Any]:
+    """Turn the review into machine-actionable next-generation weighting rules.
+
+    This does not invent new indicators or rewrite S-state definitions. It
+    changes how strongly the next model learns from the exact live conditions
+    where the current Champion was over/under-confident.
+    """
+    due = bool(review.get("evolution_due"))
+    minimum_group_samples = 5
+    group_rules: list[dict[str, Any]] = []
+    groups = review.get("error_groups") or {}
+
+    for group_type in ("state", "market", "state_regime", "state_turn"):
+        for key, stats in (groups.get(group_type) or {}).items():
+            n = int(stats.get("samples", 0) or 0)
+            gap = stats.get("calibration_gap")
+            if n < minimum_group_samples or gap is None:
+                continue
+            gap = float(gap)
+            abs_gap = abs(gap)
+            direction = "HOLD"
+            if gap <= -0.05:
+                direction = "LOWER_CONFIDENCE"
+            elif gap >= 0.05:
+                direction = "RAISE_CONFIDENCE"
+            # Larger live calibration errors receive more representation in the
+            # next training set. Actual outcomes still decide the direction.
+            multiplier = min(2.0, 1.0 + abs_gap * 5.0)
+            group_rules.append({
+                "group_type": group_type,
+                "key": key,
+                "samples": n,
+                "average_predicted_success": stats.get("average_predicted_success"),
+                "actual_success_rate": stats.get("actual_success_rate"),
+                "calibration_gap": round(gap, 6),
+                "direction": direction,
+                "live_weight_multiplier": round(multiplier, 4),
+                "overconfident_misses": int(stats.get("overconfident_misses", 0) or 0),
+                "underconfident_successes": int(stats.get("underconfident_successes", 0) or 0),
+            })
+
+    group_rules.sort(
+        key=lambda x: (abs(float(x.get("calibration_gap", 0.0))), int(x.get("samples", 0))),
+        reverse=True,
+    )
+    policy_seed = {
+        "champion_model_id": str(review.get("champion_model_id") or ""),
+        "generation": int(review.get("generation") or manifest.get("generation") or 1),
+        "settled_72h": int(review.get("settled_72h", 0) or 0),
+        "group_rules": group_rules,
+    }
+    policy_id = f"{EVOLUTION_POLICY_VERSION}-GEN{policy_seed['generation']:03d}-{policy_seed['settled_72h']}"
+    return {
+        "schema_version": 1,
+        "policy_version": EVOLUTION_POLICY_VERSION,
+        "policy_id": policy_id,
+        "active_for_next_training": due,
+        "source_review": {
+            "champion_model_id": policy_seed["champion_model_id"],
+            "generation": policy_seed["generation"],
+            "settled_72h": policy_seed["settled_72h"],
+            "minimum_settled_72h": int(review.get("minimum_settled_72h", 120) or 120),
+        },
+        "objective": "Use this generation's real Frozen mistakes to change live-case reinforcement in the next model; reduce repeated high-confidence errors without rewriting fixed S-state rules.",
+        "minimum_group_samples": minimum_group_samples,
+        "case_error_multipliers": {
+            "overconfident_non_success_p65": 2.5,
+            "true_fail_p55": 2.0,
+            "underconfident_success_p45": 2.0,
+            "ordinary_non_success_p50": 1.4,
+            "default": 1.0,
+        },
+        "group_rules": group_rules,
+        "max_effective_case_weight": 50,
+        "overconfident_failures": list(review.get("overconfident_failures") or [])[:50],
+    }
+
+
+def _case_group_keys(case: dict[str, Any]) -> dict[str, str]:
+    features = case.get("features") or {}
+    state = str(case.get("state") or "")
+    market = str(case.get("market_type") or features.get("market_type") or "CRYPTO")
+    regime = str(features.get("dmi_adx_regime") or "UNKNOWN")
+    turn = str(features.get("adx_turn_event") or "UNKNOWN")
+    return {
+        "state": state,
+        "market": market,
+        "state_regime": f"{state}|{regime}",
+        "state_turn": f"{state}|{turn}",
+    }
+
+
+def adaptive_reinforcement_weight(
+    case: dict[str, Any],
+    policy: dict[str, Any] | None,
+    base_weight: int,
+) -> int:
+    """Weight one settled live case according to the Champion's actual mistake.
+
+    The policy is generated from evolution_review.json. The output is bounded
+    so a handful of unusual observations can never dominate the historical base.
+    """
+    base = max(1, min(50, int(base_weight)))
+    if not policy or not policy.get("active_for_next_training"):
+        return base
+
+    feedback = case.get("live_feedback") or {}
+    p = float(feedback.get("predicted_success_probability", 0.0) or 0.0)
+    outcome = str(feedback.get("actual_72h_outcome") or "")
+    success = outcome == OUTCOME_SUCCESS
+
+    error_mult = 1.0
+    cfg = policy.get("case_error_multipliers") or {}
+    if not success and p >= 0.65:
+        error_mult = float(cfg.get("overconfident_non_success_p65", 2.5) or 2.5)
+    elif outcome == OUTCOME_FAIL and p >= 0.55:
+        error_mult = float(cfg.get("true_fail_p55", 2.0) or 2.0)
+    elif success and p <= 0.45:
+        error_mult = float(cfg.get("underconfident_success_p45", 2.0) or 2.0)
+    elif not success and p >= 0.50:
+        error_mult = float(cfg.get("ordinary_non_success_p50", 1.4) or 1.4)
+
+    keys = _case_group_keys(case)
+    group_mult = 1.0
+    for rule in policy.get("group_rules") or []:
+        gtype = str(rule.get("group_type") or "")
+        if keys.get(gtype) == str(rule.get("key") or ""):
+            group_mult = max(group_mult, float(rule.get("live_weight_multiplier", 1.0) or 1.0))
+
+    cap = max(base, min(50, int(policy.get("max_effective_case_weight", 50) or 50)))
+    weight = int(round(base * error_mult * group_mult))
+    return max(1, min(cap, weight))

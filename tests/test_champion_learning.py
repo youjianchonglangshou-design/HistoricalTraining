@@ -6,11 +6,15 @@ from training.champion_learning import (
     OUTCOME_ALIVE,
     OUTCOME_FAIL,
     OUTCOME_SUCCESS,
+    adaptive_reinforcement_weight,
     apply_case_settlement,
+    build_evolution_policy,
     build_evolution_review,
     build_performance,
     ensure_generation,
     frozen_record_to_case,
+    prune_rolling_ledger,
+    save_ledger_shards,
 )
 
 
@@ -190,6 +194,64 @@ class ChampionLearningTests(unittest.TestCase):
             active_model_id="NEWMODEL2", frozen_at_iso="now",
         )
         self.assertIsNone(frozen)
+
+
+    def test_evolution_policy_turns_review_into_adaptive_weighting(self):
+        manifest = {"generation": 1, "champion_model_id": "A", "evolution_min_settled_72h": 2}
+        rows = [
+            {
+                "generation": 1, "champion_model_id": "A", "market_type": "CRYPTO",
+                "symbol": "BTC", "decision_time": 1000, "decision_date_tw": "2026-09-01",
+                "state": "S0.5", "features": {"dmi_adx_regime": "PLUS_RISING", "adx_turn_event": "RED_TO_GREEN"},
+                "prediction": {"success_probability": 0.80},
+                "settlements": {"72H": {"status": "SETTLED", "outcome": OUTCOME_FAIL}},
+                "final_outcome": OUTCOME_FAIL, "final_settled": True,
+            },
+            {
+                "generation": 1, "champion_model_id": "A", "market_type": "CRYPTO",
+                "symbol": "ETH", "decision_time": 2000, "decision_date_tw": "2026-09-01",
+                "state": "S0.5", "features": {"dmi_adx_regime": "PLUS_RISING", "adx_turn_event": "RED_TO_GREEN"},
+                "prediction": {"success_probability": 0.75},
+                "settlements": {"72H": {"status": "SETTLED", "outcome": OUTCOME_FAIL}},
+                "final_outcome": OUTCOME_FAIL, "final_settled": True,
+            },
+        ]
+        review = build_evolution_review(rows, manifest)
+        self.assertTrue(review["evolution_due"])
+        policy = build_evolution_policy(review, rows, manifest)
+        self.assertTrue(policy["active_for_next_training"])
+        case = frozen_record_to_case(rows[0])
+        self.assertIsNotNone(case)
+        self.assertGreater(adaptive_reinforcement_weight(case, policy, 10), 10)
+
+    def test_r2_shards_are_generation_and_date_partitioned(self):
+        import tempfile
+        from pathlib import Path
+        rows = [
+            {"generation":1,"champion_model_id":"A","decision_time":1000,"decision_date_tw":"2026-09-01","symbol":"BTC"},
+            {"generation":1,"champion_model_id":"A","decision_time":2000,"decision_date_tw":"2026-09-02","symbol":"ETH"},
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest = save_ledger_shards(Path(tmp), rows)
+            self.assertEqual(len(manifest), 2)
+            self.assertTrue((Path(tmp)/"GEN001"/"2026-09-01.json").exists())
+            self.assertTrue((Path(tmp)/"GEN001"/"2026-09-02.json").exists())
+
+    def test_rolling_ledger_cache_prunes_old_final_rows_but_keeps_pending(self):
+        now_ms = 200 * 86400000
+        old_ms = 1 * 86400000
+        recent_ms = 190 * 86400000
+        rows = [
+            {"decision_time":old_ms,"symbol":"OLD","final_settled":True},
+            {"decision_time":old_ms,"symbol":"PENDING","final_settled":False},
+            {"decision_time":recent_ms,"symbol":"NEW","final_settled":True},
+        ]
+        kept = prune_rolling_ledger(rows, now_ms=now_ms, keep_days=90)
+        symbols = {r["symbol"] for r in kept}
+        self.assertNotIn("OLD", symbols)
+        self.assertIn("PENDING", symbols)
+        self.assertIn("NEW", symbols)
+
 
 
 if __name__ == "__main__":

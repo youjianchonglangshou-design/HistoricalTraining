@@ -1,6 +1,6 @@
 {
-  "version": "3.4.0",
-  "label": "Champion 04:01 Terminal Checkpoint + 08:25 Settlement",
+  "version": "3.5.0",
+  "label": "R2 Sharded Frozen Ledger + Error-Driven Evolution Policy",
   "champion_baseline": "a9a998d93ea396e4",
   "daily_review_taiwan": "08:25",
   "daily_review_cron_utc": "25 0 * * *",
@@ -15,5 +15,11 @@
   "schedule_owner": "Cloudflare Worker",
   "checkpoint_taiwan": "04:01",
   "checkpoint_source": "SStateMarketTerminal R2 runs/champion/YYYY-MM-DD_0401",
-  "freeze_contract": "Only the real Terminal 04:01 Champion prediction is frozen; 08:25 market refresh is settlement-only."
+  "freeze_contract": "Only the real Terminal 04:01 Champion prediction is frozen; 08:25 market refresh is settlement-only.",
+  "ledger_source_of_truth": "R2 champion/ledger/GENxxx/YYYY-MM-DD.json",
+  "github_ledger_role": "migration-only; removed after first successful R2 shard upload",
+  "evolution_policy_version": "EVOLUTION-POLICY-v1",
+  "evolution_rule": "At 120 settled 72H cases, evolution_review generates a machine-actionable policy. High-confidence misses and miscalibrated state/regime/turn groups receive adaptive bounded reinforcement in next Champion training.",
+  "performance_recent_days": 90,
+  "training_r2_export_days": 3650
 }
