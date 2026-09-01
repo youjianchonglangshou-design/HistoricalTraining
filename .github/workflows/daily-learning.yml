@@ -92,6 +92,40 @@ jobs:
               raise SystemExit('R2 Active model_id missing')
           PY
 
+      - name: Download current Generation rolling ledger from R2
+        shell: bash
+        run: |
+          BASE="${WORKER_BASE_URL%/}"
+          GEN=$(python - <<'PY'
+          import json
+          d=json.load(open('data/champion/generation.json', encoding='utf-8'))
+          print(int(d.get('generation') or 1))
+          PY
+          )
+          echo "CHAMPION_GENERATION=$GEN" >> "$GITHUB_ENV"
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            "$BASE/api/internal/champion/ledger/export?generation=$GEN&days=3650" \
+            -o /tmp/champion-ledger-export.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          src=Path('/tmp/champion-ledger-export.json')
+          out=Path('/tmp/champion-ledger.jsonl')
+          payload=json.loads(src.read_text(encoding='utf-8')) if src.exists() else {}
+          rows=payload.get('rows') or []
+          legacy=Path('data/champion/ledger.jsonl')
+          if not rows and legacy.exists() and legacy.stat().st_size:
+              rows=[]
+              for line in legacy.read_text(encoding='utf-8').splitlines():
+                  line=line.strip()
+                  if line:
+                      rows.append(json.loads(line))
+              print('R2 ledger empty: seeding migration from legacy GitHub ledger rows:', len(rows))
+          out.write_text(''.join(json.dumps(r, ensure_ascii=False, separators=(',',':'))+'\n' for r in rows), encoding='utf-8')
+          print('R2 rolling ledger rows:', len(rows))
+          PY
+
       - name: Download today 04:01 Terminal Champion checkpoints
         shell: bash
         run: |
@@ -129,7 +163,59 @@ jobs:
           if [ -s /tmp/checkpoint-us-stock.json ]; then
             ARGS+=(--checkpoint-us-stock /tmp/checkpoint-us-stock.json)
           fi
+          ARGS+=(
+            --ledger-cache /tmp/champion-ledger.jsonl
+            --ledger-cache-days 3650
+            --r2-shard-dir /tmp/champion-ledger-shards
+          )
           python champion_daily.py "${ARGS[@]}"
+
+      - name: Upload Generation/date Frozen ledger shards and performance to R2
+        shell: bash
+        run: |
+          BASE="${WORKER_BASE_URL%/}"
+          python - <<'PY' > /tmp/shard-upload.tsv
+          import json
+          from pathlib import Path
+          p=Path('/tmp/champion-ledger-shards/_upload_manifest.json')
+          d=json.loads(p.read_text(encoding='utf-8')) if p.exists() else {'shards':[]}
+          for s in d.get('shards') or []:
+              print(f"{s['generation']}\t{s['date_tw']}\t{s['file']}")
+          PY
+          while IFS=$'\t' read -r GEN DATE FILE; do
+            [ -n "$FILE" ] || continue
+            curl --fail --silent --show-error \
+              -X PUT \
+              -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data-binary "@$FILE" \
+              "$BASE/api/internal/champion/ledger/shard?generation=$GEN&date=$DATE" \
+              >/tmp/ledger-shard-upload.json
+          done < /tmp/shard-upload.tsv
+
+          curl --fail --silent --show-error \
+            -X PUT \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary "@data/champion/performance.json" \
+            "$BASE/api/internal/champion/performance" \
+            -o /tmp/performance-upload.json
+
+          curl --fail --silent --show-error \
+            -X PUT \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary "@reports/evolution_review.json" \
+            "$BASE/api/internal/champion/evolution?generation=$CHAMPION_GENERATION&kind=review" \
+            -o /tmp/evolution-review-upload.json
+
+          curl --fail --silent --show-error \
+            -X PUT \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary "@reports/evolution_policy.json" \
+            "$BASE/api/internal/champion/evolution?generation=$CHAMPION_GENERATION&kind=policy" \
+            -o /tmp/evolution-policy-upload.json
 
       - name: Read evolution gate
         shell: bash
@@ -154,6 +240,8 @@ jobs:
             --step-bars 1 \
             --min-samples 50 \
             --frozen-reinforcement 10 \
+            --ledger-cache /tmp/champion-ledger.jsonl \
+            --evolution-policy reports/evolution_policy.json \
             --cache-only
 
       - name: Resolve next Champion model id
@@ -174,7 +262,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/cache/4h data/champion reports/evolution_review.json
+          git add data/cache/4h data/champion/generation.json data/champion/generations.json data/champion/performance.json reports/evolution_review.json reports/evolution_policy.json
+          if git ls-files --error-unmatch data/champion/ledger.jsonl >/dev/null 2>&1; then
+            git rm data/champion/ledger.jsonl
+          fi
           if [ "$EVOLUTION_DUE" = "true" ]; then
             git add data/learning_meta.json models/probability_model.json reports/training_report.json quiz/model_timeline
           fi
