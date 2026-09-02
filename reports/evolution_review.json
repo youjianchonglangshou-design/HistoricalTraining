@@ -3,7 +3,7 @@
   "champion_model_id": "a9a998d93ea396e4",
   "generation": 1,
   "settled_72h": 0,
-  "legacy_excluded": 93,
+  "legacy_excluded": 48,
   "minimum_settled_72h": 120,
   "evolution_due": false,
   "overall_calibration": {
