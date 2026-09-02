@@ -1,3 +1,33 @@
+## v3.6.0｜08:25 Formal Champion Exam + Daily-Confirmed Settlement
+
+正式語意改成「每天只考一次，而且每天只批一次完整日週期」：
+
+```text
+00:01 / 04:01 / 12:01 / 16:01 / 20:01  → Live Monitor
+08:01                                  → 不再跑 pair（避免和正式考試重複）
+08:25                                  → Terminal 正式 Champion Crypto + 美股分析
+                                          ↓
+                                  兩邊 checkpoint 都寫入 R2
+                                          ↓
+                                  自動觸發 HistoricalTraining
+                                          ↓
+                           凍結今天考卷 + 批改昨天以前考卷
+```
+
+正式 R2 checkpoint：`runs/champion/YYYY-MM-DD_0825/`。
+
+- 一天仍維持 **6 次 pair 分析**：00:01、04:01、08:25、12:01、16:01、20:01。
+- 六次 Live 過程中任何暫時 S-state 都**不能**決定考卷成功。
+- `12H` 只做盤中觀察，不進正式命中率。
+- `24H / 48H / 72H` 只比較後續每天正式 08:25 checkpoint。
+- S2 盤中曾閃成 S3、隔天 08:25 還是 S2：判定 **ALIVE / 尚未成功**，不是 SUCCESS。
+- S3 隔天 08:25 退回 S2：`趨勢延續` 題判定 **TRUE_FAIL**。
+- 舊 v3.5 的 intraday settlement 會重新批改；Frozen Prediction 本身不做賽後回算。若同一天已有舊 04:01 考卷且能取得新的 08:25 正式考卷，當天舊考卷會被正式 08:25 考卷取代。
+- 歷史模型 Replay 同步改成每日完整收線案例；內部仍逐根 4H 計算 ADX / DMI / state-age features，但模型只從每日確認點建立 decision case，避免下一代繼續學盤中假突破。
+- R2 Sharded Ledger、120 筆 Evolution Review → Policy → Adaptive Retraining 閉環維持。
+
+> v3.4 / v3.5 的 04:01 checkpoint 內容只保留作版本歷史，已不是現行契約。
+
 ## v3.5.0｜R2 Sharded Frozen Ledger + Error-Driven Evolution Engine
 
 ### 1. Frozen Ledger 改為 R2 Generation / 日期分片
@@ -48,8 +78,8 @@ Frozen 72H 真實考卷
 
 ```text
 Champion
-→ 04:01 Frozen
-→ 12/24/48/72H Settlement
+→ 08:25 Formal Frozen
+→ 12H Observation + 24/48/72H Daily-Confirmed Settlement
 → 120 筆
 → Error Review
 → Evolution Policy

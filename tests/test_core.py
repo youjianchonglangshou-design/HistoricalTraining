@@ -14,6 +14,7 @@ from training.outcomes import (
     classify_outcome,
 )
 from training.replay import DEFAULT_HORIZONS, replay_symbol
+from training.outcomes import build_confirmed_close_label
 
 
 class CoreTests(unittest.TestCase):
@@ -57,6 +58,13 @@ class CoreTests(unittest.TestCase):
             OUTCOME_OTHER,
         )
 
+    def test_confirmed_close_target_ignores_intraday_semantics(self):
+        s2 = build_confirmed_close_label("S2", [{"state":"S2","bandpos":0.60,"price":99.0}], entry_price=100.0)
+        self.assertEqual(s2["outcome"], OUTCOME_ALIVE)
+        self.assertFalse(s2["hit"])
+        s3 = build_confirmed_close_label("S3", [{"state":"S2","bandpos":0.60,"price":99.0}], entry_price=100.0)
+        self.assertEqual(s3["outcome"], OUTCOME_FAIL)
+
     def test_engine_record_and_replay(self):
         rows = self.synthetic_rows()
         record = build_live_compatible_record("TEST", rows)
@@ -84,6 +92,9 @@ class CoreTests(unittest.TestCase):
         self.assertIn("adx_step_age_bin", timeline[-1]["features"])
         self.assertIn("adx_turn_event", timeline[-1]["features"])
         self.assertIn("dmi_adx_regime", timeline[-1]["features"])
+        self.assertNotIn("3", cases[0]["labels"])
+        self.assertIn("6", cases[0]["labels"])
+        self.assertEqual(cases[0].get("decision_contract"), "POST_CLOSE_DAILY_CHECKPOINT")
         primary = cases[0]["labels"]["18"]
         self.assertIn(primary["outcome"], OUTCOME_KEYS)
 

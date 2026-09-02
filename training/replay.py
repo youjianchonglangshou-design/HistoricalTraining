@@ -5,11 +5,13 @@ from typing import Any
 from engine.runtime_core import build_record_from_daily_and_4h, iso_tw, utc_day_start_ms
 from engine.scoring_rules import build_long_opportunity
 from .features import dmi_relation_from_record, extract_features
-from .outcomes import classify_outcome
+from .outcomes import build_confirmed_close_label, confirmed_close_target_hit
 
 TARGET_STATES = {"S0.5", "S1", "S2", "S3"}
-DEFAULT_HORIZONS = (3, 6, 12, 18)  # 12H / 24H / 48H / 72H
-LATE_SUCCESS_END_BAR = 42  # optional diagnostic: day 4-7 after the 72H capital-efficiency window
+DEFAULT_HORIZONS = (3, 6, 12, 18)  # 12H observation only / 24H / 48H / 72H scored
+LATE_SUCCESS_END_DAY = 7
+FOUR_HOUR_MS = 4 * 60 * 60 * 1000
+DAY_MS = 24 * 60 * 60 * 1000
 
 
 def target_name(state: str) -> str:
@@ -20,18 +22,6 @@ def target_name(state: str) -> str:
     if state in {"S1", "S3"}:
         return "BANDPOS_GT_075"
     return "UNKNOWN"
-
-
-def _target_hit(source_state: str, future_state: str, future_bandpos: float) -> bool:
-    if source_state == "S0.5":
-        # With 4H sampling, a fast move can skip the exact S1 print. S2/S3 or >0.75
-        # are accepted as evidence that the S0.5 setup progressed beyond S1 territory.
-        return future_state in {"S1", "S2", "S3"} or future_bandpos > 0.75
-    if source_state == "S2":
-        return future_state == "S3"
-    if source_state in {"S1", "S3"}:
-        return future_bandpos > 0.75
-    return False
 
 
 def _new_daily(row: dict[str, Any]) -> dict[str, float]:
@@ -52,6 +42,22 @@ def _update_daily(current: dict[str, float], row: dict[str, Any]) -> None:
     current["volume"] = float(current.get("volume", 0.0)) + float(row.get("volume", 0.0))
 
 
+def _timeline_features(features: dict[str, Any], market_type: str) -> dict[str, Any]:
+    keys = [
+        "midline_state", "bandpos", "bandpos_bin", "trigger_stage", "bandwidth_trend",
+        "bandwidth_delta_3d", "state_age_bars", "state_age_bin", "di_plus", "di_minus",
+        "di_gap", "dmi_relation", "dmi_axis_zone", "dmi_cross_event", "dmi_cross_age_bars",
+        "dmi_cross_age_bin", "di_plus_slope_3d", "di_minus_slope_3d", "di_gap_slope_3d",
+        "adx", "adx_slope_3d", "adx_axis_zone", "adx_step_direction", "adx_step_age_days",
+        "adx_step_age_bin", "adx_turn_event", "adx_step_delta", "dmi_adx_regime",
+        "adx_step_direction_legacy", "adx_step_age_days_legacy", "adx_step_age_bin_legacy",
+        "adx_turn_event_legacy", "dmi_adx_regime_legacy",
+    ]
+    out = {key: features.get(key) for key in keys}
+    out["market_type"] = market_type
+    return out
+
+
 def replay_symbol(
     symbol: str,
     rows_4h: list[dict[str, Any]],
@@ -61,17 +67,24 @@ def replay_symbol(
     allow_partial_horizons: bool = False,
     market_type: str = "CRYPTO",
 ) -> list[dict[str, Any]]:
-    """Replay the real S-state engine at each historical 4H cutoff without look-ahead.
+    """Replay the S-state engine, but score only completed daily closes.
 
-    State/features are computed only from information available at that cutoff.
-    Future bars are touched only later by the settlement loop.
+    v3.6 contract:
+    - The engine may still calculate every 4H internally so DMI/state-age inputs
+      match the live Terminal.
+    - A training decision case is created only from the final completed 4H bar
+      of each UTC day (Taiwan 08:00 post-close state).
+    - Intraday partial-daily S-state flips never count as SUCCESS.
+    - 12H is observation-only and is not a model training label.
+    - 24H / 48H / 72H are judged only at the next 1 / 2 / 3 completed daily closes.
     """
     if not rows_4h:
         return []
+
     market_type = str(market_type or "CRYPTO").upper()
     rows = sorted(rows_4h, key=lambda x: int(x["time"]))
-    max_h = max(horizons)
     snapshots: list[dict[str, Any] | None] = [None] * len(rows)
+    daily_points: list[dict[str, Any]] = []
 
     completed_days: list[dict[str, float]] = []
     current_daily: dict[str, float] | None = None
@@ -94,16 +107,14 @@ def replay_symbol(
         daily_window = (completed_days + [current_daily])[-150:]
         if len(daily_window) < 49 or idx < 149:
             continue
-        four_h_window = rows[max(0, idx - 149) : idx + 1]
+        four_h_window = rows[max(0, idx - 149): idx + 1]
         record = build_record_from_daily_and_4h(symbol, daily_window, four_h_window)
         if record is None:
             continue
+
         opportunity = build_long_opportunity(record, None)
         state = str(opportunity.get("market_state_id") or "OTHER")
-        if state == previous_state:
-            state_age += 1
-        else:
-            state_age = 1
+        state_age = state_age + 1 if state == previous_state else 1
 
         current_dmi_relation = dmi_relation_from_record(record)
         if current_dmi_relation == previous_dmi_relation and current_dmi_relation != "UNKNOWN":
@@ -121,159 +132,106 @@ def replay_symbol(
         )
         features["market_type"] = market_type
         bandpos = float((opportunity.get("current") or {}).get("ha_band_position", 0.5) or 0.5)
-        snapshots[idx] = {
+        snap = {
             "state": state,
             "features": features,
             "bandpos": bandpos,
             "price": float(record["_price"]),
         }
+        snapshots[idx] = snap
 
-        # Quiz timeline: capture the last available 4H engine snapshot of each
-        # UTC day.  This is produced inside the same replay pass, so the quiz
-        # sees the exact S-state/features (including 4H state age) that the
-        # probability model was trained against without running a second engine.
-        if daily_timeline is not None:
-            next_day_key = (
-                utc_day_start_ms(int(rows[idx + 1]["time"]))
-                if idx + 1 < len(rows)
-                else None
-            )
-            if next_day_key != day_key:
-                daily_timeline.append(
-                    {
-                        "day_time": int(day_key),
-                        "cutoff_time": int(row["time"]),
-                        "state": state,
-                        "price": float(record["_price"]),
-                        "bandpos": bandpos,
-                        "features": {
-                            "market_type": market_type,
-                            "midline_state": features.get("midline_state"),
-                            "bandpos": features.get("bandpos"),
-                            "bandpos_bin": features.get("bandpos_bin"),
-                            "trigger_stage": features.get("trigger_stage"),
-                            "bandwidth_trend": features.get("bandwidth_trend"),
-                            "bandwidth_delta_3d": features.get("bandwidth_delta_3d"),
-                            "state_age_bars": features.get("state_age_bars"),
-                            "state_age_bin": features.get("state_age_bin"),
-                            "di_plus": features.get("di_plus"),
-                            "di_minus": features.get("di_minus"),
-                            "di_gap": features.get("di_gap"),
-                            "dmi_relation": features.get("dmi_relation"),
-                            "dmi_axis_zone": features.get("dmi_axis_zone"),
-                            "dmi_cross_event": features.get("dmi_cross_event"),
-                            "dmi_cross_age_bars": features.get("dmi_cross_age_bars"),
-                            "dmi_cross_age_bin": features.get("dmi_cross_age_bin"),
-                            "di_plus_slope_3d": features.get("di_plus_slope_3d"),
-                            "di_minus_slope_3d": features.get("di_minus_slope_3d"),
-                            "di_gap_slope_3d": features.get("di_gap_slope_3d"),
-                            "adx": features.get("adx"),
-                            "adx_slope_3d": features.get("adx_slope_3d"),
-                            "adx_axis_zone": features.get("adx_axis_zone"),
-                            "adx_step_direction": features.get("adx_step_direction"),
-                            "adx_step_age_days": features.get("adx_step_age_days"),
-                            "adx_step_age_bin": features.get("adx_step_age_bin"),
-                            "adx_turn_event": features.get("adx_turn_event"),
-                            "adx_step_delta": features.get("adx_step_delta"),
-                            "dmi_adx_regime": features.get("dmi_adx_regime"),
-                            "adx_step_direction_legacy": features.get("adx_step_direction_legacy"),
-                            "adx_step_age_days_legacy": features.get("adx_step_age_days_legacy"),
-                            "adx_step_age_bin_legacy": features.get("adx_step_age_bin_legacy"),
-                            "adx_turn_event_legacy": features.get("adx_turn_event_legacy"),
-                            "dmi_adx_regime_legacy": features.get("dmi_adx_regime_legacy"),
-                        },
-                    }
-                )
+        next_day_key = utc_day_start_ms(int(rows[idx + 1]["time"])) if idx + 1 < len(rows) else None
+        if next_day_key != day_key:
+            # The row timestamp is the OPEN of the last 4H candle. Once its OHLC
+            # is present, the completed daily close is the next UTC midnight,
+            # which is Taiwan 08:00.
+            close_time = int(day_key + DAY_MS)
+            point = {
+                "day_time": int(day_key),
+                "cutoff_time": close_time,
+                "state": state,
+                "price": float(record["_price"]),
+                "bandpos": bandpos,
+                "features": _timeline_features(features, market_type),
+                "source_index": idx,
+            }
+            daily_points.append(point)
+            if daily_timeline is not None:
+                daily_timeline.append({k: v for k, v in point.items() if k != "source_index"})
 
         previous_state = state
         previous_dmi_relation = current_dmi_relation
 
+    if not daily_points:
+        return []
+
+    # Existing model schema keeps 6/12/18 bar keys for 24/48/72H compatibility.
+    # 3 bars / 12H is intentionally absent because it is an observation-only
+    # intraday window under the new contract.
+    horizon_days = {6: 1, 12: 2, 18: 3}
+    requested = [h for h in horizons if h in horizon_days]
+    step_days = max(1, int(step_bars))
     cases: list[dict[str, Any]] = []
-    step_bars = max(1, int(step_bars))
-    for idx, snapshot in enumerate(snapshots):
-        if snapshot is None or idx % step_bars != 0:
+
+    for pos, point in enumerate(daily_points):
+        if pos % step_days != 0:
             continue
-        state = str(snapshot["state"])
+        state = str(point.get("state") or "OTHER")
         if state not in TARGET_STATES:
-            continue
-        available_horizons = tuple(h for h in horizons if idx + h < len(rows)) if allow_partial_horizons else tuple(horizons)
-        if not allow_partial_horizons and idx + max_h >= len(rows):
-            continue
-        if not available_horizons:
             continue
 
         labels: dict[str, Any] = {}
-        for horizon in available_horizons:
-            hit_bar = None
-            max_bandpos = float(snapshot["bandpos"])
-            max_return = 0.0
-            min_return = 0.0
-            entry_price = float(snapshot["price"])
-            future_slice: list[dict[str, Any] | None] = []
-            state_path = [state]
-            for future_idx in range(idx + 1, idx + horizon + 1):
-                future = snapshots[future_idx]
-                future_slice.append(future)
-                if future is None:
+        for horizon in requested:
+            days = horizon_days[horizon]
+            if pos + days >= len(daily_points):
+                if allow_partial_horizons:
                     continue
-                future_state = str(future["state"])
-                future_bandpos = float(future["bandpos"])
-                future_price = float(future["price"])
-                if future_state and future_state != state_path[-1]:
-                    state_path.append(future_state)
-                max_bandpos = max(max_bandpos, future_bandpos)
-                ret = (future_price / entry_price - 1.0) if entry_price else 0.0
-                max_return = max(max_return, ret)
-                min_return = min(min_return, ret)
-                if hit_bar is None and _target_hit(state, future_state, future_bandpos):
-                    hit_bar = future_idx - idx
-
-            outcome_info = classify_outcome(
+                labels = {}
+                break
+            future_points = daily_points[pos + 1: pos + days + 1]
+            future_snaps = [
+                {"state": x["state"], "bandpos": x["bandpos"], "price": x["price"]}
+                for x in future_points
+            ]
+            label = build_confirmed_close_label(
                 state,
-                future_slice,
-                target_hit=hit_bar is not None,
+                future_snaps,
+                entry_price=float(point.get("price", 0.0) or 0.0),
             )
-            label = {
-                "hit": hit_bar is not None,
-                "bars_to_hit": hit_bar,
-                "max_bandpos": round(max_bandpos, 8),
-                "max_return": round(max_return, 8),
-                "max_drawdown": round(min_return, 8),
-                "state_path": state_path,
-                **outcome_info,
-            }
+            label["settlement_basis"] = "POST_CLOSE_DAILY_CHECKPOINT"
+            label["confirmed_close_count"] = len(future_points)
+            label["confirmed_dates_utc"] = [int(x["cutoff_time"]) for x in future_points]
 
-            # Optional audit metric: if the 72H capital-efficiency target was
-            # missed, did the exact same target arrive on day 4-7?  This does
-            # not change the 4-way outcome at 72H; it only explains "slow" paths.
-            if horizon == max_h and hit_bar is None:
-                if idx + LATE_SUCCESS_END_BAR < len(rows):
-                    late_hit_bar = None
-                    for late_idx in range(idx + horizon + 1, idx + LATE_SUCCESS_END_BAR + 1):
-                        future = snapshots[late_idx]
-                        if future is None:
-                            continue
-                        if _target_hit(state, str(future["state"]), float(future["bandpos"])):
-                            late_hit_bar = late_idx - idx
+            if horizon == 18 and not label.get("hit"):
+                if pos + LATE_SUCCESS_END_DAY < len(daily_points):
+                    late_hit = None
+                    for day_no, future in enumerate(daily_points[pos + 4: pos + LATE_SUCCESS_END_DAY + 1], start=4):
+                        if confirmed_close_target_hit(state, str(future["state"]), float(future["bandpos"])):
+                            late_hit = day_no
                             break
-                    label["late_success_4_7d"] = late_hit_bar is not None
-                    label["late_bars_to_hit"] = late_hit_bar
+                    label["late_success_4_7d"] = late_hit is not None
+                    label["late_bars_to_hit"] = (late_hit * 6) if late_hit is not None else None
                 else:
                     label["late_success_4_7d"] = None
                     label["late_bars_to_hit"] = None
             labels[str(horizon)] = label
 
-        cases.append(
-            {
-                "symbol": symbol,
-                "market_type": market_type,
-                "time": int(rows[idx]["time"]),
-                "time_tw": iso_tw(int(rows[idx]["time"])),
-                "state": state,
-                "target": target_name(state),
-                "entry_price": float(snapshot["price"]),
-                "features": snapshot["features"],
-                "labels": labels,
-            }
-        )
+        if not labels:
+            continue
+        if not allow_partial_horizons and "18" not in labels:
+            continue
+
+        cases.append({
+            "symbol": symbol,
+            "market_type": market_type,
+            "time": int(point["cutoff_time"]),
+            "time_tw": iso_tw(int(point["cutoff_time"])),
+            "state": state,
+            "target": target_name(state),
+            "entry_price": float(point.get("price", 0.0) or 0.0),
+            "features": point["features"],
+            "labels": labels,
+            "decision_contract": "POST_CLOSE_DAILY_CHECKPOINT",
+        })
+
     return cases

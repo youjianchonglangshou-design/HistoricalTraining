@@ -8,7 +8,8 @@ from typing import Any
 
 from engine.symbols_config import EXAM_SYMBOLS, get_unlocked_rwa_symbols, is_rwa_symbol
 from training.champion_learning import (
-    apply_case_settlement,
+    apply_confirmed_daily_settlements,
+    is_official_daily_record,
     build_evolution_policy,
     build_evolution_review,
     build_performance,
@@ -22,7 +23,7 @@ from training.champion_learning import (
     save_ledger_shards,
 )
 from training.pionex_history import load_csv, update_symbol_cache
-from training.replay import DEFAULT_HORIZONS, replay_symbol, target_name
+from training.replay import target_name
 
 ROOT = Path(__file__).resolve().parent
 CACHE_DIR = ROOT / "data" / "cache" / "4h"
@@ -73,7 +74,15 @@ def _parse_checkpoint_time(value: Any) -> datetime:
 
 
 def checkpoint_cutoff_ms(payload: dict[str, Any]) -> int:
-    generated = _parse_checkpoint_time((payload.get("batch") or {}).get("generated_at_taiwan"))
+    batch = payload.get("batch") or {}
+    formal = batch.get("champion_daily_checkpoint") or {}
+    cutoff_text = str(formal.get("confirmed_close_cutoff_utc") or "").strip()
+    if cutoff_text:
+        parsed = datetime.fromisoformat(cutoff_text.replace("Z", "+00:00"))
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return int(parsed.astimezone(timezone.utc).timestamp() * 1000)
+    generated = _parse_checkpoint_time(batch.get("generated_at_taiwan"))
     utc_ms = int(generated.astimezone(timezone.utc).timestamp() * 1000)
     return (utc_ms // FOUR_HOUR_MS) * FOUR_HOUR_MS
 
@@ -88,7 +97,13 @@ def load_checkpoint(path: str | None, market_type: str) -> dict[str, Any] | None
     payload = json.loads(p.read_text(encoding="utf-8"))
     if not isinstance(payload.get("records"), list):
         raise ValueError(f"{market_type} checkpoint records missing")
-    generated = _parse_checkpoint_time((payload.get("batch") or {}).get("generated_at_taiwan"))
+    batch = payload.get("batch") or {}
+    formal = batch.get("champion_daily_checkpoint") or {}
+    if str(formal.get("contract") or "") != "TAIWAN_0825_USING_COMPLETED_0800_DAILY_CLOSE":
+        raise ValueError(f"{market_type} checkpoint is not v3.6 daily-confirmed 08:25 contract")
+    if formal.get("partial_daily_excluded") is not True or formal.get("partial_4h_after_close_excluded") is not True:
+        raise ValueError(f"{market_type} checkpoint did not exclude post-08:00 partial candles")
+    generated = _parse_checkpoint_time(batch.get("generated_at_taiwan"))
     payload["_checkpoint_market_type"] = market_type
     payload["_checkpoint_cutoff_ms"] = checkpoint_cutoff_ms(payload)
     payload["_checkpoint_generated_at"] = generated.isoformat()
@@ -119,6 +134,51 @@ def checkpoint_records_by_symbol(payload: dict[str, Any] | None) -> dict[str, di
     return result
 
 
+
+def confirmed_snapshot_from_row(row: dict[str, Any]) -> dict[str, Any]:
+    opportunity = dict(row.get("opportunity_long") or {})
+    current = dict(opportunity.get("current") or {})
+    probability = dict(row.get("historical_probability") or {})
+    state = str(opportunity.get("market_state_id") or probability.get("state") or "OTHER")
+    return {
+        "state": state,
+        "price": float(row.get("price", 0.0) or 0.0),
+        "bandpos": float(current.get("ha_band_position", 0.5) or 0.5),
+    }
+
+
+def load_checkpoint_history_dir(path: str | None) -> dict[str, dict[str, dict[str, dict[str, Any]]]]:
+    """Return market -> date_tw -> symbol -> completed daily snapshot."""
+    output: dict[str, dict[str, dict[str, dict[str, Any]]]] = {"CRYPTO": {}, "US_STOCK": {}}
+    if not path:
+        return output
+    root = Path(path)
+    if not root.exists():
+        return output
+    for fp in sorted(root.glob("*.json")):
+        name = fp.stem
+        if name.endswith("_crypto"):
+            market_type = "CRYPTO"
+            date_tw = name[:-7]
+        elif name.endswith("_us-stock"):
+            market_type = "US_STOCK"
+            date_tw = name[:-9]
+        else:
+            continue
+        try:
+            payload = load_checkpoint(str(fp), market_type)
+        except Exception as exc:
+            print(f"[checkpoint-history] skip {fp.name}: {exc}")
+            continue
+        if not payload:
+            continue
+        records = checkpoint_records_by_symbol(payload)
+        output[market_type][date_tw] = {
+            symbol: confirmed_snapshot_from_row(row)
+            for symbol, row in records.items()
+        }
+    return output
+
 def frozen_from_terminal_checkpoint(
     *,
     row: dict[str, Any],
@@ -136,10 +196,10 @@ def frozen_from_terminal_checkpoint(
 
     model_id = str(probability.get("model_id") or checkpoint_model_id(payload) or "")
     if model_id != active_model_id:
-        # Do not mis-attribute a 04:01 prediction to another generation.
+        # Do not mis-attribute an 08:25 daily-confirmed prediction to another generation.
         print(
             f"[checkpoint] SKIP {market_type}/{row.get('symbol')}: "
-            f"04:01 model={model_id or '?'} != active Champion={active_model_id}"
+            f"08:25 model={model_id or '?'} != active Champion={active_model_id}"
         )
         return None
 
@@ -181,7 +241,7 @@ def frozen_from_terminal_checkpoint(
         generation=generation,
         market_type=market_type,
     )
-    frozen["frozen_source"] = "TERMINAL_0401_CHECKPOINT"
+    frozen["frozen_source"] = "TERMINAL_0825_DAILY_CHECKPOINT"
     frozen["checkpoint_time_tw"] = str(payload.get("_checkpoint_generated_at") or "")
     frozen["checkpoint_snapshot_hash"] = (payload.get("batch") or {}).get("snapshot_hash")
     frozen["checkpoint_engine_version"] = (payload.get("batch") or {}).get("engine_version")
@@ -191,18 +251,18 @@ def frozen_from_terminal_checkpoint(
 
 def main() -> int:
     ap = argparse.ArgumentParser(
-        description="Settle previous Champion paths and freeze the real Terminal 04:01 Champion checkpoint"
+        description="Settle Champion paths from completed daily closes and freeze the Terminal 08:25 daily-confirmed checkpoint"
     )
     ap.add_argument("--active-model", required=True, help="Downloaded R2 Active model JSON")
-    ap.add_argument("--checkpoint-crypto", default="", help="Terminal 04:01 Crypto checkpoint JSON")
-    ap.add_argument("--checkpoint-us-stock", default="", help="Terminal 04:01 US-stock checkpoint JSON")
+    ap.add_argument("--checkpoint-crypto", default="", help="Terminal 08:25 daily-confirmed Crypto checkpoint JSON")
+    ap.add_argument("--checkpoint-us-stock", default="", help="Terminal 08:25 daily-confirmed US-stock checkpoint JSON")
     ap.add_argument("--symbols", default="ALL")
     ap.add_argument("--max-records", type=int, default=20000)
     ap.add_argument("--cache-only", action="store_true", help="Use existing local 4H cache; do not call Pionex")
-    ap.add_argument("--replay-bars", type=int, default=1500, help="Recent 4H bars used only for path settlement replay")
     ap.add_argument("--ledger-cache", default=str(LEDGER_PATH), help="Recent ledger cache loaded from R2 export; not the long-term source of truth")
     ap.add_argument("--ledger-cache-days", type=int, default=3650, help="Temporary rolling ledger retention; workflow cache lives in /tmp, long-term truth is R2 shards")
     ap.add_argument("--r2-shard-dir", default=str(ROOT / "data" / "champion" / "r2_shards"), help="Output directory for Generation/date R2 ledger shards")
+    ap.add_argument("--checkpoint-history-dir", default="", help="Directory containing exact daily 08:25 checkpoints used to regrade 24H/48H/72H")
     args = ap.parse_args()
 
     active_model = json.loads(Path(args.active_model).read_text(encoding="utf-8"))
@@ -243,6 +303,14 @@ def main() -> int:
     ledger_path = Path(args.ledger_cache)
     shard_dir = Path(args.r2_shard_dir)
     ledger = load_ledger(ledger_path)
+    legacy_excluded = 0
+    for row in ledger:
+        if str(row.get("frozen_source") or "") != "TERMINAL_0825_DAILY_CHECKPOINT":
+            row["official_scoring"] = False
+            row["legacy_exclusion_reason"] = "PRE_0825_OR_INTRADAY_CONTRACT_NOT_COMPARABLE"
+            legacy_excluded += 1
+        else:
+            row["official_scoring"] = True
     by_snapshot_id = {str(r.get("snapshot_id")): r for r in ledger}
     by_symbol_time: dict[tuple[str, str, int], dict[str, Any]] = {
         (
@@ -260,45 +328,50 @@ def main() -> int:
 
     symbols = parse_symbols(args.symbols)
     max_records = max(500, min(50000, int(args.max_records)))
-    replay_bars = max(500, min(max_records, int(args.replay_bars)))
     new_snapshots = 0
+    replaced_same_day_legacy_snapshots = 0
     settled_updates = 0
+
+    checkpoint_history = load_checkpoint_history_dir(args.checkpoint_history_dir)
+    # Always expose today's checkpoint to the settlement map even when the
+    # workflow only supplied it through --checkpoint-crypto / --checkpoint-us-stock.
+    for market_type, payload in checkpoints.items():
+        if not payload:
+            continue
+        date_tw = _parse_checkpoint_time((payload.get("batch") or {}).get("generated_at_taiwan")).astimezone(TW).date().isoformat()
+        checkpoint_history.setdefault(market_type, {})[date_tw] = {
+            symbol: confirmed_snapshot_from_row(row)
+            for symbol, row in checkpoint_records_by_symbol(payload).items()
+        }
 
     for pos, symbol in enumerate(symbols, start=1):
         market_type = "US_STOCK" if is_rwa_symbol(symbol) else "CRYPTO"
-        print(f"[{pos}/{len(symbols)}] {market_type}/{symbol}: update cache + settle replay", flush=True)
+        print(f"[{pos}/{len(symbols)}] {market_type}/{symbol}: update cache + daily-confirmed settlement", flush=True)
 
-        # 08:25 still refreshes market data, but ONLY for settlement of previously
-        # frozen 04:01 predictions. It never creates a new prediction from this
-        # 08:25 partial Daily candle.
-        symbol_max_records = min(max_records, replay_bars) if market_type == "US_STOCK" else max_records
-        rows = (
+        # Keep the 4H cache fresh for future model evolution, but NEVER use an
+        # intraday partial-daily state to score a Frozen Champion prediction.
+        symbol_max_records = min(max_records, 1500) if market_type == "US_STOCK" else max_records
+        if args.cache_only:
             load_csv(CACHE_DIR / f"{symbol}.csv")[-symbol_max_records:]
-            if args.cache_only
-            else update_symbol_cache(
+        else:
+            update_symbol_cache(
                 symbol,
                 CACHE_DIR,
                 max_records=symbol_max_records,
                 full_refresh=False,
             )
-        )
-        review_rows = rows[-replay_bars:]
-        cases = replay_symbol(
-            symbol,
-            review_rows,
-            horizons=DEFAULT_HORIZONS,
-            step_bars=1,
-            daily_timeline=None,
-            allow_partial_horizons=True,
-            market_type=market_type,
-        )
-        case_index = {int(c.get("time", 0)): c for c in cases}
 
-        for (row_market, row_symbol, decision_time), frozen in list(by_symbol_time.items()):
+        confirmed_by_date = {
+            date_tw: symbols_map[symbol]
+            for date_tw, symbols_map in (checkpoint_history.get(market_type) or {}).items()
+            if symbol in symbols_map
+        }
+        for (row_market, row_symbol, _decision_time), frozen in list(by_symbol_time.items()):
             if row_market != market_type or row_symbol != symbol:
                 continue
-            case = case_index.get(decision_time)
-            if case and apply_case_settlement(frozen, case):
+            if not is_official_daily_record(frozen):
+                continue
+            if apply_confirmed_daily_settlements(frozen, confirmed_by_date):
                 settled_updates += 1
 
         payload = checkpoints.get(market_type)
@@ -316,15 +389,33 @@ def main() -> int:
         )
         if not frozen:
             continue
+        frozen["official_scoring"] = True
         snapshot_id = str(frozen.get("snapshot_id") or "")
         if not snapshot_id or snapshot_id in by_snapshot_id:
             continue
 
+        # Migration rule: if v3.5 already froze a 04:01 record for *today*,
+        # replace that same market/symbol/date exam with the real 08:25
+        # daily-confirmed prediction. Older dates are kept because their 08:25
+        # source may no longer be reconstructable.
+        new_date = str(frozen.get("decision_date_tw") or "")
+        for old in list(ledger):
+            if (
+                int(old.get("generation", 0) or 0) == int(frozen.get("generation", 0) or 0)
+                and str(old.get("market_type") or "CRYPTO") == market_type
+                and str(old.get("symbol") or "") == symbol
+                and str(old.get("decision_date_tw") or "") == new_date
+                and str(old.get("snapshot_id") or "") != snapshot_id
+                and str(old.get("frozen_source") or "") != "TERMINAL_0825_DAILY_CHECKPOINT"
+            ):
+                ledger.remove(old)
+                by_snapshot_id.pop(str(old.get("snapshot_id") or ""), None)
+                by_symbol_time.pop((market_type, symbol, int(old.get("decision_time", 0) or 0)), None)
+                replaced_same_day_legacy_snapshots += 1
+
         ledger.append(frozen)
         by_snapshot_id[snapshot_id] = frozen
-        by_symbol_time[
-            (market_type, symbol, int(frozen["decision_time"]))
-        ] = frozen
+        by_symbol_time[(market_type, symbol, int(frozen["decision_time"]))] = frozen
         new_snapshots += 1
 
     performance = build_performance(ledger, manifest, history, now_ms=now_ms)
@@ -350,7 +441,9 @@ def main() -> int:
 
     print(f"Champion={active_model_id}")
     print(f"Generation={manifest.get('generation')}")
-    print(f"Frozen new 04:01 snapshots={new_snapshots}")
+    print(f"Frozen new 08:25 daily-confirmed snapshots={new_snapshots}")
+    print(f"Replaced same-day legacy pre-08:25 snapshots={replaced_same_day_legacy_snapshots}")
+    print(f"Legacy pre-08:25 records excluded from official scoring={legacy_excluded}")
     print(f"Settlement updates={settled_updates}")
     print(f"Settled 72H={evolution_review.get('settled_72h')}")
     print(f"Evolution due={evolution_review.get('evolution_due')}")

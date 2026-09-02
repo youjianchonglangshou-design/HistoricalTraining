@@ -6,6 +6,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from .outcomes import build_confirmed_close_label
+
 OUTCOME_SUCCESS = "SUCCESS_WITHIN_HORIZON"
 OUTCOME_ALIVE = "ALIVE_SLOW"
 OUTCOME_FAIL = "TRUE_FAIL"
@@ -15,6 +17,15 @@ TW_TZ = timezone(timedelta(hours=8))
 HORIZON_BARS_TO_HOURS = {3: 12, 6: 24, 12: 48, 18: 72}
 ROLLING_LEDGER_CACHE_DAYS = 90
 EVOLUTION_POLICY_VERSION = "EVOLUTION-POLICY-v1"
+OFFICIAL_FROZEN_SOURCE = "TERMINAL_0825_DAILY_CHECKPOINT"
+
+
+def is_official_daily_record(row: dict[str, Any]) -> bool:
+    """Only 08:25 exams built from the completed 08:00 daily close are scored."""
+    return (
+        str(row.get("frozen_source") or "") == OFFICIAL_FROZEN_SOURCE
+        and row.get("official_scoring", True) is not False
+    )
 
 
 def load_json(path: Path, default: Any) -> Any:
@@ -200,6 +211,124 @@ def apply_case_settlement(record: dict[str, Any], case: dict[str, Any]) -> bool:
     return changed
 
 
+
+
+def _parse_tw_date(value: Any) -> datetime.date | None:
+    text = str(value or "").strip()
+    if not text:
+        return None
+    try:
+        return datetime.strptime(text[:10], "%Y-%m-%d").date()
+    except ValueError:
+        return None
+
+
+def apply_confirmed_daily_settlements(
+    record: dict[str, Any],
+    confirmed_by_date: dict[str, dict[str, Any]],
+) -> bool:
+    """Regrade one Frozen prediction only from completed daily checkpoints.
+
+    ``confirmed_by_date`` is keyed by Taiwan date and contains exactly one
+    post-close state snapshot per date for this symbol. The 12H window is
+    intentionally observation-only. Old intraday-settled results are replaced
+    once the corresponding post-close checkpoint exists; otherwise they are
+    reset to PENDING so a false intraday SUCCESS can never survive migration.
+    """
+    changed = False
+    settlements = record.setdefault("settlements", {})
+
+    observation = {
+        "status": "OBSERVATION_ONLY",
+        "outcome": None,
+        "hit": False,
+        "settlement_basis": "INTRADAY_NOT_SCORED",
+        "reason": "12H partial-daily movement is observation-only; official scoring waits for completed daily close",
+    }
+    if settlements.get("12H") != observation:
+        settlements["12H"] = observation
+        changed = True
+
+    decision_date = _parse_tw_date(record.get("decision_date_tw"))
+    if decision_date is None:
+        return changed
+
+    source_state = str(record.get("state") or "")
+    entry_price = float(record.get("entry_price", 0.0) or 0.0)
+    basis = "POST_CLOSE_DAILY_CHECKPOINT"
+
+    for hours, day_count in ((24, 1), (48, 2), (72, 3)):
+        key = f"{hours}H"
+        expected_dates = [
+            (decision_date + timedelta(days=i)).isoformat()
+            for i in range(1, day_count + 1)
+        ]
+        future = [confirmed_by_date.get(day) for day in expected_dates]
+        complete = all(isinstance(x, dict) for x in future)
+        previous = settlements.get(key) or {}
+
+        if not complete:
+            # Any old 4H/intraday result is invalid under v3.6. Clear it now so
+            # the UI does not keep showing a false green SUCCESS while waiting
+            # for the exact post-close date(s) needed for regrading.
+            if previous.get("status") == "SETTLED" and previous.get("settlement_basis") != basis:
+                settlements[key] = {
+                    "status": "PENDING",
+                    "settlement_basis": basis,
+                    "reason": "awaiting_exact_post_close_checkpoint_for_regrade",
+                    "expected_checkpoint_dates_tw": expected_dates,
+                }
+                changed = True
+            continue
+
+        label = build_confirmed_close_label(
+            source_state,
+            future,
+            entry_price=entry_price,
+        )
+        payload = {
+            "status": "SETTLED",
+            "outcome": label.get("outcome"),
+            "hit": bool(label.get("hit")),
+            "days_to_hit": label.get("days_to_hit"),
+            "bars_to_hit": label.get("bars_to_hit"),
+            "max_return": label.get("max_return"),
+            "max_drawdown": label.get("max_drawdown"),
+            "max_bandpos": label.get("max_bandpos"),
+            "hard_invalidated": bool(label.get("hard_invalidated", False)),
+            "end_state": label.get("end_state"),
+            "end_bandpos": label.get("end_bandpos"),
+            "state_path": label.get("state_path") or [],
+            "reason": label.get("reason"),
+            "settlement_basis": basis,
+            "confirmed_checkpoint_dates_tw": expected_dates,
+        }
+        if previous != payload:
+            settlements[key] = payload
+            changed = True
+
+        if hours == 72:
+            if record.get("final_outcome") != label.get("outcome") or not record.get("final_settled"):
+                record["final_outcome"] = label.get("outcome")
+                record["final_settled"] = True
+                record["final_path"] = label.get("state_path") or []
+                record["final_settlement_basis"] = basis
+                changed = True
+
+    # If 72H was previously settled by the obsolete intraday contract but the
+    # exact 3 daily checkpoints are not available yet, revoke final_settled.
+    s72 = settlements.get("72H") or {}
+    if s72.get("status") != "SETTLED" or s72.get("settlement_basis") != basis:
+        if record.get("final_settled") or record.get("final_outcome") is not None:
+            record["final_settled"] = False
+            record["final_outcome"] = None
+            record["final_path"] = []
+            record.pop("final_settlement_basis", None)
+            changed = True
+
+    record["settlement_contract"] = "POST_CLOSE_DAILY_V1"
+    return changed
+
 def _blank_counts() -> Counter[str]:
     return Counter({k: 0 for k in OUTCOME_KEYS})
 
@@ -241,7 +370,9 @@ def build_performance(
 ) -> dict[str, Any]:
     model_id = str(manifest.get("champion_model_id") or "")
     generation = int(manifest.get("generation") or 1)
-    current = [r for r in rows if str(r.get("champion_model_id") or "") == model_id and int(r.get("generation") or 0) == generation]
+    generation_rows = [r for r in rows if str(r.get("champion_model_id") or "") == model_id and int(r.get("generation") or 0) == generation]
+    current = [r for r in generation_rows if is_official_daily_record(r)]
+    legacy_excluded = len(generation_rows) - len(current)
 
     windows: dict[str, Any] = {}
     for days in (7, 14, 30, 90):
@@ -311,7 +442,8 @@ def build_performance(
     return {
         "schema_version": 1,
         "generated_at": datetime.fromtimestamp(now_ms / 1000.0, tz=timezone.utc).isoformat(),
-        "contract": "Frozen Champion predictions only. Historical replay may change; frozen live predictions never change after creation. Settlement is appended later from actual future 4H path.",
+        "contract": "Official Champion records only: Taiwan 08:25 exam using the completed 08:00 daily close. Intraday 4H/partial-daily states cannot score SUCCESS; 12H is observation-only; 24H/48H/72H use confirmed daily checkpoints.",
+        "legacy_excluded": legacy_excluded,
         "champion": {
             "generation": generation,
             "model_id": model_id,
@@ -337,6 +469,8 @@ def frozen_record_to_case(record: dict[str, Any]) -> dict[str, Any] | None:
     next generation training pass.
     """
     if not isinstance(record, dict) or not record.get("final_settled"):
+        return None
+    if not is_official_daily_record(record):
         return None
     settlements = record.get("settlements") or {}
     labels: dict[str, Any] = {}
@@ -516,7 +650,8 @@ def build_evolution_review(rows: list[dict[str, Any]], manifest: dict[str, Any])
     model_id = str(manifest.get("champion_model_id") or "")
     generation = int(manifest.get("generation") or 1)
     threshold = int(manifest.get("evolution_min_settled_72h") or 120)
-    current = [r for r in rows if str(r.get("champion_model_id") or "") == model_id and int(r.get("generation") or 0) == generation]
+    generation_rows = [r for r in rows if str(r.get("champion_model_id") or "") == model_id and int(r.get("generation") or 0) == generation]
+    current = [r for r in generation_rows if is_official_daily_record(r)]
     settled = [r for r in current if r.get("final_outcome") in OUTCOME_KEYS]
     due = len(settled) >= threshold
 
@@ -568,6 +703,7 @@ def build_evolution_review(rows: list[dict[str, Any]], manifest: dict[str, Any])
         "champion_model_id": model_id,
         "generation": generation,
         "settled_72h": len(settled),
+        "legacy_excluded": len(generation_rows) - len(current),
         "minimum_settled_72h": threshold,
         "evolution_due": due,
         "overall_calibration": _calibration_stats(settled),

@@ -1,6 +1,6 @@
 {
-  "version": "3.5.0",
-  "label": "R2 Sharded Frozen Ledger + Error-Driven Evolution Policy",
+  "version": "3.6.0",
+  "label": "08:25 Daily Champion Exam + Daily-Confirmed Settlement + R2 Evolution",
   "champion_baseline": "a9a998d93ea396e4",
   "daily_review_taiwan": "08:25",
   "daily_review_cron_utc": "25 0 * * *",
@@ -13,13 +13,15 @@
   ],
   "generation_rule": "Each Champion evolves once after 120 new 72H Frozen settlements; next Champion starts a fresh generation counter.",
   "schedule_owner": "Cloudflare Worker",
-  "checkpoint_taiwan": "04:01",
-  "checkpoint_source": "SStateMarketTerminal R2 runs/champion/YYYY-MM-DD_0401",
-  "freeze_contract": "Only the real Terminal 04:01 Champion prediction is frozen; 08:25 market refresh is settlement-only.",
+  "checkpoint_taiwan": "08:25",
+  "checkpoint_source": "SStateMarketTerminal R2 runs/champion/YYYY-MM-DD_0825",
+  "freeze_contract": "The formal Terminal batch is initiated at Taiwan 08:25 after the daily reset. HistoricalTraining starts only after Crypto + US-stock checkpoint uploads succeed.",
   "ledger_source_of_truth": "R2 champion/ledger/GENxxx/YYYY-MM-DD.json",
   "github_ledger_role": "migration-only; removed after first successful R2 shard upload",
   "evolution_policy_version": "EVOLUTION-POLICY-v1",
   "evolution_rule": "At 120 settled 72H cases, evolution_review generates a machine-actionable policy. High-confidence misses and miscalibrated state/regime/turn groups receive adaptive bounded reinforcement in next Champion training.",
   "performance_recent_days": 90,
-  "training_r2_export_days": 3650
+  "training_r2_export_days": 3650,
+  "settlement_contract": "DAILY_CONFIRMED_V1: 12H observation-only; 24H/48H/72H score only one formal 08:25 checkpoint per day. Intraday 4H state flashes cannot create SUCCESS.",
+  "historical_training_contract": "Historical model replay uses completed daily-close decision cases; live scoring uses the same one-checkpoint-per-day principle at 08:25."
 }

@@ -107,11 +107,11 @@ def parse_symbols(text: str) -> list[str]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Historical S-state replay + 4-way outcome probability JSON builder")
+    parser = argparse.ArgumentParser(description="Post-close daily S-state replay + 4-way outcome probability JSON builder")
     parser.add_argument("--symbols", default="ALL", help="ALL or comma-separated symbols, e.g. BTC,ETH,LINK")
     parser.add_argument("--max-records", type=int, default=5000, help="Local 4H history capacity per symbol; first backfill is capped by Pionex at 10000")
     parser.add_argument("--full-refresh", action="store_true", help="Refetch full configured history instead of latest-page merge")
-    parser.add_argument("--step-bars", type=int, default=1, help="Replay every N 4H bars; production default 1")
+    parser.add_argument("--step-bars", type=int, default=1, help="Replay every N completed daily checkpoints; production default 1")
     parser.add_argument("--min-samples", type=int, default=50, help="Minimum cases for a conditional probability rule")
     parser.add_argument("--cache-only", action="store_true", help="Use existing local 4H cache only; do not call Pionex API")
     parser.add_argument("--frozen-reinforcement", type=int, default=10, help="Base training weight for each settled Frozen Champion case in the current generation")
@@ -125,7 +125,7 @@ def main() -> int:
     symbol_reports = []
 
     print(f"ENGINE={ENGINE_API_VERSION} / {OPPORTUNITY_ENGINE_VERSION} / {PURPLE2_RULE_VERSION}")
-    print(f"symbols={len(symbols)} max_records={max_records} step_bars={args.step_bars}")
+    print(f"symbols={len(symbols)} max_records={max_records} post_close_step_days={args.step_bars}")
 
     for pos, symbol in enumerate(symbols, start=1):
         print(f"[{pos}/{len(symbols)}] {symbol}: update Pionex 4H cache ...", flush=True)
@@ -146,7 +146,7 @@ def main() -> int:
                 {
                     "schema_version": 1,
                     "symbol": symbol,
-                    "source": "same S-state replay; last 4H snapshot of each UTC day",
+                    "source": "same S-state replay; completed UTC daily close only (Taiwan 08:00)",
                     "rows": quiz_timeline,
                 },
             )
