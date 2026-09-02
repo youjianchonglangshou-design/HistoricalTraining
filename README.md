@@ -1,3 +1,10 @@
+## v3.6.1｜Frozen Exam Preserve + Daily Settlement Regrade
+
+- 所有舊 Frozen Snapshot 永久保留，不因新 08:25 正式考卷而刪除。
+- 舊 04:01 / intraday Frozen Snapshot 仍會用後續完整 08:00 日線重新批改 settlement；錯的是答案就改答案，Prediction 不動。
+- 舊制紀錄仍 `official_scoring=false`，因此不計入 120 筆 Evolution 門檻，但會留在戰績明細與歷史路徑。
+- 同一天若同時存在舊制與 08:25 正式考卷，兩筆都保留。
+
 ## v3.6.0｜08:25 Formal Champion Exam + Daily-Confirmed Settlement
 
 正式語意改成「每天只考一次，而且每天只批一次完整日週期」：
@@ -22,7 +29,7 @@
 - `24H / 48H / 72H` 只比較後續每天正式 08:25 checkpoint。
 - S2 盤中曾閃成 S3、隔天 08:25 還是 S2：判定 **ALIVE / 尚未成功**，不是 SUCCESS。
 - S3 隔天 08:25 退回 S2：`趨勢延續` 題判定 **TRUE_FAIL**。
-- 舊 v3.5 的 intraday settlement 會重新批改；Frozen Prediction 本身不做賽後回算。若同一天已有舊 04:01 考卷且能取得新的 08:25 正式考卷，當天舊考卷會被正式 08:25 考卷取代。
+- 舊 v3.5 的 intraday settlement 會重新批改；Frozen Prediction 本身不做賽後回算。若同一天已有舊 04:01 考卷且後來產生新的 08:25 正式考卷，兩筆都保留；只有正式 08:25 考卷計入 120 筆 Evolution 門檻。
 - 歷史模型 Replay 同步改成每日完整收線案例；內部仍逐根 4H 計算 ADX / DMI / state-age features，但模型只從每日確認點建立 decision case，避免下一代繼續學盤中假突破。
 - R2 Sharded Ledger、120 筆 Evolution Review → Policy → Adaptive Retraining 閉環維持。
 

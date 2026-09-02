@@ -269,6 +269,24 @@ class ChampionLearningTests(unittest.TestCase):
         self.assertIsNotNone(case)
         self.assertGreater(adaptive_reinforcement_weight(case, policy, 10), 10)
 
+    def test_legacy_frozen_exam_can_be_regraded_without_becoming_official(self):
+        legacy = {
+            "generation": 1, "champion_model_id": "A", "market_type": "CRYPTO",
+            "frozen_source": "TERMINAL_0401_CHECKPOINT", "official_scoring": False,
+            "symbol": "BNB", "decision_time": 1000, "decision_date_tw": "2026-09-01",
+            "state": "S2", "entry_price": 700.0,
+            "settlements": {
+                "12H": {"status": "SETTLED", "outcome": OUTCOME_SUCCESS},
+                "24H": {"status": "SETTLED", "outcome": OUTCOME_SUCCESS},
+                "48H": {"status": "PENDING"}, "72H": {"status": "PENDING"},
+            },
+        }
+        history = {"2026-09-02": {"state": "S2", "price": 683.39, "bandpos": 0.602187}}
+        self.assertTrue(apply_confirmed_daily_settlements(legacy, history))
+        self.assertEqual(legacy["settlements"]["12H"]["status"], "OBSERVATION_ONLY")
+        self.assertEqual(legacy["settlements"]["24H"]["outcome"], OUTCOME_ALIVE)
+        self.assertFalse(legacy["official_scoring"])
+
     def test_legacy_pre_0825_rows_do_not_count_as_official_performance_or_evolution(self):
         manifest = {"generation": 1, "champion_model_id": "A", "evolution_min_settled_72h": 1}
         legacy = {

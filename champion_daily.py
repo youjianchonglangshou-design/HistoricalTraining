@@ -369,8 +369,10 @@ def main() -> int:
         for (row_market, row_symbol, _decision_time), frozen in list(by_symbol_time.items()):
             if row_market != market_type or row_symbol != symbol:
                 continue
-            if not is_official_daily_record(frozen):
-                continue
+            # Regrade ALL historical Frozen exams from completed daily closes.
+            # official_scoring controls only whether the row contributes to the
+            # 120-case Champion statistics/evolution. It must never hide or
+            # freeze an incorrect old settlement.
             if apply_confirmed_daily_settlements(frozen, confirmed_by_date):
                 settled_updates += 1
 
@@ -394,24 +396,10 @@ def main() -> int:
         if not snapshot_id or snapshot_id in by_snapshot_id:
             continue
 
-        # Migration rule: if v3.5 already froze a 04:01 record for *today*,
-        # replace that same market/symbol/date exam with the real 08:25
-        # daily-confirmed prediction. Older dates are kept because their 08:25
-        # source may no longer be reconstructable.
-        new_date = str(frozen.get("decision_date_tw") or "")
-        for old in list(ledger):
-            if (
-                int(old.get("generation", 0) or 0) == int(frozen.get("generation", 0) or 0)
-                and str(old.get("market_type") or "CRYPTO") == market_type
-                and str(old.get("symbol") or "") == symbol
-                and str(old.get("decision_date_tw") or "") == new_date
-                and str(old.get("snapshot_id") or "") != snapshot_id
-                and str(old.get("frozen_source") or "") != "TERMINAL_0825_DAILY_CHECKPOINT"
-            ):
-                ledger.remove(old)
-                by_snapshot_id.pop(str(old.get("snapshot_id") or ""), None)
-                by_symbol_time.pop((market_type, symbol, int(old.get("decision_time", 0) or 0)), None)
-                replaced_same_day_legacy_snapshots += 1
+        # Preserve every prior Frozen exam. The new official 08:25 record is
+        # appended as a new exam; old 04:01/intraday records remain visible and
+        # their settlements are regraded, but they stay excluded from the 120
+        # official Champion evolution sample via official_scoring=False.
 
         ledger.append(frozen)
         by_snapshot_id[snapshot_id] = frozen
