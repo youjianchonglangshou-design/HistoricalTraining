@@ -1,6 +1,6 @@
 {
-  "version": "3.6.1",
-  "label": "08:25 Daily Champion Exam + Daily-Confirmed Settlement + R2 Evolution",
+  "version": "3.6.2",
+  "label": "08:25 Daily Champion + One Exam Per Symbol/Date",
   "champion_baseline": "a9a998d93ea396e4",
   "daily_review_taiwan": "08:25",
   "daily_review_cron_utc": "25 0 * * *",
@@ -23,5 +23,7 @@
   "performance_recent_days": 90,
   "training_r2_export_days": 3650,
   "settlement_contract": "DAILY_CONFIRMED_V1: 12H observation-only; 24H/48H/72H score only one formal 08:25 checkpoint per day. Intraday 4H state flashes cannot create SUCCESS.",
-  "historical_training_contract": "Historical model replay uses completed daily-close decision cases; live scoring uses the same one-checkpoint-per-day principle at 08:25."
+  "historical_training_contract": "Historical model replay uses completed daily-close decision cases; live scoring uses the same one-checkpoint-per-day principle at 08:25.",
+  "daily_uniqueness_key": "generation+champion_model_id+market_type+symbol+decision_date_tw",
+  "same_day_duplicate_policy": "If a formal 08:25 exam exists, it is canonical and same-day legacy/repair copies are collapsed into audit metadata."
 }

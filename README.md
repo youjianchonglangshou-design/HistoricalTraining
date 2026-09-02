@@ -395,3 +395,10 @@ v2 起同時保留：
 - 美股不做深度歷史 backfill；只維護足以計算當下 S-state/ADX/DI 與後續 72H 結算的近期 4H cache。
 - Frozen Snapshot 永久保存 `market_type=CRYPTO/US_STOCK`，戰績 JSON 同時提供整體與分市場成績。
 - 進化時，本代已結算 Frozen cases 會以預設 **10x live reinforcement** 加入下一代訓練，使 120 筆真實考卷不會被約 20 萬筆歷史樣本完全稀釋。美股 Frozen cases 因此也會正式參與下一代模型學習。
+
+
+## v3.6.2｜ONE EXAM PER SYMBOL / DATE
+- 每個 Generation／Champion／市場／標的／台灣日期只保留一張正式 Frozen 考卷。
+- 同日已有正式 08:25 考卷時，repair / rerun 不得新增第二筆。
+- 若同日舊 legacy 與正式 08:25 並存，正式 08:25 成為 canonical，舊 snapshot_id 留在 merged_same_day_snapshot_ids 稽核欄位。
+- 新 Frozen 建立時立即把 12H 設為 OBSERVATION_ONLY。

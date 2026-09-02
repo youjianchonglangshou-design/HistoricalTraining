@@ -59,6 +59,61 @@ def parse_symbols(text: str) -> list[str]:
     return requested
 
 
+def _daily_exam_key(row: dict[str, Any]) -> tuple[int, str, str, str, str] | None:
+    date_tw = str(row.get("decision_date_tw") or "").strip()[:10]
+    symbol = str(row.get("symbol") or "").strip().upper()
+    if not date_tw or not symbol:
+        return None
+    return (
+        int(row.get("generation") or 0),
+        str(row.get("champion_model_id") or ""),
+        str(row.get("market_type") or "CRYPTO").upper(),
+        symbol,
+        date_tw,
+    )
+
+
+def _collapse_same_day_official_duplicates(ledger: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], int]:
+    """Keep one exam per symbol/date once a formal 08:25 row exists.
+
+    Legacy rows on dates without a formal 08:25 exam remain untouched. When a
+    formal row exists, it becomes the canonical daily exam and same-day legacy
+    copies are folded into its audit metadata instead of remaining as duplicate
+    visible exams.
+    """
+    groups: dict[tuple[int, str, str, str, str], list[dict[str, Any]]] = {}
+    unkeyed: list[dict[str, Any]] = []
+    for row in ledger:
+        key = _daily_exam_key(row)
+        if key is None:
+            unkeyed.append(row)
+            continue
+        groups.setdefault(key, []).append(row)
+
+    output: list[dict[str, Any]] = list(unkeyed)
+    removed = 0
+    for rows in groups.values():
+        official = [r for r in rows if is_official_daily_record(r)]
+        if not official:
+            output.extend(rows)
+            continue
+        official.sort(key=lambda r: int(r.get("decision_time", 0) or 0), reverse=True)
+        canonical = official[0]
+        duplicate_ids = [
+            str(r.get("snapshot_id") or "")
+            for r in rows
+            if r is not canonical and str(r.get("snapshot_id") or "")
+        ]
+        if duplicate_ids:
+            prior = list(canonical.get("merged_same_day_snapshot_ids") or [])
+            canonical["merged_same_day_snapshot_ids"] = list(dict.fromkeys([*prior, *duplicate_ids]))
+        output.append(canonical)
+        removed += len(rows) - 1
+
+    output.sort(key=lambda r: (int(r.get("decision_time", 0) or 0), str(r.get("symbol") or "")))
+    return output, removed
+
+
 def _parse_checkpoint_time(value: Any) -> datetime:
     text = str(value or "").strip()
     if not text:
@@ -311,7 +366,11 @@ def main() -> int:
             legacy_excluded += 1
         else:
             row["official_scoring"] = True
+    ledger, same_day_duplicates_collapsed = _collapse_same_day_official_duplicates(ledger)
     by_snapshot_id = {str(r.get("snapshot_id")): r for r in ledger}
+    by_daily_exam = {
+        key: row for row in ledger if (key := _daily_exam_key(row)) is not None
+    }
     by_symbol_time: dict[tuple[str, str, int], dict[str, Any]] = {
         (
             str(r.get("market_type") or "CRYPTO"),
@@ -392,17 +451,44 @@ def main() -> int:
         if not frozen:
             continue
         frozen["official_scoring"] = True
+        # New daily exams start with 12H observation semantics immediately, so
+        # a just-created row can never display 12H as "PENDING".
+        apply_confirmed_daily_settlements(frozen, confirmed_by_date)
+
         snapshot_id = str(frozen.get("snapshot_id") or "")
-        if not snapshot_id or snapshot_id in by_snapshot_id:
+        if not snapshot_id:
+            continue
+        daily_key = _daily_exam_key(frozen)
+        existing = by_daily_exam.get(daily_key) if daily_key is not None else None
+        if existing is not None:
+            # A formal 08:25 row already owns this symbol/date. Never append a
+            # second exam during repair/re-run. If the existing row is legacy,
+            # replace that same-day slot with the formal row instead of adding
+            # another visible record.
+            if is_official_daily_record(existing):
+                continue
+            try:
+                idx = ledger.index(existing)
+            except ValueError:
+                idx = -1
+            merged_ids = [str(existing.get("snapshot_id") or "")]
+            frozen["merged_same_day_snapshot_ids"] = [x for x in merged_ids if x]
+            if idx >= 0:
+                ledger[idx] = frozen
+            else:
+                ledger.append(frozen)
+            by_daily_exam[daily_key] = frozen
+            by_snapshot_id[snapshot_id] = frozen
+            by_symbol_time[(market_type, symbol, int(frozen["decision_time"]))] = frozen
+            replaced_same_day_legacy_snapshots += 1
             continue
 
-        # Preserve every prior Frozen exam. The new official 08:25 record is
-        # appended as a new exam; old 04:01/intraday records remain visible and
-        # their settlements are regraded, but they stay excluded from the 120
-        # official Champion evolution sample via official_scoring=False.
-
+        if snapshot_id in by_snapshot_id:
+            continue
         ledger.append(frozen)
         by_snapshot_id[snapshot_id] = frozen
+        if daily_key is not None:
+            by_daily_exam[daily_key] = frozen
         by_symbol_time[(market_type, symbol, int(frozen["decision_time"]))] = frozen
         new_snapshots += 1
 
@@ -430,6 +516,7 @@ def main() -> int:
     print(f"Champion={active_model_id}")
     print(f"Generation={manifest.get('generation')}")
     print(f"Frozen new 08:25 daily-confirmed snapshots={new_snapshots}")
+    print(f"Same-day duplicate exams collapsed={same_day_duplicates_collapsed}")
     print(f"Replaced same-day legacy pre-08:25 snapshots={replaced_same_day_legacy_snapshots}")
     print(f"Legacy pre-08:25 records excluded from official scoring={legacy_excluded}")
     print(f"Settlement updates={settled_updates}")
