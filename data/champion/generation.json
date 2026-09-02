@@ -9,6 +9,6 @@
   "ledger_source": "R2_SHARDED_BY_GENERATION_DATE",
   "ledger_recent_cache_days": 90,
   "evolution_policy_version": "EVOLUTION-POLICY-v1",
-  "settlement_contract": "DAILY_CONFIRMED_V1",
+  "settlement_contract": "POST_CLOSE_DAILY_ROUTE_V2",
   "checkpoint_taiwan": "08:25"
 }

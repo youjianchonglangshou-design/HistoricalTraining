@@ -195,10 +195,17 @@ def confirmed_snapshot_from_row(row: dict[str, Any]) -> dict[str, Any]:
     current = dict(opportunity.get("current") or {})
     probability = dict(row.get("historical_probability") or {})
     state = str(opportunity.get("market_state_id") or probability.get("state") or "OTHER")
+    structure_state = str(opportunity.get("structure_state") or "")
+    purple_scope = str((opportunity.get("purple_structure") or {}).get("scope") or "")
     return {
         "state": state,
         "price": float(row.get("price", 0.0) or 0.0),
         "bandpos": float(current.get("ha_band_position", 0.5) or 0.5),
+        "ha_color": str(current.get("ha_color") or "unknown"),
+        "trigger_stage": str(opportunity.get("trigger_stage") or "T0"),
+        "structure_state": structure_state,
+        "s1_expanded": structure_state.startswith("1浪已離開"),
+        "s3_expanded": structure_state.startswith("S3 已發動") or purple_scope == "wave2_pullback_expired_by_space",
     }
 
 

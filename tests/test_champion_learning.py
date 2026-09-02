@@ -229,7 +229,7 @@ class ChampionLearningTests(unittest.TestCase):
         self.assertEqual(record["settlements"]["12H"]["status"], "OBSERVATION_ONLY")
         self.assertEqual(record["settlements"]["24H"]["outcome"], OUTCOME_ALIVE)
         self.assertFalse(record["settlements"]["24H"]["hit"])
-        self.assertEqual(record["settlements"]["24H"]["settlement_basis"], "POST_CLOSE_DAILY_CHECKPOINT")
+        self.assertEqual(record["settlements"]["24H"]["settlement_basis"], "POST_CLOSE_DAILY_ROUTE_V2")
 
     def test_post_close_s3_back_to_s2_is_true_fail(self):
         record = {
@@ -239,7 +239,36 @@ class ChampionLearningTests(unittest.TestCase):
         history = {"2026-09-02": {"state": "S2", "price": 95.0, "bandpos": 0.60}}
         self.assertTrue(apply_confirmed_daily_settlements(record, history))
         self.assertEqual(record["settlements"]["24H"]["outcome"], OUTCOME_FAIL)
-        self.assertEqual(record["settlements"]["24H"]["reason"], "s3_lost_on_confirmed_daily_close")
+        self.assertEqual(record["settlements"]["24H"]["reason"], "s3_regressed_to_s2_on_confirmed_daily_close")
+
+    def test_post_close_s3_upward_expansion_is_success_even_if_terminal_state_is_other(self):
+        record = {
+            "state": "S3", "entry_price": 90.0, "decision_date_tw": "2026-09-01",
+            "settlements": {"12H": {"status": "PENDING"}, "24H": {"status": "PENDING"}, "48H": {"status": "PENDING"}, "72H": {"status": "PENDING"}},
+        }
+        history = {"2026-09-02": {
+            "state": "OTHER", "price": 94.647, "bandpos": 0.82,
+            "ha_color": "yellow", "trigger_stage": "T2", "s3_expanded": True,
+            "structure_state": "S3 已發動但已走到上軌側｜不追",
+        }}
+        self.assertTrue(apply_confirmed_daily_settlements(record, history))
+        self.assertEqual(record["settlements"]["24H"]["outcome"], OUTCOME_SUCCESS)
+        self.assertTrue(record["settlements"]["24H"]["hit"])
+        self.assertEqual(record["settlements"]["24H"]["settlement_basis"], "POST_CLOSE_DAILY_ROUTE_V2")
+
+    def test_post_close_s2_expanded_third_wave_is_success_even_if_state_is_other(self):
+        record = {
+            "state": "S2", "entry_price": 90.0, "decision_date_tw": "2026-09-01",
+            "settlements": {"12H": {"status": "PENDING"}, "24H": {"status": "PENDING"}, "48H": {"status": "PENDING"}, "72H": {"status": "PENDING"}},
+        }
+        history = {"2026-09-02": {
+            "state": "OTHER", "price": 96.0, "bandpos": 0.84,
+            "ha_color": "yellow", "trigger_stage": "T2", "s3_expanded": True,
+            "structure_state": "S3 已發動但已走到上軌側｜不追",
+        }}
+        self.assertTrue(apply_confirmed_daily_settlements(record, history))
+        self.assertEqual(record["settlements"]["24H"]["outcome"], OUTCOME_SUCCESS)
+        self.assertTrue(record["settlements"]["24H"]["hit"])
 
     def test_evolution_policy_turns_review_into_adaptive_weighting(self):
         manifest = {"generation": 1, "champion_model_id": "A", "evolution_min_settled_72h": 2}
@@ -268,24 +297,6 @@ class ChampionLearningTests(unittest.TestCase):
         case = frozen_record_to_case(rows[0])
         self.assertIsNotNone(case)
         self.assertGreater(adaptive_reinforcement_weight(case, policy, 10), 10)
-
-    def test_legacy_frozen_exam_can_be_regraded_without_becoming_official(self):
-        legacy = {
-            "generation": 1, "champion_model_id": "A", "market_type": "CRYPTO",
-            "frozen_source": "TERMINAL_0401_CHECKPOINT", "official_scoring": False,
-            "symbol": "BNB", "decision_time": 1000, "decision_date_tw": "2026-09-01",
-            "state": "S2", "entry_price": 700.0,
-            "settlements": {
-                "12H": {"status": "SETTLED", "outcome": OUTCOME_SUCCESS},
-                "24H": {"status": "SETTLED", "outcome": OUTCOME_SUCCESS},
-                "48H": {"status": "PENDING"}, "72H": {"status": "PENDING"},
-            },
-        }
-        history = {"2026-09-02": {"state": "S2", "price": 683.39, "bandpos": 0.602187}}
-        self.assertTrue(apply_confirmed_daily_settlements(legacy, history))
-        self.assertEqual(legacy["settlements"]["12H"]["status"], "OBSERVATION_ONLY")
-        self.assertEqual(legacy["settlements"]["24H"]["outcome"], OUTCOME_ALIVE)
-        self.assertFalse(legacy["official_scoring"])
 
     def test_legacy_pre_0825_rows_do_not_count_as_official_performance_or_evolution(self):
         manifest = {"generation": 1, "champion_model_id": "A", "evolution_min_settled_72h": 1}

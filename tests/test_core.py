@@ -14,7 +14,7 @@ from training.outcomes import (
     classify_outcome,
 )
 from training.replay import DEFAULT_HORIZONS, replay_symbol
-from training.outcomes import build_confirmed_close_label
+from training.outcomes import build_confirmed_close_label, confirmed_close_target_hit
 
 
 class CoreTests(unittest.TestCase):
@@ -47,7 +47,7 @@ class CoreTests(unittest.TestCase):
         )
         self.assertEqual(
             classify_outcome("S3", [{"state": "S2", "bandpos": 0.49}], target_hit=False)["outcome"],
-            OUTCOME_ALIVE,
+            OUTCOME_FAIL,
         )
         self.assertEqual(
             classify_outcome("S3", [{"state": "OTHER", "bandpos": 0.31}], target_hit=False)["outcome"],
@@ -57,6 +57,35 @@ class CoreTests(unittest.TestCase):
             classify_outcome("S3", [{"state": "S0.5", "bandpos": 0.45}], target_hit=False)["outcome"],
             OUTCOME_OTHER,
         )
+
+    def test_route_contract_matrix(self):
+        # S0.5: advance into S1+ is success; still basing is alive.
+        self.assertEqual(build_confirmed_close_label("S0.5", [{"state":"S1","bandpos":0.58,"price":103.0}])["outcome"], OUTCOME_SUCCESS)
+        self.assertEqual(build_confirmed_close_label("S0.5", [{"state":"S0.5","bandpos":0.42,"price":99.0}])["outcome"], OUTCOME_ALIVE)
+        self.assertEqual(build_confirmed_close_label("S0.5", [{"state":"OTHER","bandpos":0.82,"price":108.0,"ha_color":"yellow","s1_expanded":True}])["outcome"], OUTCOME_SUCCESS)
+
+        # S1 target remains BANDPOS_GT_075; staying in S1 is alive.
+        self.assertEqual(build_confirmed_close_label("S1", [{"state":"OTHER","bandpos":0.81,"price":108.0}])["outcome"], OUTCOME_SUCCESS)
+        self.assertEqual(build_confirmed_close_label("S1", [{"state":"S1","bandpos":0.68,"price":102.0}])["outcome"], OUTCOME_ALIVE)
+
+        # S2: S3 or an S3 that already expanded out of the entry window is success.
+        self.assertEqual(build_confirmed_close_label("S2", [{"state":"S3","bandpos":0.68,"price":104.0}])["outcome"], OUTCOME_SUCCESS)
+        self.assertEqual(build_confirmed_close_label("S2", [{"state":"OTHER","bandpos":0.84,"price":109.0,"ha_color":"yellow","trigger_stage":"T2","s3_expanded":True}])["outcome"], OUTCOME_SUCCESS)
+        self.assertEqual(build_confirmed_close_label("S2", [{"state":"S2","bandpos":0.60,"price":99.0}])["outcome"], OUTCOME_ALIVE)
+
+        # S3: moving above 0.75 is success even though the opportunity scanner
+        # intentionally changes the visible state to OTHER. S3 -> S2 is failure.
+        brent = build_confirmed_close_label("S3", [{"state":"OTHER","bandpos":0.82,"price":108.0,"s3_expanded":True}], entry_price=100.0)
+        self.assertEqual(brent["outcome"], OUTCOME_SUCCESS)
+        self.assertTrue(brent["hit"])
+        self.assertEqual(build_confirmed_close_label("S3", [{"state":"S3","bandpos":0.70,"price":103.0}])["outcome"], OUTCOME_ALIVE)
+        self.assertEqual(build_confirmed_close_label("S3", [{"state":"S2","bandpos":0.60,"price":95.0}])["outcome"], OUTCOME_FAIL)
+
+    def test_s3_target_is_reachable_after_entry_state_expires(self):
+        # Engine rule: S3 is only displayed while bandpos <= 0.75. The target is
+        # bandpos > 0.75, so settlement must allow OTHER + upward expansion.
+        self.assertTrue(confirmed_close_target_hit("S3", {"state":"OTHER","bandpos":0.80,"s3_expanded":True}))
+        self.assertFalse(confirmed_close_target_hit("S3", {"state":"S2","bandpos":0.76}))
 
     def test_confirmed_close_target_ignores_intraday_semantics(self):
         s2 = build_confirmed_close_label("S2", [{"state":"S2","bandpos":0.60,"price":99.0}], entry_price=100.0)
@@ -94,7 +123,7 @@ class CoreTests(unittest.TestCase):
         self.assertIn("dmi_adx_regime", timeline[-1]["features"])
         self.assertNotIn("3", cases[0]["labels"])
         self.assertIn("6", cases[0]["labels"])
-        self.assertEqual(cases[0].get("decision_contract"), "POST_CLOSE_DAILY_CHECKPOINT")
+        self.assertEqual(cases[0].get("decision_contract"), "POST_CLOSE_DAILY_ROUTE_V2")
         primary = cases[0]["labels"]["18"]
         self.assertIn(primary["outcome"], OUTCOME_KEYS)
 

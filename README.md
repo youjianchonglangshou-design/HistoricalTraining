@@ -1,11 +1,4 @@
-## v3.6.1｜Frozen Exam Preserve + Daily Settlement Regrade
-
-- 所有舊 Frozen Snapshot 永久保留，不因新 08:25 正式考卷而刪除。
-- 舊 04:01 / intraday Frozen Snapshot 仍會用後續完整 08:00 日線重新批改 settlement；錯的是答案就改答案，Prediction 不動。
-- 舊制紀錄仍 `official_scoring=false`，因此不計入 120 筆 Evolution 門檻，但會留在戰績明細與歷史路徑。
-- 同一天若同時存在舊制與 08:25 正式考卷，兩筆都保留。
-
-## v3.6.0｜08:25 Formal Champion Exam + Daily-Confirmed Settlement
+## v3.6.3｜08:25 Formal Champion Exam + Route-Aware Daily Settlement
 
 正式語意改成「每天只考一次，而且每天只批一次完整日週期」：
 
@@ -23,13 +16,33 @@
 
 正式 R2 checkpoint：`runs/champion/YYYY-MM-DD_0825/`。
 
+### v3.6.3 路徑判定修正
+
+這版修正一個會直接把上漲判成失敗的核心矛盾：
+
+- `S3_ACTIVE_MAX_BANDPOS = 0.75`：S3 只在仍有進場空間時顯示。
+- 原本 Settlement 卻要求 `future_state == S3 AND bandpos > 0.75` 才算 S3 成功。
+- 兩個條件互斥；價格真的向上突破 0.75 後，Terminal 反而會把狀態改成 `OTHER / 不追`，舊 Settlement 因此會把成功上漲錯判成失敗。
+
+新的正式規則把 **S-state 當成進場機會標籤，而不是單調遞增的趨勢狀態**：
+
+| 起始狀態 | 成功 | 存活 | 真失敗 |
+|---|---|---|---|
+| S0.5 | 正式收線進入 S1 / S2 / S3，或已向上跑出 S1 進場區 | 仍在 S0 / S0.5 且未破硬失效線 | 跌破 `BREAKOUT_INVALIDATE_BANDPOS` |
+| S1 | 正式收線 `bandpos > 0.75`（即使畫面已變 OTHER / 不追） | 尚未 >0.75，但仍在 S1 / S2 / S3 可恢復路徑 | 跌破 `BREAKOUT_INVALIDATE_BANDPOS` |
+| S2 | 正式進入 S3，或 S3 已向上跑出進場區而顯示 OTHER | 仍維持 S2 | 跌破 `S2_BREAKDOWN_FLOOR_BANDPOS` |
+| S3 | 正式收線 `bandpos > 0.75`；上漲過頭變 OTHER 仍是成功 | 仍維持 S3、尚未突破 0.75 | **正式收線退回 S2**，或跌破硬失效線 |
+
+因此像 BRENT OIL：`9/1 S3 → 9/2 價格續漲、bandpos > 0.75、畫面因為「不追」變 OTHER`，應判 **SUCCESS**，不是 TRUE_FAIL。
+
+
 - 一天仍維持 **6 次 pair 分析**：00:01、04:01、08:25、12:01、16:01、20:01。
 - 六次 Live 過程中任何暫時 S-state 都**不能**決定考卷成功。
 - `12H` 只做盤中觀察，不進正式命中率。
 - `24H / 48H / 72H` 只比較後續每天正式 08:25 checkpoint。
 - S2 盤中曾閃成 S3、隔天 08:25 還是 S2：判定 **ALIVE / 尚未成功**，不是 SUCCESS。
 - S3 隔天 08:25 退回 S2：`趨勢延續` 題判定 **TRUE_FAIL**。
-- 舊 v3.5 的 intraday settlement 會重新批改；Frozen Prediction 本身不做賽後回算。若同一天已有舊 04:01 考卷且後來產生新的 08:25 正式考卷，兩筆都保留；只有正式 08:25 考卷計入 120 筆 Evolution 門檻。
+- 舊 v3.5 的 intraday settlement 會重新批改；Frozen Prediction 本身不做賽後回算。若同一天已有舊 04:01 考卷且能取得新的 08:25 正式考卷，當天舊考卷會被正式 08:25 考卷取代。
 - 歷史模型 Replay 同步改成每日完整收線案例；內部仍逐根 4H 計算 ADX / DMI / state-age features，但模型只從每日確認點建立 decision case，避免下一代繼續學盤中假突破。
 - R2 Sharded Ledger、120 筆 Evolution Review → Policy → Adaptive Retraining 閉環維持。
 
@@ -284,7 +297,7 @@ S3 相似樣本 1,171
 1. 沒有觸發引擎硬失效線；
 2. 72H 結束時仍處於可恢復的同一波段幾何。
 
-S3 回到 S2 不是自動判失敗；正常回踩仍可屬於 `ALIVE_SLOW`。
+現行 v3.6.3 契約：**S3 在正式日線收線退回 S2 = TRUE_FAIL**。S3 若向上突破進場區而被掃描器改標 `OTHER / 不追`，則是 SUCCESS，不是失敗。
 
 ### OTHER 的意思
 
@@ -297,7 +310,7 @@ S3 回到 S2 不是自動判失敗；正常回踩仍可屬於 `ALIVE_SLOW`。
 | S0.5 | 進入 S1 或更高上攻階段 |
 | S1 | HA Band Position > 0.75 |
 | S2 | 進入 S3 |
-| S3 | HA Band Position > 0.75 |
+| S3 | HA Band Position > 0.75；不要求畫面仍顯示 S3，因為 S3 進場標籤在 >0.75 後會主動退成 OTHER / 不追 |
 
 同時計算 3 / 6 / 12 / 18 根 4H，也就是 12 / 24 / 48 / 72 小時。UI 主判斷建議用 72H，24H / 48H 當速度參考。
 
@@ -395,10 +408,3 @@ v2 起同時保留：
 - 美股不做深度歷史 backfill；只維護足以計算當下 S-state/ADX/DI 與後續 72H 結算的近期 4H cache。
 - Frozen Snapshot 永久保存 `market_type=CRYPTO/US_STOCK`，戰績 JSON 同時提供整體與分市場成績。
 - 進化時，本代已結算 Frozen cases 會以預設 **10x live reinforcement** 加入下一代訓練，使 120 筆真實考卷不會被約 20 萬筆歷史樣本完全稀釋。美股 Frozen cases 因此也會正式參與下一代模型學習。
-
-
-## v3.6.2｜ONE EXAM PER SYMBOL / DATE
-- 每個 Generation／Champion／市場／標的／台灣日期只保留一張正式 Frozen 考卷。
-- 同日已有正式 08:25 考卷時，repair / rerun 不得新增第二筆。
-- 若同日舊 legacy 與正式 08:25 並存，正式 08:25 成為 canonical，舊 snapshot_id 留在 merged_same_day_snapshot_ids 稽核欄位。
-- 新 Frozen 建立時立即把 12H 設為 OBSERVATION_ONLY。

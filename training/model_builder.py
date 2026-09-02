@@ -491,7 +491,7 @@ def build_model(
         "schema_version": 3,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "engine_contract": "S-state rules fixed; probability/outcome parameters evolve in JSON",
-        "settlement_contract": "POST_CLOSE_DAILY_V1: 12H is observation-only; 24H/48H/72H targets are confirmed only at completed UTC daily closes (Taiwan 08:00). Intraday 4H state flashes never count as SUCCESS.",
+        "settlement_contract": "POST_CLOSE_DAILY_ROUTE_V2: 12H is observation-only; 24H/48H/72H score only completed UTC daily closes (Taiwan 08:00). Settlement is route-aware: S1/S3 may expire to OTHER after successful upward expansion, and that must not be counted as failure.",
         "outcome_keys": list(OUTCOME_KEYS),
         "outcome_labels_zh": OUTCOME_LABELS_ZH,
         "default_min_samples": int(min_samples),

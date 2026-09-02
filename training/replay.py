@@ -146,12 +146,19 @@ def replay_symbol(
             # is present, the completed daily close is the next UTC midnight,
             # which is Taiwan 08:00.
             close_time = int(day_key + DAY_MS)
+            structure_state = str(opportunity.get("structure_state") or "")
+            purple_scope = str((opportunity.get("purple_structure") or {}).get("scope") or "")
             point = {
                 "day_time": int(day_key),
                 "cutoff_time": close_time,
                 "state": state,
                 "price": float(record["_price"]),
                 "bandpos": bandpos,
+                "ha_color": str(features.get("ha_color") or "unknown"),
+                "trigger_stage": str(features.get("trigger_stage") or "T0"),
+                "structure_state": structure_state,
+                "s1_expanded": structure_state.startswith("1浪已離開"),
+                "s3_expanded": structure_state.startswith("S3 已發動") or purple_scope == "wave2_pullback_expired_by_space",
                 "features": _timeline_features(features, market_type),
                 "source_index": idx,
             }
@@ -190,7 +197,16 @@ def replay_symbol(
                 break
             future_points = daily_points[pos + 1: pos + days + 1]
             future_snaps = [
-                {"state": x["state"], "bandpos": x["bandpos"], "price": x["price"]}
+                {
+                    "state": x["state"],
+                    "bandpos": x["bandpos"],
+                    "price": x["price"],
+                    "ha_color": x.get("ha_color"),
+                    "trigger_stage": x.get("trigger_stage"),
+                    "structure_state": x.get("structure_state"),
+                    "s1_expanded": bool(x.get("s1_expanded")),
+                    "s3_expanded": bool(x.get("s3_expanded")),
+                }
                 for x in future_points
             ]
             label = build_confirmed_close_label(
@@ -198,7 +214,7 @@ def replay_symbol(
                 future_snaps,
                 entry_price=float(point.get("price", 0.0) or 0.0),
             )
-            label["settlement_basis"] = "POST_CLOSE_DAILY_CHECKPOINT"
+            label["settlement_basis"] = "POST_CLOSE_DAILY_ROUTE_V2"
             label["confirmed_close_count"] = len(future_points)
             label["confirmed_dates_utc"] = [int(x["cutoff_time"]) for x in future_points]
 
@@ -206,7 +222,7 @@ def replay_symbol(
                 if pos + LATE_SUCCESS_END_DAY < len(daily_points):
                     late_hit = None
                     for day_no, future in enumerate(daily_points[pos + 4: pos + LATE_SUCCESS_END_DAY + 1], start=4):
-                        if confirmed_close_target_hit(state, str(future["state"]), float(future["bandpos"])):
+                        if confirmed_close_target_hit(state, future):
                             late_hit = day_no
                             break
                     label["late_success_4_7d"] = late_hit is not None
@@ -231,7 +247,7 @@ def replay_symbol(
             "entry_price": float(point.get("price", 0.0) or 0.0),
             "features": point["features"],
             "labels": labels,
-            "decision_contract": "POST_CLOSE_DAILY_CHECKPOINT",
+            "decision_contract": "POST_CLOSE_DAILY_ROUTE_V2",
         })
 
     return cases

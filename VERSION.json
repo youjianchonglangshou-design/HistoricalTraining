@@ -1,6 +1,6 @@
 {
-  "version": "3.6.2",
-  "label": "08:25 Daily Champion + One Exam Per Symbol/Date",
+  "version": "3.6.3",
+  "label": "08:25 Daily Champion + Route-Aware Settlement V2",
   "champion_baseline": "a9a998d93ea396e4",
   "daily_review_taiwan": "08:25",
   "daily_review_cron_utc": "25 0 * * *",
@@ -22,8 +22,6 @@
   "evolution_rule": "At 120 settled 72H cases, evolution_review generates a machine-actionable policy. High-confidence misses and miscalibrated state/regime/turn groups receive adaptive bounded reinforcement in next Champion training.",
   "performance_recent_days": 90,
   "training_r2_export_days": 3650,
-  "settlement_contract": "DAILY_CONFIRMED_V1: 12H observation-only; 24H/48H/72H score only one formal 08:25 checkpoint per day. Intraday 4H state flashes cannot create SUCCESS.",
-  "historical_training_contract": "Historical model replay uses completed daily-close decision cases; live scoring uses the same one-checkpoint-per-day principle at 08:25.",
-  "daily_uniqueness_key": "generation+champion_model_id+market_type+symbol+decision_date_tw",
-  "same_day_duplicate_policy": "If a formal 08:25 exam exists, it is canonical and same-day legacy/repair copies are collapsed into audit metadata."
+  "settlement_contract": "POST_CLOSE_DAILY_ROUTE_V2: 12H observation-only; 24H/48H/72H use completed daily checkpoints. S1/S3 upward expansion may intentionally appear as OTHER after leaving the entry window and must still count as success; S3 confirmed regression to S2 is TRUE_FAIL.",
+  "historical_training_contract": "Historical replay and live settlement use the same route-aware completed-daily-close target logic; intraday flashes never score and opportunity-state expiry is not mistaken for trend failure."
 }

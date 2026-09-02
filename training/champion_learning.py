@@ -197,6 +197,7 @@ def apply_case_settlement(record: dict[str, Any], case: dict[str, Any]) -> bool:
             "max_drawdown": label.get("max_drawdown"),
             "max_bandpos": label.get("max_bandpos"),
             "hard_invalidated": bool(label.get("hard_invalidated", False)),
+            "route_invalidated": bool(label.get("route_invalidated", False)),
             "end_state": label.get("end_state"),
             "end_bandpos": label.get("end_bandpos"),
             "state_path": label.get("state_path") or [],
@@ -255,7 +256,7 @@ def apply_confirmed_daily_settlements(
 
     source_state = str(record.get("state") or "")
     entry_price = float(record.get("entry_price", 0.0) or 0.0)
-    basis = "POST_CLOSE_DAILY_CHECKPOINT"
+    basis = "POST_CLOSE_DAILY_ROUTE_V2"
 
     for hours, day_count in ((24, 1), (48, 2), (72, 3)):
         key = f"{hours}H"
@@ -326,7 +327,7 @@ def apply_confirmed_daily_settlements(
             record.pop("final_settlement_basis", None)
             changed = True
 
-    record["settlement_contract"] = "POST_CLOSE_DAILY_V1"
+    record["settlement_contract"] = "POST_CLOSE_DAILY_ROUTE_V2"
     return changed
 
 def _blank_counts() -> Counter[str]:
@@ -486,6 +487,7 @@ def frozen_record_to_case(record: dict[str, Any]) -> dict[str, Any] | None:
             "max_drawdown": node.get("max_drawdown"),
             "max_bandpos": node.get("max_bandpos"),
             "hard_invalidated": bool(node.get("hard_invalidated", False)),
+            "route_invalidated": bool(node.get("route_invalidated", False)),
             "end_state": node.get("end_state"),
             "end_bandpos": node.get("end_bandpos"),
             "state_path": node.get("state_path") or [],

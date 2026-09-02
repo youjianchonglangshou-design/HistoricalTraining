@@ -2,17 +2,23 @@ from __future__ import annotations
 
 """Settlement outcome classifier for the S-state learner.
 
-Two contracts exist:
-1. ``classify_outcome`` is the generic structural classifier.
-2. ``build_confirmed_close_label`` is the production Champion contract from
-   v3.6 onward: only completed Taiwan 08:00 / UTC 00:00 daily checkpoints can
-   confirm a target. Intraday 4H partial-daily states are never allowed to turn
-   a Frozen prediction into SUCCESS.
+Production contract (v3.6.3):
+- Only completed Taiwan 08:00 / UTC 00:00 daily checkpoints can score a Frozen exam.
+- The Terminal S-state is an *entry-opportunity scanner*, not a monotonic trend-state enum.
+  S1 and S3 intentionally disappear to OTHER after price expands too far to chase.
+- Therefore settlement must judge the structural route, not blindly treat ``state != source``
+  as failure.
 """
 
 from typing import Any, Iterable
 
-from engine.scoring_rules import BREAKOUT_INVALIDATE_BANDPOS, S2_ACTIVE_MAX_BANDPOS, S2_BREAKDOWN_FLOOR_BANDPOS
+from engine.scoring_rules import (
+    BREAKOUT_INVALIDATE_BANDPOS,
+    S1_ACTIVE_MAX_BANDPOS,
+    S2_ACTIVE_MAX_BANDPOS,
+    S2_BREAKDOWN_FLOOR_BANDPOS,
+    S3_ACTIVE_MAX_BANDPOS,
+)
 
 OUTCOME_SUCCESS = "SUCCESS_WITHIN_HORIZON"
 OUTCOME_ALIVE = "ALIVE_SLOW"
@@ -40,19 +46,84 @@ def _valid_snapshots(items: Iterable[dict[str, Any] | None]) -> list[dict[str, A
     return [x for x in items if isinstance(x, dict)]
 
 
-def confirmed_close_target_hit(source_state: str, future_state: str, future_bandpos: float) -> bool:
-    """Return whether one *completed daily close* confirms the original target."""
+def _snapshot(value: dict[str, Any] | str, bandpos: float | None = None) -> dict[str, Any]:
+    """Normalize the old (state, bandpos) call shape and the route-aware dict shape."""
+    if isinstance(value, dict):
+        return value
+    return {"state": str(value or "OTHER"), "bandpos": 0.5 if bandpos is None else float(bandpos)}
+
+
+def _state(snap: dict[str, Any]) -> str:
+    return str(snap.get("state") or "OTHER")
+
+
+def _bandpos(snap: dict[str, Any]) -> float:
+    try:
+        return float(snap.get("bandpos", 0.5) or 0.5)
+    except (TypeError, ValueError):
+        return 0.5
+
+
+def _route_flag(snap: dict[str, Any], key: str) -> bool:
+    return bool(snap.get(key, False))
+
+
+def confirmed_close_target_hit(
+    source_state: str,
+    future_snapshot: dict[str, Any] | str,
+    future_bandpos: float | None = None,
+) -> bool:
+    """Whether one *completed daily close* confirms the original target.
+
+    Important: S1/S3 are entry-window labels. Once an up-move becomes mature, the
+    Terminal deliberately emits OTHER rather than S1/S3. That upward expiry is a
+    success for settlement, not a failure.
+    """
+    snap = _snapshot(future_snapshot, future_bandpos)
+    state = _state(snap)
+    bandpos = _bandpos(snap)
+    ha_color = str(snap.get("ha_color") or "").lower()
+    trigger_stage = str(snap.get("trigger_stage") or "")
+    s1_expanded = _route_flag(snap, "s1_expanded")
+    s3_expanded = _route_flag(snap, "s3_expanded")
+
     if source_state == "S0.5":
-        return future_state in {"S1", "S2", "S3"}
-    if source_state == "S2":
-        return future_state == "S3"
+        # Goal = enter S1 or a later upward stage. If S1 already ran beyond the
+        # active entry window, Terminal may report OTHER; that still counts.
+        return (
+            state in {"S1", "S2", "S3"}
+            or s1_expanded
+            or s3_expanded
+            or (ha_color == "yellow" and bandpos > float(S1_ACTIVE_MAX_BANDPOS))
+        )
+
     if source_state == "S1":
-        return future_bandpos > 0.75
+        # Existing model target remains BANDPOS_GT_075. State label is irrelevant
+        # once price has expanded beyond the S1 entry window.
+        return bandpos > 0.75 or s1_expanded or s3_expanded
+
+    if source_state == "S2":
+        # Goal = S3. A strong third-wave launch may immediately expire to OTHER
+        # because S3 itself is only displayed while bandpos <= 0.75.
+        return (
+            state == "S3"
+            or s3_expanded
+            or (
+                state == "OTHER"
+                and ha_color == "yellow"
+                and trigger_stage == "T2"
+                and bandpos > float(S3_ACTIVE_MAX_BANDPOS)
+            )
+        )
+
     if source_state == "S3":
-        # A partial intraday yellow print is never enough. S3 continuation must
-        # still be S3 at the completed daily checkpoint and have expanded past
-        # the existing BANDPOS_GT_075 target.
-        return future_state == "S3" and future_bandpos > 0.75
+        # Existing target = BANDPOS_GT_075. By engine design S3 disappears when
+        # bandpos > 0.75, so requiring future_state == S3 here would make SUCCESS
+        # logically impossible. S2 regression is explicitly not a success.
+        if state == "S2":
+            return False
+        return bandpos > 0.75 or s3_expanded
+
     return False
 
 
@@ -79,11 +150,11 @@ def classify_outcome(
         }
 
     floor = hard_failure_floor(source_state)
-    bandposes = [float(x.get("bandpos", 0.5) or 0.5) for x in future]
+    bandposes = [_bandpos(x) for x in future]
     min_bandpos = min(bandposes)
     end = future[-1]
-    end_state = str(end.get("state") or "OTHER")
-    end_bandpos = float(end.get("bandpos", 0.5) or 0.5)
+    end_state = _state(end)
+    end_bandpos = _bandpos(end)
 
     hard_invalidated = bool(min_bandpos < floor)
     if hard_invalidated:
@@ -97,13 +168,31 @@ def classify_outcome(
             "reason": "engine_hard_invalidation_floor_broken",
         }
 
+    if source_state == "S3" and end_state == "S2":
+        return {
+            "outcome": OUTCOME_FAIL,
+            "hard_invalidated": False,
+            "route_invalidated": True,
+            "failure_floor": floor,
+            "min_bandpos": round(min_bandpos, 8),
+            "end_state": end_state,
+            "end_bandpos": round(end_bandpos, 8),
+            "reason": "s3_regressed_to_s2_on_confirmed_daily_close",
+        }
+
     alive = False
     if source_state == "S0.5":
         alive = end_state in {"S0", "S0.5"} or (end_state == "OTHER" and floor <= end_bandpos < 0.5)
     elif source_state == "S1":
         alive = end_state in {"S1", "S2", "S3"} or (end_state == "OTHER" and end_bandpos >= 0.5)
-    elif source_state in {"S2", "S3"}:
-        alive = end_state in {"S2", "S3"} or (end_state == "OTHER" and floor <= end_bandpos <= float(S2_ACTIVE_MAX_BANDPOS))
+    elif source_state == "S2":
+        alive = end_state in {"S2", "S3"} or (
+            end_state == "OTHER" and floor <= end_bandpos <= float(S2_ACTIVE_MAX_BANDPOS)
+        )
+    elif source_state == "S3":
+        # User contract: S3 -> S2 is a failed continuation. Remaining S3 is alive;
+        # upward OTHER is already caught as SUCCESS above.
+        alive = end_state == "S3"
 
     if alive:
         return {
@@ -133,11 +222,7 @@ def build_confirmed_close_label(
     *,
     entry_price: float = 0.0,
 ) -> dict[str, Any]:
-    """Build one horizon label using only completed daily checkpoints.
-
-    ``future_snapshots`` must be chronological, one item per completed daily
-    close. This function deliberately ignores all 4H states between closes.
-    """
+    """Build one horizon label using only completed daily checkpoints."""
     future = _valid_snapshots(future_snapshots)
     state_path = [source_state]
     max_bandpos = None
@@ -147,8 +232,8 @@ def build_confirmed_close_label(
     hit_index = None
 
     for idx, snap in enumerate(future, start=1):
-        state = str(snap.get("state") or "OTHER")
-        bandpos = float(snap.get("bandpos", 0.5) or 0.5)
+        state = _state(snap)
+        bandpos = _bandpos(snap)
         price = float(snap.get("price", 0.0) or 0.0)
         if state and state != state_path[-1]:
             state_path.append(state)
@@ -157,16 +242,19 @@ def build_confirmed_close_label(
             ret = price / float(entry_price) - 1.0
             max_return = max(max_return, ret)
             min_return = min(min_return, ret)
-        if hit_day is None and confirmed_close_target_hit(source_state, state, bandpos):
+        if hit_day is None and confirmed_close_target_hit(source_state, snap):
             hit_day = idx
             hit_index = idx - 1
 
-    # S3 is a continuation setup. If the first completed daily close that
-    # matters has already regressed from S3 before any confirmed target hit,
-    # the original continuation call failed. This is intentionally stricter
-    # than the generic structural classifier.
+    # Explicit continuation contract requested by the user:
+    # S3 -> S2 on a confirmed daily close means the S3 continuation call failed.
+    # Crucially, OTHER is NOT an automatic failure because a strong upward S3
+    # intentionally becomes OTHER once it has moved too far to chase.
     if source_state == "S3" and future:
-        regression_index = next((i for i, snap in enumerate(future) if str(snap.get("state") or "OTHER") != "S3"), None)
+        regression_index = next(
+            (i for i, snap in enumerate(future) if _state(snap) == "S2"),
+            None,
+        )
         if regression_index is not None and (hit_index is None or regression_index <= hit_index):
             end = future[-1]
             return {
@@ -178,11 +266,12 @@ def build_confirmed_close_label(
                 "max_return": round(max_return, 8),
                 "max_drawdown": round(min_return, 8),
                 "state_path": state_path,
-                "hard_invalidated": True,
+                "hard_invalidated": False,
+                "route_invalidated": True,
                 "failure_floor": hard_failure_floor(source_state),
-                "end_state": str(end.get("state") or "OTHER"),
-                "end_bandpos": round(float(end.get("bandpos", 0.5) or 0.5), 8),
-                "reason": "s3_lost_on_confirmed_daily_close",
+                "end_state": _state(end),
+                "end_bandpos": round(_bandpos(end), 8),
+                "reason": "s3_regressed_to_s2_on_confirmed_daily_close",
             }
 
     outcome = classify_outcome(source_state, future, target_hit=hit_day is not None)
@@ -195,7 +284,7 @@ def build_confirmed_close_label(
         "max_return": round(max_return, 8),
         "max_drawdown": round(min_return, 8),
         "state_path": state_path,
-        "end_state": str(end.get("state") or "OTHER") if future else None,
-        "end_bandpos": round(float(end.get("bandpos", 0.5) or 0.5), 8) if future else None,
+        "end_state": _state(end) if future else None,
+        "end_bandpos": round(_bandpos(end), 8) if future else None,
         **outcome,
     }
