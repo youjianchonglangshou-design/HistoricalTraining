@@ -1,4 +1,4 @@
-# HistoricalTraining v3.7.0 — CCI20 + SMA14 Champion Full Rebuild
+# HistoricalTraining v3.7.1 — CCI20 + SMA14 Champion Full Rebuild
 
 這版的目的只有一個：用 CCI 取代原本 ADX/DMI Expert，重新跑完整 HistoricalTraining，Action 完成後直接把新模型發布成新的 Champion。
 
@@ -32,7 +32,7 @@ CCI 是第二層歷史證據，用來取代原本 ADX/DMI Expert 對機率的修
 
 GitHub Actions：
 
-`Manual Historical S-state CCI Full Rebuild v3.7`
+`Manual Historical S-state CCI Full Rebuild v3.7.1`
 
 預設直接使用：
 
@@ -112,3 +112,9 @@ Full Rebuild 不會刪除舊世代歷史，而是：
 等 CCI Full Rebuild Action 成功、R2 Active 已是新 CCI Champion 後，再到 SStateMarketTerminal 手動跑正式 Champion checkpoint，日期指定 `2026-09-03`。這會讓 9/3 成為新 generation 的第一份正式考卷。
 
 Terminal 必須使用支援 Schema 4 / CCI Expert 的 probability reader，否則只會讀到 base Level 1～5，無法套用 CCI Expert 修正。
+
+
+## v3.7.1 bugfix
+
+- 修正 HistoricalTraining Action 在建立新 Champion generation 時呼叫 `build_performance()` 漏傳 `now_ms`，導致全量訓練完成後於清空近期戰績步驟失敗。
+- CCI 訓練公式、模型結構、Champion 發布流程皆不變。

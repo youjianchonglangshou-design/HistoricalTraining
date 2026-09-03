@@ -1,6 +1,6 @@
 {
-  "version": "3.7.0",
-  "label": "CCI20 + SMA14 Champion Full Rebuild",
+  "version": "3.7.1",
+  "label": "CCI20 + SMA14 Champion Full Rebuild — Action now_ms bugfix",
   "champion_baseline": "ACTION_GENERATES_NEW_CCI_CHAMPION",
   "daily_review_taiwan": "08:25",
   "daily_review_cron_utc": "25 0 * * *",
