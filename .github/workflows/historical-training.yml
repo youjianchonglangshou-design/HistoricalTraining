@@ -1,4 +1,4 @@
-name: Manual Historical S-state CCI Full Rebuild v3.7
+name: Manual Historical S-state CCI Full Rebuild v3.7.1
 
 on:
   workflow_dispatch:
@@ -110,7 +110,9 @@ jobs:
 
           model=json.load(open('models/probability_model.json', encoding='utf-8'))
           model_id=str(model.get('model_id') or '')
-          now=datetime.now(timezone.utc).isoformat()
+          now_dt=datetime.now(timezone.utc)
+          now=now_dt.isoformat()
+          now_ms=int(now_dt.timestamp() * 1000)
 
           generation_path=Path('data/champion/generation.json')
           history_path=Path('data/champion/generations.json')
@@ -134,7 +136,7 @@ jobs:
 
           # Empty rows = this Champion starts from 0 recent exams. Previous generation
           # history is retained separately and does not enter the new score window.
-          performance=build_performance([], manifest, history)
+          performance=build_performance([], manifest, history, now_ms=now_ms)
           review=build_evolution_review([], manifest)
           policy=build_evolution_policy(review, [], manifest)
 
