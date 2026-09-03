@@ -1,9 +1,9 @@
 {
   "schema_version": 2,
-  "champion_model_id": "a9a998d93ea396e4",
-  "generation": 1,
+  "champion_model_id": "cab21fa6195f0b6c",
+  "generation": 2,
   "settled_72h": 0,
-  "legacy_excluded": 48,
+  "legacy_excluded": 0,
   "minimum_settled_72h": 120,
   "evolution_due": false,
   "overall_calibration": {
@@ -17,9 +17,9 @@
   },
   "state_review": {
     "S0.5": {
-      "snapshots": 17,
+      "snapshots": 0,
       "settled_72h": 0,
-      "pending_72h": 17,
+      "pending_72h": 0,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -31,9 +31,9 @@
       "other_rate": null
     },
     "S1": {
-      "snapshots": 8,
+      "snapshots": 0,
       "settled_72h": 0,
-      "pending_72h": 8,
+      "pending_72h": 0,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -45,9 +45,9 @@
       "other_rate": null
     },
     "S2": {
-      "snapshots": 43,
+      "snapshots": 0,
       "settled_72h": 0,
-      "pending_72h": 43,
+      "pending_72h": 0,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -59,9 +59,9 @@
       "other_rate": null
     },
     "S3": {
-      "snapshots": 16,
+      "snapshots": 0,
       "settled_72h": 0,
-      "pending_72h": 16,
+      "pending_72h": 0,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -75,9 +75,9 @@
   },
   "market_review": {
     "CRYPTO": {
-      "snapshots": 38,
+      "snapshots": 0,
       "settled_72h": 0,
-      "pending_72h": 38,
+      "pending_72h": 0,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -89,9 +89,9 @@
       "other_rate": null
     },
     "US_STOCK": {
-      "snapshots": 46,
+      "snapshots": 0,
       "settled_72h": 0,
-      "pending_72h": 46,
+      "pending_72h": 0,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -103,7 +103,7 @@
       "other_rate": null
     }
   },
-  "adx_regime_review": {},
+  "cci_regime_review": {},
   "error_groups": {
     "state": {},
     "market": {},
