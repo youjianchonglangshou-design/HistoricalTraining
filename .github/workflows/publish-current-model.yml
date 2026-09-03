@@ -31,10 +31,10 @@ jobs:
           model_id=str(m.get('model_id') or '')
           if not model_id:
               raise SystemExit('model_id missing')
-          if int(m.get('schema_version') or 0) != 3:
-              raise SystemExit('schema_version must be 3')
-          if str((m.get('dmi_expert_contract') or {}).get('version') or '') != 'DMI-EXPERT-v3-ADX-1DP-STICKY':
-              raise SystemExit('DMI Expert contract mismatch')
+          if int(m.get('schema_version') or 0) != 4:
+              raise SystemExit('schema_version must be 4')
+          if str((m.get('cci_expert_contract') or {}).get('version') or '') != 'CCI-EXPERT-v1-HLC3-20-SMA14':
+              raise SystemExit('CCI Expert contract mismatch')
           print('Champion to publish:', model_id)
           with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
               f.write('MODEL_ID=' + model_id + '\n')

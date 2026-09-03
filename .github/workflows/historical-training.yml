@@ -1,4 +1,4 @@
-name: Manual Historical S-state Full Rebuild v3.2
+name: Manual Historical S-state CCI Full Rebuild v3.7
 
 on:
   workflow_dispatch:
@@ -14,12 +14,12 @@ on:
         default: "20000"
         type: string
       step_bars:
-        description: "每幾根 4H 建一筆決策樣本；1=完整"
+        description: "每幾個完整日收線建一筆決策樣本；1=完整"
         required: true
         default: "1"
         type: string
       full_refresh:
-        description: "重新抓完整歷史；只有首次建庫才勾。已有 cache 請不要勾"
+        description: "重新抓完整歷史；已有 cache 請不要勾"
         required: true
         default: false
         type: boolean
@@ -32,9 +32,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  train:
+  train-and-promote:
     runs-on: ubuntu-latest
     timeout-minutes: 330
+    env:
+      WORKER_BASE_URL: ${{ secrets.WORKER_BASE_URL }}
+      WORKER_CALLBACK_TOKEN: ${{ secrets.WORKER_CALLBACK_TOKEN }}
 
     steps:
       - name: Checkout
@@ -51,43 +54,177 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Validate Champion publish secrets
+        shell: bash
+        run: |
+          test -n "$WORKER_BASE_URL" || (echo "WORKER_BASE_URL missing" && exit 1)
+          test -n "$WORKER_CALLBACK_TOKEN" || (echo "WORKER_CALLBACK_TOKEN missing" && exit 1)
+
       - name: Verify Python files
-        run: python -m compileall -q engine training run_training.py predict_from_model.py
+        run: python -m compileall -q engine training run_training.py champion_daily.py predict_from_model.py
 
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
 
-      - name: Historical replay + 4-way outcome + DMI Expert v3 ADX 1DP Sticky model
+      - name: Historical replay + CCI20 / SMA14 Expert model
         shell: bash
         run: |
           EXTRA=""
           if [ "${{ inputs.full_refresh }}" = "true" ]; then EXTRA="--full-refresh"; fi
-          python run_training.py \
-            --symbols "${{ inputs.symbols }}" \
-            --max-records "${{ inputs.max_records }}" \
-            --step-bars "${{ inputs.step_bars }}" \
-            --min-samples 50 \
-            $EXTRA
+          python run_training.py             --symbols "${{ inputs.symbols }}"             --max-records "${{ inputs.max_records }}"             --step-bars "${{ inputs.step_bars }}"             --min-samples 50             $EXTRA
+
+      - name: Validate new CCI model and resolve id
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os
+          m=json.load(open('models/probability_model.json', encoding='utf-8'))
+          model_id=str(m.get('model_id') or '')
+          if not model_id:
+              raise SystemExit('model_id missing')
+          if int(m.get('schema_version') or 0) != 4:
+              raise SystemExit('schema_version must be 4')
+          version=str((m.get('cci_expert_contract') or {}).get('version') or '')
+          if version != 'CCI-EXPERT-v1-HLC3-20-SMA14':
+              raise SystemExit(f'CCI Expert contract mismatch: {version}')
+          print('New CCI Champion:', model_id)
+          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
+              f.write('NEW_MODEL_ID=' + model_id + '\n')
+          PY
+
+      - name: Start fresh Champion generation and clear recent performance
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+          from training.champion_learning import (
+              build_evolution_policy,
+              build_evolution_review,
+              build_performance,
+              ensure_generation,
+              load_json,
+              save_json,
+          )
+
+          model=json.load(open('models/probability_model.json', encoding='utf-8'))
+          model_id=str(model.get('model_id') or '')
+          now=datetime.now(timezone.utc).isoformat()
+
+          generation_path=Path('data/champion/generation.json')
+          history_path=Path('data/champion/generations.json')
+          performance_path=Path('data/champion/performance.json')
+          review_path=Path('reports/evolution_review.json')
+          policy_path=Path('reports/evolution_policy.json')
+
+          old_manifest=load_json(generation_path, {})
+          history=load_json(history_path, [])
+          manifest, history, _=ensure_generation(old_manifest, history, model_id, now)
+
+          # Preserve the official exam/evolution contract while opening a clean generation.
+          manifest.update({
+              'ledger_source': 'R2 champion/ledger/GENxxx/YYYY-MM-DD.json',
+              'ledger_recent_cache_days': 90,
+              'evolution_policy_version': 'EVOLUTION-POLICY-v1',
+              'settlement_contract': 'POST_CLOSE_DAILY_ROUTE_V2',
+              'checkpoint_taiwan': '08:25',
+              'reset_reason': 'CCI_CHAMPION_FULL_REBUILD',
+          })
+
+          # Empty rows = this Champion starts from 0 recent exams. Previous generation
+          # history is retained separately and does not enter the new score window.
+          performance=build_performance([], manifest, history)
+          review=build_evolution_review([], manifest)
+          policy=build_evolution_policy(review, [], manifest)
+
+          save_json(generation_path, manifest)
+          save_json(history_path, history)
+          save_json(performance_path, performance)
+          save_json(review_path, review)
+          save_json(policy_path, policy)
+
+          print('Champion generation:', manifest.get('generation'))
+          print('Champion model_id   :', manifest.get('champion_model_id'))
+          print('Recent snapshots    :', (performance.get('windows') or {}).get('all', {}).get('snapshots'))
+          print('Recent records      :', len(performance.get('recent_records') or []))
+          PY
 
       - name: Upload audit cases
         uses: actions/upload-artifact@v4
         with:
-          name: historical-cases-${{ github.run_number }}
+          name: historical-cci-cases-${{ github.run_number }}
           path: data/cases/history_cases.jsonl.gz
           retention-days: 7
           if-no-files-found: warn
 
-      - name: Commit learned data and JSON model
+      - name: Commit learned CCI model and fresh Champion generation
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/cache/4h data/learning_meta.json models/probability_model.json reports/training_report.json quiz/model_timeline
+          git add             data/cache/4h             data/learning_meta.json             data/champion/generation.json             data/champion/generations.json             data/champion/performance.json             models/probability_model.json             reports/training_report.json             reports/evolution_review.json             reports/evolution_policy.json             quiz/model_timeline
           if git diff --cached --quiet; then
             echo "No learned-data changes."
-            exit 0
+          else
+            git commit -m "training: promote CCI20 SMA14 full rebuild as new Champion"
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
           fi
-          git commit -m "training: update historical S-state DMI Expert v3 ADX 1DP Sticky model"
-          git fetch origin main
-          git rebase origin/main
-          git push origin HEAD:main
+
+      - name: Publish CCI model directly as Champion / Active
+        shell: bash
+        run: |
+          BASE="${WORKER_BASE_URL%/}"
+
+          curl --fail --silent --show-error             -X PUT             -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN"             -H "Content-Type: application/json"             --data-binary "@models/probability_model.json"             "$BASE/api/internal/model/active"             -o /tmp/publish-active.json
+          cat /tmp/publish-active.json
+
+          curl --fail --silent --show-error             -X PUT             -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN"             -H "Content-Type: application/json"             --data-binary "@reports/training_report.json"             "$BASE/api/internal/learning/report?model_id=$NEW_MODEL_ID"             -o /tmp/publish-report.json
+          cat /tmp/publish-report.json
+
+          curl --fail --silent --show-error             -X PUT             -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN"             -H "Content-Type: application/json"             --data-binary "@data/learning_meta.json"             "$BASE/api/internal/learning/meta?model_id=$NEW_MODEL_ID"             -o /tmp/publish-meta.json
+          cat /tmp/publish-meta.json
+
+      - name: Publish cleared Champion performance
+        shell: bash
+        run: |
+          BASE="${WORKER_BASE_URL%/}"
+          GEN=$(python - <<'PY'
+          import json
+          print(int(json.load(open('data/champion/generation.json', encoding='utf-8')).get('generation') or 1))
+          PY
+          )
+
+          curl --fail --silent --show-error             -X PUT             -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN"             -H "Content-Type: application/json"             --data-binary "@data/champion/performance.json"             "$BASE/api/internal/champion/performance"             -o /tmp/performance-upload.json
+          cat /tmp/performance-upload.json
+
+          curl --fail --silent --show-error             -X PUT             -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN"             -H "Content-Type: application/json"             --data-binary "@reports/evolution_review.json"             "$BASE/api/internal/champion/evolution?generation=$GEN&kind=review"             -o /tmp/evolution-review-upload.json
+          cat /tmp/evolution-review-upload.json
+
+          curl --fail --silent --show-error             -X PUT             -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN"             -H "Content-Type: application/json"             --data-binary "@reports/evolution_policy.json"             "$BASE/api/internal/champion/evolution?generation=$GEN&kind=policy"             -o /tmp/evolution-policy-upload.json
+          cat /tmp/evolution-policy-upload.json
+
+      - name: Verify new Active Champion and clean score window
+        shell: bash
+        run: |
+          BASE="${WORKER_BASE_URL%/}"
+          curl --fail --silent --show-error "$BASE/api/model/active" -o /tmp/verify-active.json
+          python - <<'PY'
+          import json, os
+          active=json.load(open('/tmp/verify-active.json', encoding='utf-8'))
+          got=str(active.get('model_id') or '')
+          expected=os.environ['NEW_MODEL_ID']
+          perf=json.load(open('data/champion/performance.json', encoding='utf-8'))
+          snapshots=int(((perf.get('windows') or {}).get('all') or {}).get('snapshots') or 0)
+          recent=len(perf.get('recent_records') or [])
+          print('Expected Champion:', expected)
+          print('Active Champion  :', got)
+          print('Fresh snapshots  :', snapshots)
+          print('Fresh recent rows:', recent)
+          if got != expected:
+              raise SystemExit('New CCI Champion publish verification failed')
+          if snapshots != 0 or recent != 0:
+              raise SystemExit('Champion recent performance was not cleared')
+          PY
