@@ -1,0 +1,124 @@
+name: Manual Historical CCI Challenger Full Rebuild
+
+on:
+  workflow_dispatch:
+    inputs:
+      symbols:
+        description: "ALL 或逗號分隔，例如 BTC,ETH,LINK"
+        required: true
+        default: "ALL"
+        type: string
+      setup_low:
+        description: "CCI 甜蜜區下限"
+        required: true
+        default: "-120"
+        type: string
+      setup_high:
+        description: "CCI 甜蜜區上限"
+        required: true
+        default: "-80"
+        type: string
+      max_wait_days:
+        description: "第一次 setup 後最多等幾天形成右側確認"
+        required: true
+        default: "20"
+        type: string
+      primary_horizon:
+        description: "主評估天數；3 = 72H，與 Champion 正式口徑相同"
+        required: true
+        default: "3"
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cci-challenger-learning
+  cancel-in-progress: false
+
+jobs:
+  train-cci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Verify Python files
+        run: python -m compileall -q engine training train_cci_model.py
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Train CCI Challenger from historical cache
+        shell: bash
+        run: |
+          python train_cci_model.py \
+            --symbols "${{ inputs.symbols }}" \
+            --cci-length 20 \
+            --smoothing-length 14 \
+            --setup-low "${{ inputs.setup_low }}" \
+            --setup-high "${{ inputs.setup_high }}" \
+            --max-wait-days "${{ inputs.max_wait_days }}" \
+            --horizons "1,3,5,7" \
+            --primary-horizon "${{ inputs.primary_horizon }}" \
+            --min-samples 20
+
+      - name: Print CCI training summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          model = json.loads(Path('models/cci_probability_model.json').read_text(encoding='utf-8'))
+          report = json.loads(Path('reports/cci_training_report.json').read_text(encoding='utf-8'))
+          print('CCI model_id:', model.get('model_id'))
+          print('schema_version:', model.get('schema_version'))
+          print('primary_horizon:', model.get('primary_horizon'))
+          for key in ('symbols', 'bars', 'trigger_cases', 'setup_cases', 'right_confirm_cases'):
+              if key in report:
+                  print(f'{key}:', report.get(key))
+          PY
+
+      - name: Upload CCI audit cases and model
+        uses: actions/upload-artifact@v4
+        with:
+          name: cci-challenger-${{ github.run_number }}
+          path: |
+            models/cci_probability_model.json
+            reports/cci_training_report.json
+            data/cases/cci_training_cases.jsonl.gz
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Commit CCI Challenger model and report
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add train_cci_model.py .github/workflows/cci-historical-training.yml models/cci_probability_model.json reports/cci_training_report.json data/cases/cci_training_cases.jsonl.gz
+          if git diff --cached --quiet; then
+            echo "No CCI Challenger changes."
+            exit 0
+          fi
+          MODEL_ID=$(python - <<'PY'
+          import json
+          print(json.load(open('models/cci_probability_model.json', encoding='utf-8')).get('model_id','unknown'))
+          PY
+          )
+          git commit -m "training: update CCI Challenger ${MODEL_ID}"
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
