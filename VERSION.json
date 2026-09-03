@@ -1,6 +1,6 @@
 {
-  "version": "3.7.1",
-  "label": "CCI20 + SMA14 Champion Full Rebuild — Action now_ms bugfix",
+  "version": "3.7.2",
+  "label": "CCI20 + SMA14 Champion — manual checkpoint date repair",
   "champion_baseline": "ACTION_GENERATES_NEW_CCI_CHAMPION",
   "daily_review_taiwan": "08:25",
   "daily_review_cron_utc": "25 0 * * *",
@@ -19,5 +19,6 @@
   "cci_formula": "hlc3 -> CCI20 -> SMA14 smoothingMA; yellow if smoothing rises, purple if it falls.",
   "reset_rule": "A manual full rebuild starts a new Champion generation with 0 recent snapshots/recent_records while retaining closed generation history separately.",
   "settlement_contract": "POST_CLOSE_DAILY_ROUTE_V2: 12H observation-only; 24H/48H/72H use completed daily checkpoints.",
-  "historical_training_contract": "Historical replay and live settlement use the same completed-daily-close target logic; CCI is learned as an independent correction layer without changing S-state definitions."
+  "historical_training_contract": "Historical replay and live settlement use the same completed-daily-close target logic; CCI is learned as an independent correction layer without changing S-state definitions.",
+  "manual_checkpoint_repair": "Daily Champion workflow accepts checkpoint_date_tw so an already-stored R2 checkpoint can be frozen as the requested exam date."
 }

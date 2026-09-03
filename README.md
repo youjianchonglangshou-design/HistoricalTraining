@@ -1,4 +1,4 @@
-# HistoricalTraining v3.7.1 — CCI20 + SMA14 Champion Full Rebuild
+# HistoricalTraining v3.7.2 — CCI20 + SMA14 Champion Full Rebuild
 
 這版的目的只有一個：用 CCI 取代原本 ADX/DMI Expert，重新跑完整 HistoricalTraining，Action 完成後直接把新模型發布成新的 Champion。
 
@@ -112,6 +112,23 @@ Full Rebuild 不會刪除舊世代歷史，而是：
 等 CCI Full Rebuild Action 成功、R2 Active 已是新 CCI Champion 後，再到 SStateMarketTerminal 手動跑正式 Champion checkpoint，日期指定 `2026-09-03`。這會讓 9/3 成為新 generation 的第一份正式考卷。
 
 Terminal 必須使用支援 Schema 4 / CCI Expert 的 probability reader，否則只會讀到 base Level 1～5，無法套用 CCI Expert 修正。
+
+
+## v3.7.2 手動補寫指定日期考卷
+
+`Daily Champion 08:25 Daily-Confirmed Settlement & Evolution` 現在多一個 `checkpoint_date_tw` 輸入。
+
+- 留空：維持原本行為，使用台灣今天。
+- 指定 `2026-09-03`：直接讀 R2 已存在的 9/3 Crypto / US-stock 正式 checkpoint，並把它凍結成目前 Champion generation 的 Frozen Snapshot 考卷。
+- 不需要重跑 Auto Market Batch；已存在的 9/3 checkpoint 會直接被使用。
+- 模型、CCI 公式、Champion ID 都不會因此重新訓練或更換。
+
+本次 9/3 補寫請到 HistoricalTraining → Actions → `Daily Champion 08:25 Daily-Confirmed Settlement & Evolution` → Run workflow，填：
+
+- `run_id`：留空
+- `checkpoint_date_tw`：`2026-09-03`
+
+Action 完成後，GEN002 的 performance ledger 應新增 9/3 Frozen Snapshot；72H 尚未到期的欄位維持待結算。
 
 
 ## v3.7.1 bugfix
