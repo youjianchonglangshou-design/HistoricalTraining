@@ -8,6 +8,11 @@ on:
         required: false
         default: ""
         type: string
+      checkpoint_date_tw:
+        description: "手動補寫正式考卷日期 YYYY-MM-DD；留空 = 台灣今天"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: write
@@ -24,6 +29,7 @@ jobs:
       WORKER_BASE_URL: ${{ secrets.WORKER_BASE_URL }}
       WORKER_CALLBACK_TOKEN: ${{ secrets.WORKER_CALLBACK_TOKEN }}
       LEARNING_RUN_ID: ${{ inputs.run_id }}
+      REQUESTED_CHECKPOINT_DATE_TW: ${{ inputs.checkpoint_date_tw }}
 
     steps:
       - name: Checkout
@@ -126,18 +132,29 @@ jobs:
           print('R2 rolling ledger rows:', len(rows))
           PY
 
-      - name: Download formal 08:25 Champion checkpoints (today + previous 3 days)
+      - name: Download formal 08:25 Champion checkpoints (target date + previous 3 days)
         shell: bash
         run: |
           BASE="${WORKER_BASE_URL%/}"
-          CHECKPOINT_DATE_TW=$(TZ=Asia/Taipei date '+%Y-%m-%d')
-          echo "CHECKPOINT_DATE_TW=$CHECKPOINT_DATE_TW" >> "$GITHUB_ENV"
+          TARGET_DATE_TW="${REQUESTED_CHECKPOINT_DATE_TW:-}"
+          if [ -z "$TARGET_DATE_TW" ]; then
+            TARGET_DATE_TW=$(TZ=Asia/Taipei date '+%Y-%m-%d')
+          fi
+          if ! [[ "$TARGET_DATE_TW" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            echo "invalid checkpoint_date_tw: $TARGET_DATE_TW"
+            exit 1
+          fi
+          # GNU date also validates impossible calendar dates.
+          TZ=Asia/Taipei date -d "$TARGET_DATE_TW" '+%Y-%m-%d' >/dev/null
+          echo "CHECKPOINT_DATE_TW=$TARGET_DATE_TW" >> "$GITHUB_ENV"
+          echo "Target formal Champion exam date: $TARGET_DATE_TW"
+
           rm -rf /tmp/postclose-checkpoints
           mkdir -p /tmp/postclose-checkpoints
           rm -f /tmp/checkpoint-crypto.json /tmp/checkpoint-us-stock.json
 
           for OFFSET in 0 1 2 3; do
-            DATE_TW=$(TZ=Asia/Taipei date -d "-$OFFSET day" '+%Y-%m-%d')
+            DATE_TW=$(TZ=Asia/Taipei date -d "$TARGET_DATE_TW -$OFFSET day" '+%Y-%m-%d')
             for MARKET in crypto us-stock; do
               OUT="/tmp/postclose-checkpoints/${DATE_TW}_${MARKET}.json"
               if curl --fail --silent --show-error \
