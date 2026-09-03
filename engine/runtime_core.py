@@ -17,7 +17,8 @@ from .ha_threshold import compute_threshold_from_daily_data
 TW_TZ = timezone(timedelta(hours=8))
 STRUCTURE_WINDOW_DAYS = 30
 BB_PERIOD = 20
-ADX_PERIOD = 14
+CCI_LENGTH = 20
+CCI_SMOOTHING_LENGTH = 14
 LIVE_DAILY_FETCH_BARS = 150
 LIVE_4H_FETCH_BARS = 150
 MIN_DAILY_BARS = STRUCTURE_WINDOW_DAYS + BB_PERIOD - 1
@@ -75,80 +76,68 @@ def calculate_bollinger_bands(
     return basis, basis + std_multiplier * std, basis - std_multiplier * std
 
 
-def calculate_adx_dmi(klines: list[dict[str, Any]], period: int = ADX_PERIOD) -> list[dict[str, Any]]:
-    """Pine-equivalent DI+ / DI- / DX / ADX used by SStateMarketTerminal.
+def calculate_cci_sma(
+    klines: list[dict[str, Any]],
+    length: int = CCI_LENGTH,
+    smoothing_length: int = CCI_SMOOTHING_LENGTH,
+) -> list[dict[str, Any]]:
+    """TradingView/Pine-equivalent CCI(hlc3, 20) + SMA14 smoothingMA.
 
-    This intentionally mirrors the user-provided TradingView source and the
-    live Terminal implementation: TR/DM use the recursive Wilder-style
-    ``prev - prev / period + current`` smoothing, while ADX is SMA(period) of
-    DX.  Keeping the exact arithmetic here makes historical replay and live
-    inference share the same DMI inputs without introducing another engine.
+    CCI uses the mean absolute deviation of HLC3 from its rolling SMA:
+      CCI = (hlc3 - SMA(hlc3, length)) / (0.015 * mean_abs_deviation)
+
+    The smoothing line is SMA14 of valid CCI values. Its step color follows the
+    Terminal/TradingView rule exactly: current > previous => yellow,
+    current < previous => purple, equality/unready => gray.
     """
     if not klines:
         return []
-    if period <= 0:
-        raise ValueError("ADX period must be positive")
+    if length <= 0 or smoothing_length <= 0:
+        raise ValueError("CCI lengths must be positive")
 
-    smoothed_true_range = 0.0
-    smoothed_dm_plus = 0.0
-    smoothed_dm_minus = 0.0
-    dx_window: list[float] = []
-    output: list[dict[str, Any]] = []
+    typical = [
+        (float(candle["high"]) + float(candle["low"]) + float(candle["close"])) / 3.0
+        for candle in klines
+    ]
+    cci_values: list[float | None] = [None] * len(klines)
 
-    for index, candle in enumerate(klines):
-        high = float(candle["high"])
-        low = float(candle["low"])
-        previous = klines[index - 1] if index > 0 else None
-        previous_close = float(previous["close"]) if previous is not None else 0.0
-        previous_high = float(previous["high"]) if previous is not None else 0.0
-        previous_low = float(previous["low"]) if previous is not None else 0.0
+    for index in range(length - 1, len(klines)):
+        window = np.asarray(typical[index - length + 1 : index + 1], dtype=float)
+        mean = float(np.mean(window))
+        mean_deviation = float(np.mean(np.abs(window - mean)))
+        denominator = 0.015 * mean_deviation
+        cci_values[index] = ((typical[index] - mean) / denominator) if denominator > 1e-18 else 0.0
 
-        true_range = max(
-            high - low,
-            abs(high - previous_close),
-            abs(low - previous_close),
-        )
-        up_move = high - previous_high
-        down_move = previous_low - low
-        directional_plus = max(up_move, 0.0) if up_move > down_move else 0.0
-        directional_minus = max(down_move, 0.0) if down_move > up_move else 0.0
+    smoothing: list[float | None] = [None] * len(klines)
+    valid_cci: list[float] = []
+    for index, value in enumerate(cci_values):
+        if value is None:
+            continue
+        valid_cci.append(float(value))
+        if len(valid_cci) >= smoothing_length:
+            smoothing[index] = float(np.mean(np.asarray(valid_cci[-smoothing_length:], dtype=float)))
 
-        smoothed_true_range = smoothed_true_range - smoothed_true_range / period + true_range
-        smoothed_dm_plus = smoothed_dm_plus - smoothed_dm_plus / period + directional_plus
-        smoothed_dm_minus = smoothed_dm_minus - smoothed_dm_minus / period + directional_minus
+    colors: list[str] = ["gray"] * len(klines)
+    previous_smoothing: float | None = None
+    for index, current in enumerate(smoothing):
+        if current is None:
+            continue
+        if previous_smoothing is not None:
+            if current > previous_smoothing:
+                colors[index] = "yellow"
+            elif current < previous_smoothing:
+                colors[index] = "purple"
+        previous_smoothing = current
 
-        if smoothed_true_range > 0:
-            di_plus = smoothed_dm_plus / smoothed_true_range * 100.0
-            di_minus = smoothed_dm_minus / smoothed_true_range * 100.0
-        else:
-            di_plus = None
-            di_minus = None
-
-        denominator = (di_plus or 0.0) + (di_minus or 0.0)
-        dx = (
-            abs(di_plus - di_minus) / denominator * 100.0
-            if di_plus is not None and di_minus is not None and denominator > 0
-            else None
-        )
-
-        if dx is None:
-            dx_window.clear()
-            adx = None
-        else:
-            dx_window.append(dx)
-            if len(dx_window) > period:
-                dx_window.pop(0)
-            adx = float(np.mean(dx_window)) if len(dx_window) == period else None
-
-        output.append({
+    return [
+        {
             "time": candle.get("time"),
-            "di_plus": di_plus,
-            "di_minus": di_minus,
-            "dx": dx,
-            "adx": adx,
-        })
-
-    return output
+            "cci": cci_values[index],
+            "smoothing_ma": smoothing[index],
+            "smoothing_color": colors[index],
+        }
+        for index, candle in enumerate(klines)
+    ]
 
 
 def utc_day_start_ms(timestamp_ms: int) -> int:
@@ -221,7 +210,7 @@ def build_record_from_daily_and_4h(
 
     daily_ha = calculate_heikin_ashi(daily_raw)
     four_h_ha = calculate_heikin_ashi(four_h_raw_display)
-    daily_adx = calculate_adx_dmi(daily_raw, period=ADX_PERIOD)
+    daily_cci = calculate_cci_sma(daily_raw, length=CCI_LENGTH, smoothing_length=CCI_SMOOTHING_LENGTH)
     basis, upper_band, lower_band = calculate_bollinger_bands(daily_raw, period=20, std_multiplier=2.0)
     if basis is None or upper_band is None or lower_band is None:
         return None
@@ -231,7 +220,7 @@ def build_record_from_daily_and_4h(
 
     last_30 = daily_ha[-STRUCTURE_WINDOW_DAYS:]
     raw_last_30 = daily_raw[-STRUCTURE_WINDOW_DAYS:]
-    adx_last_30 = daily_adx[-len(last_30):]
+    cci_last_30 = daily_cci[-len(last_30):]
     start_index = len(daily_raw) - len(last_30)
     band_basis_series, band_upper_series, band_lower_series = _rolling_bb_series(daily_raw, start_index)
     percentages = [
@@ -279,10 +268,9 @@ def build_record_from_daily_and_4h(
         "_raw_highs_last30": [float(item["high"]) for item in raw_last_30],
         "_raw_lows_last30": [float(item["low"]) for item in raw_last_30],
         "_raw_closes_last30": [float(item["close"]) for item in raw_last_30],
-        "_di_plus_last30": [item.get("di_plus") for item in adx_last_30],
-        "_di_minus_last30": [item.get("di_minus") for item in adx_last_30],
-        "_dx_last30": [item.get("dx") for item in adx_last_30],
-        "_adx_last30": [item.get("adx") for item in adx_last_30],
+        "_cci_last30": [item.get("cci") for item in cci_last_30],
+        "_cci_smoothing_ma_last30": [item.get("smoothing_ma") for item in cci_last_30],
+        "_cci_smoothing_color_last30": [item.get("smoothing_color") for item in cci_last_30],
         "_ha4h_color_series": four_h_colors,
         "_ha_threshold": threshold,
     }

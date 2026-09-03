@@ -163,7 +163,7 @@ def make_frozen_record(
             "samples": int(prediction.get("samples", 0) or 0),
             "level": int(prediction.get("level", 0) or 0),
             "signature": prediction.get("signature"),
-            "dmi_expert": prediction.get("dmi_expert") or {},
+            "cci_expert": prediction.get("cci_expert") or {},
         },
         "features": dict(timeline_row.get("features") or {}),
         "settlements": {
@@ -664,7 +664,7 @@ def build_evolution_review(rows: list[dict[str, Any]], manifest: dict[str, Any])
     }
     regime_groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for r in settled:
-        regime = str((r.get("features") or {}).get("dmi_adx_regime") or "UNKNOWN")
+        regime = str((r.get("features") or {}).get("cci_regime") or "UNKNOWN")
         regime_groups[regime].append(r)
     regime_stats = {name: _summary_from_rows(group) for name, group in sorted(regime_groups.items())}
 
@@ -679,11 +679,12 @@ def build_evolution_review(rows: list[dict[str, Any]], manifest: dict[str, Any])
                 "state": r.get("state"),
                 "predicted_success": p,
                 "actual": r.get("final_outcome"),
-                "adx_regime": (r.get("features") or {}).get("dmi_adx_regime"),
-                "adx_turn_event": (r.get("features") or {}).get("adx_turn_event"),
-                "adx": (r.get("features") or {}).get("adx"),
-                "di_plus": (r.get("features") or {}).get("di_plus"),
-                "di_minus": (r.get("features") or {}).get("di_minus"),
+                "cci_regime": (r.get("features") or {}).get("cci_regime"),
+                "cci_smoothing_turn_event": (r.get("features") or {}).get("cci_smoothing_turn_event"),
+                "cci": (r.get("features") or {}).get("cci"),
+                "cci_zone": (r.get("features") or {}).get("cci_zone"),
+                "cci_cross_event": (r.get("features") or {}).get("cci_cross_event"),
+                "cci_smoothing_direction": (r.get("features") or {}).get("cci_smoothing_direction"),
             })
     overconfident_failures.sort(key=lambda x: x["predicted_success"], reverse=True)
 
@@ -692,11 +693,11 @@ def build_evolution_review(rows: list[dict[str, Any]], manifest: dict[str, Any])
         "market": _group_calibration(settled, lambda r: str(r.get("market_type") or "CRYPTO")),
         "state_regime": _group_calibration(
             settled,
-            lambda r: f"{r.get('state')}|{(r.get('features') or {}).get('dmi_adx_regime')}",
+            lambda r: f"{r.get('state')}|{(r.get('features') or {}).get('cci_regime')}",
         ),
         "state_turn": _group_calibration(
             settled,
-            lambda r: f"{r.get('state')}|{(r.get('features') or {}).get('adx_turn_event')}",
+            lambda r: f"{r.get('state')}|{(r.get('features') or {}).get('cci_smoothing_turn_event')}",
         ),
     }
 
@@ -711,7 +712,7 @@ def build_evolution_review(rows: list[dict[str, Any]], manifest: dict[str, Any])
         "overall_calibration": _calibration_stats(settled),
         "state_review": state_stats,
         "market_review": market_stats,
-        "adx_regime_review": regime_stats,
+        "cci_regime_review": regime_stats,
         "error_groups": error_groups,
         "overconfident_failures": overconfident_failures[:50],
         "next_action": "build_error_driven_policy_then_retrain_next_champion" if due else "keep_collecting_frozen_settlements",
@@ -804,8 +805,8 @@ def _case_group_keys(case: dict[str, Any]) -> dict[str, str]:
     features = case.get("features") or {}
     state = str(case.get("state") or "")
     market = str(case.get("market_type") or features.get("market_type") or "CRYPTO")
-    regime = str(features.get("dmi_adx_regime") or "UNKNOWN")
-    turn = str(features.get("adx_turn_event") or "UNKNOWN")
+    regime = str(features.get("cci_regime") or "UNKNOWN")
+    turn = str(features.get("cci_smoothing_turn_event") or "UNKNOWN")
     return {
         "state": state,
         "market": market,

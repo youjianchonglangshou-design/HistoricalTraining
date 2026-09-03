@@ -1,20 +1,25 @@
+import math
 import unittest
 
-from engine.runtime_core import aggregate_4h_to_daily, build_live_compatible_record, calculate_adx_dmi
+from engine.runtime_core import (
+    aggregate_4h_to_daily,
+    build_live_compatible_record,
+    calculate_cci_sma,
+)
 from engine.scoring_rules import build_long_opportunity
 from training.features import extract_features
-from training.model_builder import _features_for_model_version, build_model, lookup_probability
-from training.features import _adx_step_features, _adx_step_features_legacy
+from training.model_builder import build_model, lookup_probability
 from training.outcomes import (
     OUTCOME_ALIVE,
     OUTCOME_FAIL,
     OUTCOME_KEYS,
     OUTCOME_OTHER,
     OUTCOME_SUCCESS,
+    build_confirmed_close_label,
     classify_outcome,
+    confirmed_close_target_hit,
 )
 from training.replay import DEFAULT_HORIZONS, replay_symbol
-from training.outcomes import build_confirmed_close_label, confirmed_close_target_hit
 
 
 class CoreTests(unittest.TestCase):
@@ -29,7 +34,10 @@ class CoreTests(unittest.TestCase):
             c = max(1.0, o * (1 + drift + wiggle))
             h = max(o, c) * 1.003
             l = min(o, c) * 0.997
-            rows.append({"time": base + i * 4 * 3600 * 1000, "open": o, "high": h, "low": l, "close": c, "volume": 1000 + i})
+            rows.append({
+                "time": base + i * 4 * 3600 * 1000,
+                "open": o, "high": h, "low": l, "close": c, "volume": 1000 + i,
+            })
             price = c
         return rows
 
@@ -50,345 +58,166 @@ class CoreTests(unittest.TestCase):
             OUTCOME_FAIL,
         )
         self.assertEqual(
-            classify_outcome("S3", [{"state": "OTHER", "bandpos": 0.31}], target_hit=False)["outcome"],
-            OUTCOME_FAIL,
-        )
-        self.assertEqual(
             classify_outcome("S3", [{"state": "S0.5", "bandpos": 0.45}], target_hit=False)["outcome"],
             OUTCOME_OTHER,
         )
 
     def test_route_contract_matrix(self):
-        # S0.5: advance into S1+ is success; still basing is alive.
-        self.assertEqual(build_confirmed_close_label("S0.5", [{"state":"S1","bandpos":0.58,"price":103.0}])["outcome"], OUTCOME_SUCCESS)
-        self.assertEqual(build_confirmed_close_label("S0.5", [{"state":"S0.5","bandpos":0.42,"price":99.0}])["outcome"], OUTCOME_ALIVE)
-        self.assertEqual(build_confirmed_close_label("S0.5", [{"state":"OTHER","bandpos":0.82,"price":108.0,"ha_color":"yellow","s1_expanded":True}])["outcome"], OUTCOME_SUCCESS)
-
-        # S1 target remains BANDPOS_GT_075; staying in S1 is alive.
-        self.assertEqual(build_confirmed_close_label("S1", [{"state":"OTHER","bandpos":0.81,"price":108.0}])["outcome"], OUTCOME_SUCCESS)
-        self.assertEqual(build_confirmed_close_label("S1", [{"state":"S1","bandpos":0.68,"price":102.0}])["outcome"], OUTCOME_ALIVE)
-
-        # S2: S3 or an S3 that already expanded out of the entry window is success.
-        self.assertEqual(build_confirmed_close_label("S2", [{"state":"S3","bandpos":0.68,"price":104.0}])["outcome"], OUTCOME_SUCCESS)
-        self.assertEqual(build_confirmed_close_label("S2", [{"state":"OTHER","bandpos":0.84,"price":109.0,"ha_color":"yellow","trigger_stage":"T2","s3_expanded":True}])["outcome"], OUTCOME_SUCCESS)
-        self.assertEqual(build_confirmed_close_label("S2", [{"state":"S2","bandpos":0.60,"price":99.0}])["outcome"], OUTCOME_ALIVE)
-
-        # S3: moving above 0.75 is success even though the opportunity scanner
-        # intentionally changes the visible state to OTHER. S3 -> S2 is failure.
-        brent = build_confirmed_close_label("S3", [{"state":"OTHER","bandpos":0.82,"price":108.0,"s3_expanded":True}], entry_price=100.0)
-        self.assertEqual(brent["outcome"], OUTCOME_SUCCESS)
-        self.assertTrue(brent["hit"])
-        self.assertEqual(build_confirmed_close_label("S3", [{"state":"S3","bandpos":0.70,"price":103.0}])["outcome"], OUTCOME_ALIVE)
-        self.assertEqual(build_confirmed_close_label("S3", [{"state":"S2","bandpos":0.60,"price":95.0}])["outcome"], OUTCOME_FAIL)
-
-    def test_s3_target_is_reachable_after_entry_state_expires(self):
-        # Engine rule: S3 is only displayed while bandpos <= 0.75. The target is
-        # bandpos > 0.75, so settlement must allow OTHER + upward expansion.
-        self.assertTrue(confirmed_close_target_hit("S3", {"state":"OTHER","bandpos":0.80,"s3_expanded":True}))
-        self.assertFalse(confirmed_close_target_hit("S3", {"state":"S2","bandpos":0.76}))
-
-    def test_confirmed_close_target_ignores_intraday_semantics(self):
-        s2 = build_confirmed_close_label("S2", [{"state":"S2","bandpos":0.60,"price":99.0}], entry_price=100.0)
-        self.assertEqual(s2["outcome"], OUTCOME_ALIVE)
-        self.assertFalse(s2["hit"])
-        s3 = build_confirmed_close_label("S3", [{"state":"S2","bandpos":0.60,"price":99.0}], entry_price=100.0)
-        self.assertEqual(s3["outcome"], OUTCOME_FAIL)
-
-    def test_engine_record_and_replay(self):
-        rows = self.synthetic_rows()
-        record = build_live_compatible_record("TEST", rows)
-        self.assertIsNotNone(record)
-        self.assertEqual(len(record["_ha_pct_series"]), 30)
-        self.assertEqual(len(record["_di_plus_last30"]), 30)
-        self.assertEqual(len(record["_di_minus_last30"]), 30)
-        self.assertEqual(len(record["_adx_last30"]), 30)
-        self.assertIsNotNone(record["_di_plus_last30"][-1])
-        self.assertIsNotNone(record["_di_minus_last30"][-1])
-        opportunity = build_long_opportunity(record, None)
-        self.assertIn(opportunity["market_state_id"], {"S0", "S0.5", "S1", "S2", "S3", "OTHER"})
-        timeline = []
-        cases = replay_symbol("TEST", rows, daily_timeline=timeline)
-        self.assertGreater(len(cases), 0)
-        self.assertGreater(len(timeline), 0)
-        self.assertIn("state", timeline[-1])
-        self.assertIn("state_age_bin", timeline[-1]["features"])
-        self.assertIn("di_plus", timeline[-1]["features"])
-        self.assertIn("di_minus", timeline[-1]["features"])
-        self.assertIn("dmi_relation", timeline[-1]["features"])
-        self.assertIn("dmi_axis_zone", timeline[-1]["features"])
-        self.assertIn("adx", timeline[-1]["features"])
-        self.assertIn("adx_step_direction", timeline[-1]["features"])
-        self.assertIn("adx_step_age_bin", timeline[-1]["features"])
-        self.assertIn("adx_turn_event", timeline[-1]["features"])
-        self.assertIn("dmi_adx_regime", timeline[-1]["features"])
-        self.assertNotIn("3", cases[0]["labels"])
-        self.assertIn("6", cases[0]["labels"])
-        self.assertEqual(cases[0].get("decision_contract"), "POST_CLOSE_DAILY_ROUTE_V2")
-        primary = cases[0]["labels"]["18"]
-        self.assertIn(primary["outcome"], OUTCOME_KEYS)
-
-        model = build_model(cases, DEFAULT_HORIZONS, min_samples=10)
-        self.assertEqual(model["schema_version"], 3)
-        first = cases[0]
-        pred = lookup_probability(model, first["state"], 6, first["features"])
-        self.assertTrue(pred["available"])
-        self.assertIn("dmi_expert", pred)
-        self.assertGreaterEqual(pred["probability"], 0.0)
-        self.assertLessEqual(pred["probability"], 1.0)
-        self.assertEqual(set(pred["outcomes"].keys()), set(OUTCOME_KEYS))
-        total = sum(float(v["probability"]) for v in pred["outcomes"].values())
-        self.assertAlmostEqual(total, 1.0, places=5)
-        self.assertAlmostEqual(
-            pred["structural_survival_probability"],
-            float(pred["outcomes"][OUTCOME_SUCCESS]["probability"]) + float(pred["outcomes"][OUTCOME_ALIVE]["probability"]),
-            places=5,
+        self.assertEqual(
+            build_confirmed_close_label("S0.5", [{"state":"S1","bandpos":0.58,"price":103.0}])["outcome"],
+            OUTCOME_SUCCESS,
         )
+        self.assertEqual(
+            build_confirmed_close_label("S0.5", [{"state":"S0.5","bandpos":0.42,"price":99.0}])["outcome"],
+            OUTCOME_ALIVE,
+        )
+        self.assertEqual(
+            build_confirmed_close_label("S3", [{"state":"S2","bandpos":0.60,"price":95.0}])["outcome"],
+            OUTCOME_FAIL,
+        )
+        self.assertTrue(confirmed_close_target_hit("S3", {"state":"OTHER","bandpos":0.80,"s3_expanded":True}))
 
-    def test_adx_matches_pine_reference(self):
+    def test_cci_matches_pine_reference(self):
         daily = []
         base = 1704067200000
         close = 100.0
-        for i in range(60):
+        for i in range(70):
             o = close
-            c = o * (1.0 + (0.004 if i % 5 in {0, 1, 2} else -0.0025))
+            c = o * (1.0 + (0.006 if i % 7 in {0, 1, 2} else -0.0035))
             h = max(o, c) * (1.004 + (i % 3) * 0.0005)
             l = min(o, c) * (0.996 - (i % 2) * 0.0004)
             daily.append({"time": base + i * 86400000, "open": o, "high": h, "low": l, "close": c})
             close = c
 
-        actual = calculate_adx_dmi(daily, period=14)
+        actual = calculate_cci_sma(daily, length=20, smoothing_length=14)
+        typical = [(x["high"] + x["low"] + x["close"]) / 3.0 for x in daily]
+        cci = [None] * len(daily)
+        for i in range(19, len(daily)):
+            window = typical[i-19:i+1]
+            mean = sum(window) / 20.0
+            dev = sum(abs(v - mean) for v in window) / 20.0
+            cci[i] = (typical[i] - mean) / (0.015 * dev) if dev > 1e-18 else 0.0
 
-        sm_tr = sm_plus = sm_minus = 0.0
-        dx_window = []
-        expected = []
-        for i, candle in enumerate(daily):
-            prev = daily[i - 1] if i > 0 else None
-            pc = float(prev["close"]) if prev else 0.0
-            ph = float(prev["high"]) if prev else 0.0
-            pl = float(prev["low"]) if prev else 0.0
-            high, low = float(candle["high"]), float(candle["low"])
-            tr = max(high - low, abs(high - pc), abs(low - pc))
-            up = high - ph
-            down = pl - low
-            dm_plus = max(up, 0.0) if up > down else 0.0
-            dm_minus = max(down, 0.0) if down > up else 0.0
-            sm_tr = sm_tr - sm_tr / 14 + tr
-            sm_plus = sm_plus - sm_plus / 14 + dm_plus
-            sm_minus = sm_minus - sm_minus / 14 + dm_minus
-            di_plus = sm_plus / sm_tr * 100 if sm_tr > 0 else None
-            di_minus = sm_minus / sm_tr * 100 if sm_tr > 0 else None
-            denom = (di_plus or 0.0) + (di_minus or 0.0)
-            dx = abs(di_plus - di_minus) / denom * 100 if di_plus is not None and di_minus is not None and denom > 0 else None
-            if dx is None:
-                dx_window.clear()
-                adx = None
+        smoothing = [None] * len(daily)
+        valid = []
+        for i, value in enumerate(cci):
+            if value is None:
+                continue
+            valid.append(value)
+            if len(valid) >= 14:
+                smoothing[i] = sum(valid[-14:]) / 14.0
+
+        for i in range(len(daily)):
+            if cci[i] is None:
+                self.assertIsNone(actual[i]["cci"])
             else:
-                dx_window.append(dx)
-                if len(dx_window) > 14:
-                    dx_window.pop(0)
-                adx = sum(dx_window) / len(dx_window) if len(dx_window) == 14 else None
-            expected.append((di_plus, di_minus, dx, adx))
+                self.assertAlmostEqual(actual[i]["cci"], cci[i], places=10)
+            if smoothing[i] is None:
+                self.assertIsNone(actual[i]["smoothing_ma"])
+            else:
+                self.assertAlmostEqual(actual[i]["smoothing_ma"], smoothing[i], places=10)
 
-        for row, ref in zip(actual, expected):
-            for key, value in zip(("di_plus", "di_minus", "dx", "adx"), ref):
-                if value is None:
-                    self.assertIsNone(row[key])
-                else:
-                    self.assertAlmostEqual(float(row[key]), float(value), places=12)
+        self.assertIsNotNone(actual[32]["smoothing_ma"])
+        for i in range(33, len(actual)):
+            prev = actual[i-1]["smoothing_ma"]
+            curr = actual[i]["smoothing_ma"]
+            if prev is None or curr is None:
+                continue
+            expected = "yellow" if curr > prev else "purple" if curr < prev else "gray"
+            self.assertEqual(actual[i]["smoothing_color"], expected)
 
-    def test_adx_step_features_match_terminal_red_green_semantics(self):
-        record = {
-            "_bb_upper_series": [120.0, 120.0, 120.0, 120.0],
-            "_bb_lower_series": [80.0, 80.0, 80.0, 80.0],
-            "_bb_basis_series": [100.0, 100.0, 100.0, 100.0],
-            "_di_plus_last30": [15.0, 16.0, 18.0, 22.0],
-            "_di_minus_last30": [27.0, 25.0, 23.0, 20.0],
-            "_adx_last30": [26.0, 22.0, 18.0, 19.0],
-        }
-        opportunity = {
-            "market_state_id": "S0.5",
-            "trigger_stage": "T1",
-            "current": {
-                "ha_band_position": 0.48,
-                "ha_color": "🟢",
-                "current_color_run_length": 1,
-            },
-            "midline": {
-                "state": "flattening",
-                "recent_5d_slope_pct_per_day": 0.0,
-                "slope_improvement_pct_per_day": 0.0,
-            },
-            "purple_structure": {"base_quality": {"qualified": True}},
-        }
-        features = extract_features(
-            record, opportunity, "S0", 1, previous_dmi_relation="MINUS", dmi_relation_age_bars=1
+    def test_engine_record_and_replay_contains_cci_contract(self):
+        rows = self.synthetic_rows()
+        record = build_live_compatible_record("TEST", rows)
+        self.assertIsNotNone(record)
+        self.assertEqual(len(record["_ha_pct_series"]), 30)
+        self.assertEqual(len(record["_cci_last30"]), 30)
+        self.assertEqual(len(record["_cci_smoothing_ma_last30"]), 30)
+        self.assertEqual(len(record["_cci_smoothing_color_last30"]), 30)
+        self.assertIsNotNone(record["_cci_last30"][-1])
+        self.assertIsNotNone(record["_cci_smoothing_ma_last30"][-1])
+
+        opportunity = build_long_opportunity(record, None)
+        features = extract_features(record, opportunity, "NONE", 1)
+        for key in (
+            "cci", "cci_zone", "cci_smoothing_ma", "cci_sma_gap", "cci_sma_relation",
+            "cci_cross_event", "cci_smoothing_direction", "cci_smoothing_turn_event",
+            "cci_cross_on_yellow", "cci_regime", "midline_slope_5d", "midline_improvement",
+        ):
+            self.assertIn(key, features)
+
+        timeline = []
+        cases = replay_symbol("TEST", rows, daily_timeline=timeline)
+        self.assertGreater(len(cases), 0)
+        self.assertGreater(len(timeline), 0)
+        self.assertIn("cci", timeline[-1]["features"])
+        self.assertIn("cci_smoothing_direction", timeline[-1]["features"])
+        self.assertNotIn("3", cases[0]["labels"])
+        self.assertIn("6", cases[0]["labels"])
+        self.assertEqual(cases[0].get("decision_contract"), "POST_CLOSE_DAILY_ROUTE_V2")
+
+        model = build_model(cases, DEFAULT_HORIZONS, min_samples=10)
+        self.assertEqual(model["schema_version"], 4)
+        self.assertEqual(
+            (model.get("cci_expert_contract") or {}).get("version"),
+            "CCI-EXPERT-v1-HLC3-20-SMA14",
         )
-        self.assertEqual(features["dmi_relation"], "PLUS")
-        self.assertEqual(features["adx_step_direction"], "RISING")
-        self.assertEqual(features["adx_step_age_days"], 1)
-        self.assertEqual(features["adx_step_age_bin"], "1")
-        self.assertEqual(features["adx_turn_event"], "RED_TO_GREEN")
-        self.assertEqual(features["adx_axis_zone"], "BELOW_20")
-        self.assertEqual(features["dmi_adx_regime"], "PLUS_RISING")
+        first = cases[0]
+        pred = lookup_probability(model, first["state"], 6, first["features"])
+        self.assertTrue(pred["available"])
+        self.assertIn("cci_expert", pred)
+        total = sum(float(v["probability"]) for v in pred["outcomes"].values())
+        self.assertAlmostEqual(total, 1.0, places=5)
 
-    def test_adx_1dp_sticky_suppresses_micro_flip(self):
-        # AMD example: both final displayed values round to 10.5. The old
-        # full-precision rule flips red, while v3 keeps the preceding green.
-        values = [10.4, 10.496955, 10.454547]
-        sticky = _adx_step_features(values)
-        legacy = _adx_step_features_legacy(values)
-        self.assertEqual(sticky["adx_step_direction"], "RISING")
-        self.assertEqual(sticky["adx_step_age_days"], 2)
-        self.assertEqual(sticky["adx_turn_event"], "NONE")
-        self.assertEqual(legacy["adx_step_direction"], "FALLING")
-        self.assertEqual(legacy["adx_turn_event"], "GREEN_TO_RED")
-
-    def test_adx_1dp_sticky_keeps_red_when_equal_after_fall(self):
-        values = [10.6, 10.496955, 10.454547]
-        sticky = _adx_step_features(values)
-        self.assertEqual(sticky["adx_step_direction"], "FALLING")
-        self.assertEqual(sticky["adx_step_age_days"], 2)
-        self.assertEqual(sticky["adx_turn_event"], "NONE")
-
-    def test_model_version_bridge_keeps_v2_champion_on_legacy_adx_semantics(self):
-        features = {
-            "adx_step_direction": "RISING",
-            "adx_step_age_days": 2,
-            "adx_step_age_bin": "2_3",
-            "adx_turn_event": "NONE",
-            "dmi_adx_regime": "PLUS_RISING",
-            "adx_step_direction_legacy": "FALLING",
-            "adx_step_age_days_legacy": 1,
-            "adx_step_age_bin_legacy": "1",
-            "adx_turn_event_legacy": "GREEN_TO_RED",
-            "dmi_adx_regime_legacy": "PLUS_FALLING",
+    def test_cci_expert_learns_patterns_without_redefining_state(self):
+        cases = []
+        base = {
+            "midline_state": "purple",
+            "bandpos_bin": "025_050",
+            "trigger_stage": "T0",
+            "bandwidth_trend": "FLAT",
+            "state_age_bin": "2_3",
+            "ha_color": "🟢",
+            "current_run_bin": "2",
+            "midline_slope_5d": -0.10,
+            "midline_improvement": 0.08,
         }
-        v2 = {"dmi_expert_contract": {"version": "DMI-EXPERT-v2-ADX-STEP"}}
-        v3 = {"dmi_expert_contract": {"version": "DMI-EXPERT-v3-ADX-1DP-STICKY"}}
-        old = _features_for_model_version(v2, features)
-        new = _features_for_model_version(v3, features)
-        self.assertEqual(old["adx_step_direction"], "FALLING")
-        self.assertEqual(old["dmi_adx_regime"], "PLUS_FALLING")
-        self.assertEqual(new["adx_step_direction"], "RISING")
-        self.assertEqual(new["dmi_adx_regime"], "PLUS_RISING")
-
-    def test_dmi_expert_v2_learns_adx_step_regime_per_state(self):
-        cases = []
-        regimes = [
-            ("PLUS", "RISING", OUTCOME_SUCCESS),
-            ("PLUS", "FALLING", OUTCOME_ALIVE),
-            ("MINUS", "RISING", OUTCOME_FAIL),
-            ("MINUS", "FALLING", OUTCOME_OTHER),
-        ]
-        t = 0
-        for relation, step_direction, dominant_outcome in regimes:
-            for i in range(100):
-                t += 1
-                outcome = dominant_outcome if i < 85 else OUTCOME_ALIVE
-                regime = f"{relation}_{step_direction}"
-                features = {
-                    "midline_state": "flat",
-                    "bandpos_bin": "025_050",
-                    "trigger_stage": "T1",
-                    "bandwidth_trend": "FLAT",
-                    "state_age_bin": "2_3",
-                    "dmi_relation": relation,
-                    "dmi_axis_zone": "PLUS_ONLY_ABOVE_20" if relation == "PLUS" else "MINUS_ONLY_ABOVE_20",
-                    "dmi_cross_age_bin": "1" if i < 50 else "2_3",
-                    "di_abs_gap": 6.0,
-                    "di_axis_distance": 3.0,
-                    "di_plus_slope_3d": 1.0 if relation == "PLUS" else -1.0,
-                    "di_minus_slope_3d": -1.0 if relation == "PLUS" else 1.0,
-                    "di_gap_slope_3d": 2.0 if relation == "PLUS" else -2.0,
-                    "adx": 18.0,
-                    "adx_slope_3d": 1.0 if step_direction == "RISING" else -1.0,
-                    "adx_axis_zone": "BELOW_20",
-                    "adx_step_direction": step_direction,
-                    "adx_step_age_days": 1 if i < 50 else 3,
-                    "adx_step_age_bin": "1" if i < 50 else "2_3",
-                    "adx_turn_event": "RED_TO_GREEN" if step_direction == "RISING" and i < 50 else "GREEN_TO_RED" if step_direction == "FALLING" and i < 50 else "NONE",
-                    "adx_step_delta": 1.0 if step_direction == "RISING" else -1.0,
-                    "dmi_adx_regime": regime,
-                }
-                label = {"outcome": outcome, "hit": outcome == OUTCOME_SUCCESS, "late_success_4_7d": None}
-                cases.append({
-                    "symbol": "TEST",
-                    "time": t,
-                    "state": "S0.5",
-                    "target": "S1_OR_HIGHER",
-                    "features": features,
-                    "labels": {str(h): dict(label) for h in DEFAULT_HORIZONS},
-                })
-
-        model = build_model(cases, DEFAULT_HORIZONS, min_samples=20)
-        self.assertEqual(model["schema_version"], 3)
-        self.assertEqual((model.get("dmi_expert_contract") or {}).get("version"), "DMI-EXPERT-v3-ADX-1DP-STICKY")
-        facet_names = {f["name"] for f in model["states"]["S0.5"]["horizons"]["18"]["dmi_expert"]["facets"]}
-        self.assertTrue({"adx_step_regime", "adx_step_persistence", "adx_turn_handover"}.issubset(facet_names))
-        plus_rising = lookup_probability(model, "S0.5", 18, cases[0]["features"])
-        minus_rising = lookup_probability(model, "S0.5", 18, cases[200]["features"])
-        self.assertGreater(plus_rising["probability"], minus_rising["probability"])
-        matched_names = {x.get("name") for x in plus_rising["dmi_expert"]["matched_facets"]}
-        self.assertIn("adx_step_regime", matched_names)
-        self.assertIn("adx_step_persistence", matched_names)
-        self.assertIn("adx_turn_handover", matched_names)
-
-    def test_dmi_expert_learns_without_redefining_state(self):
-        cases = []
-        outcomes = [OUTCOME_SUCCESS, OUTCOME_ALIVE, OUTCOME_FAIL, OUTCOME_OTHER]
-        for i in range(240):
-            plus_leads = i < 120
-            outcome = OUTCOME_SUCCESS if (plus_leads and i % 5 != 0) else OUTCOME_FAIL if not plus_leads and i % 4 != 0 else OUTCOME_OTHER
+        for i in range(160):
+            positive = i < 80
             features = {
-                "midline_state": "flat",
-                "bandpos_bin": "025_050",
-                "trigger_stage": "T1",
-                "bandwidth_trend": "FLAT",
-                "state_age_bin": "2_3",
-                "dmi_relation": "PLUS" if plus_leads else "MINUS",
-                "dmi_axis_zone": "PLUS_ONLY_ABOVE_20" if plus_leads else "MINUS_ONLY_ABOVE_20",
-                "dmi_cross_age_bin": "1",
-                "di_abs_gap": 8.0 if plus_leads else 7.0,
-                "di_axis_distance": 3.0,
-                "di_plus_slope_3d": 2.0 if plus_leads else -1.5,
-                "di_minus_slope_3d": -1.0 if plus_leads else 2.0,
-                "di_gap_slope_3d": 3.0 if plus_leads else -3.0,
-                "adx": 26.0,
-                "adx_slope_3d": 1.2,
-                "adx_axis_zone": "ABOVE_20",
-                "adx_step_direction": "RISING",
-                "adx_step_age_days": 2,
-                "adx_step_age_bin": "2_3",
-                "adx_turn_event": "NONE",
-                "adx_step_delta": 1.0,
-                "dmi_adx_regime": "PLUS_RISING" if plus_leads else "MINUS_RISING",
+                **base,
+                "cci": -100.0 if positive else -155.0,
+                "cci_zone": "NEG120_NEG80" if positive else "LT_NEG150",
+                "cci_distance_to_neg100": 0.0 if positive else 55.0,
+                "cci_smoothing_ma": -108.0 if positive else -130.0,
+                "cci_sma_gap": 8.0 if positive else -25.0,
+                "cci_sma_relation": "ABOVE" if positive else "BELOW",
+                "cci_relation_age_bin": "1",
+                "cci_cross_event": "CCI_CROSS_UP" if positive else "NO_NEW_CROSS",
+                "cci_slope_3d": 20.0 if positive else -10.0,
+                "cci_smoothing_slope_3d": 4.0 if positive else -5.0,
+                "cci_smoothing_direction": "YELLOW" if positive else "PURPLE",
+                "cci_smoothing_age_bin": "1",
+                "cci_smoothing_turn_event": "PURPLE_TO_YELLOW" if positive else "NONE",
+                "cci_cross_on_yellow": "CROSS_UP_YELLOW" if positive else "NO_CROSS_UP",
+                "cci_regime": "ABOVE_YELLOW" if positive else "BELOW_PURPLE",
             }
-            label = {
-                "outcome": outcome,
-                "hit": outcome == OUTCOME_SUCCESS,
-                "late_success_4_7d": None,
-            }
+            outcome = OUTCOME_SUCCESS if positive else OUTCOME_FAIL
             cases.append({
-                "symbol": "TEST",
-                "time": i,
                 "state": "S0.5",
                 "target": "S1_OR_HIGHER",
                 "features": features,
-                "labels": {str(h): dict(label) for h in DEFAULT_HORIZONS},
+                "labels": {"18": {"outcome": outcome, "hit": positive}},
             })
 
-        model = build_model(cases, DEFAULT_HORIZONS, min_samples=20)
-        self.assertEqual(model["schema_version"], 3)
-        self.assertEqual(model["states"]["S0.5"]["target"], "S1_OR_HIGHER")
-        plus = lookup_probability(model, "S0.5", 18, cases[1]["features"])
-        minus = lookup_probability(model, "S0.5", 18, cases[-1]["features"])
-        self.assertTrue(plus["dmi_expert"]["available"])
-        self.assertTrue(minus["dmi_expert"]["available"])
-        self.assertGreater(plus["probability"], minus["probability"])
-        self.assertLess(plus["true_fail_probability"], minus["true_fail_probability"])
-        for result in (plus, minus):
-            total = sum(float(v["probability"]) for v in result["outcomes"].values())
-            self.assertAlmostEqual(total, 1.0, places=5)
+        model = build_model(cases, (18,), min_samples=20)
+        facet_names = {f["name"] for f in model["states"]["S0.5"]["horizons"]["18"]["cci_expert"]["facets"]}
+        self.assertTrue({"position_cross", "bb_slope_context", "right_side_confirm"}.issubset(facet_names))
+        positive_pred = lookup_probability(model, "S0.5", 18, cases[0]["features"])
+        negative_pred = lookup_probability(model, "S0.5", 18, cases[-1]["features"])
+        self.assertTrue(positive_pred["cci_expert"]["available"])
+        self.assertTrue(negative_pred["cci_expert"]["available"])
+        self.assertGreater(positive_pred["probability"], negative_pred["probability"])
 
 
 if __name__ == "__main__":

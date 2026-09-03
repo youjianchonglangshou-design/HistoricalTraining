@@ -291,7 +291,7 @@ def frozen_from_terminal_checkpoint(
         "samples": int(p72.get("matched_samples", probability.get("matched_samples", 0)) or 0),
         "level": int(p72.get("level", probability.get("model_level", 0)) or 0),
         "signature": p72.get("signature"),
-        "dmi_expert": p72.get("dmi_expert") or probability.get("dmi_expert") or {},
+        "cci_expert": p72.get("cci_expert") or probability.get("cci_expert") or {},
     }
     frozen = make_frozen_record(
         symbol=str(row.get("symbol") or "").strip().upper(),

@@ -1,7 +1,7 @@
 {
-  "version": "3.6.3",
-  "label": "08:25 Daily Champion + Route-Aware Settlement V2",
-  "champion_baseline": "a9a998d93ea396e4",
+  "version": "3.7.0",
+  "label": "CCI20 + SMA14 Champion Full Rebuild",
+  "champion_baseline": "ACTION_GENERATES_NEW_CCI_CHAMPION",
   "daily_review_taiwan": "08:25",
   "daily_review_cron_utc": "25 0 * * *",
   "evolution_min_settled_72h": 120,
@@ -11,17 +11,13 @@
     "CRYPTO",
     "US_STOCK"
   ],
-  "generation_rule": "Each Champion evolves once after 120 new 72H Frozen settlements; next Champion starts a fresh generation counter.",
+  "generation_rule": "Manual Historical CCI Full Rebuild immediately promotes the generated model as a fresh Champion generation; later each Champion evolves once after 120 new 72H Frozen settlements.",
   "schedule_owner": "Cloudflare Worker",
   "checkpoint_taiwan": "08:25",
   "checkpoint_source": "SStateMarketTerminal R2 runs/champion/YYYY-MM-DD_0825",
-  "freeze_contract": "The formal Terminal batch is initiated at Taiwan 08:25 after the daily reset. HistoricalTraining starts only after Crypto + US-stock checkpoint uploads succeed.",
-  "ledger_source_of_truth": "R2 champion/ledger/GENxxx/YYYY-MM-DD.json",
-  "github_ledger_role": "migration-only; removed after first successful R2 shard upload",
-  "evolution_policy_version": "EVOLUTION-POLICY-v1",
-  "evolution_rule": "At 120 settled 72H cases, evolution_review generates a machine-actionable policy. High-confidence misses and miscalibrated state/regime/turn groups receive adaptive bounded reinforcement in next Champion training.",
-  "performance_recent_days": 90,
-  "training_r2_export_days": 3650,
-  "settlement_contract": "POST_CLOSE_DAILY_ROUTE_V2: 12H observation-only; 24H/48H/72H use completed daily checkpoints. S1/S3 upward expansion may intentionally appear as OTHER after leaving the entry window and must still count as success; S3 confirmed regression to S2 is TRUE_FAIL.",
-  "historical_training_contract": "Historical replay and live settlement use the same route-aware completed-daily-close target logic; intraday flashes never score and opportunity-state expiry is not mistaken for trend failure."
+  "cci_contract": "CCI-EXPERT-v1-HLC3-20-SMA14",
+  "cci_formula": "hlc3 -> CCI20 -> SMA14 smoothingMA; yellow if smoothing rises, purple if it falls.",
+  "reset_rule": "A manual full rebuild starts a new Champion generation with 0 recent snapshots/recent_records while retaining closed generation history separately.",
+  "settlement_contract": "POST_CLOSE_DAILY_ROUTE_V2: 12H observation-only; 24H/48H/72H use completed daily checkpoints.",
+  "historical_training_contract": "Historical replay and live settlement use the same completed-daily-close target logic; CCI is learned as an independent correction layer without changing S-state definitions."
 }

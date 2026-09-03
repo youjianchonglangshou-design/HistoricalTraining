@@ -4,7 +4,7 @@ from typing import Any
 
 from engine.runtime_core import build_record_from_daily_and_4h, iso_tw, utc_day_start_ms
 from engine.scoring_rules import build_long_opportunity
-from .features import dmi_relation_from_record, extract_features
+from .features import extract_features
 from .outcomes import build_confirmed_close_label, confirmed_close_target_hit
 
 TARGET_STATES = {"S0.5", "S1", "S2", "S3"}
@@ -44,14 +44,14 @@ def _update_daily(current: dict[str, float], row: dict[str, Any]) -> None:
 
 def _timeline_features(features: dict[str, Any], market_type: str) -> dict[str, Any]:
     keys = [
-        "midline_state", "bandpos", "bandpos_bin", "trigger_stage", "bandwidth_trend",
-        "bandwidth_delta_3d", "state_age_bars", "state_age_bin", "di_plus", "di_minus",
-        "di_gap", "dmi_relation", "dmi_axis_zone", "dmi_cross_event", "dmi_cross_age_bars",
-        "dmi_cross_age_bin", "di_plus_slope_3d", "di_minus_slope_3d", "di_gap_slope_3d",
-        "adx", "adx_slope_3d", "adx_axis_zone", "adx_step_direction", "adx_step_age_days",
-        "adx_step_age_bin", "adx_turn_event", "adx_step_delta", "dmi_adx_regime",
-        "adx_step_direction_legacy", "adx_step_age_days_legacy", "adx_step_age_bin_legacy",
-        "adx_turn_event_legacy", "dmi_adx_regime_legacy",
+        "midline_state", "midline_slope_5d", "midline_improvement", "bandpos", "bandpos_bin",
+        "trigger_stage", "bandwidth_trend", "bandwidth_delta_3d", "state_age_bars", "state_age_bin",
+        "ha_color", "current_run_length", "current_run_bin",
+        "cci", "cci_zone", "cci_distance_to_neg100", "cci_smoothing_ma", "cci_sma_gap",
+        "cci_sma_relation", "cci_relation_age_days", "cci_relation_age_bin", "cci_cross_event",
+        "cci_slope_3d", "cci_smoothing_slope_3d", "cci_smoothing_direction",
+        "cci_smoothing_age_days", "cci_smoothing_age_bin", "cci_smoothing_turn_event",
+        "cci_cross_on_yellow", "cci_regime",
     ]
     out = {key: features.get(key) for key in keys}
     out["market_type"] = market_type
@@ -69,9 +69,9 @@ def replay_symbol(
 ) -> list[dict[str, Any]]:
     """Replay the S-state engine, but score only completed daily closes.
 
-    v3.6 contract:
-    - The engine may still calculate every 4H internally so DMI/state-age inputs
-      match the live Terminal.
+    v3.7 contract:
+    - The engine may still calculate every 4H internally so CCI/SMA14 and
+      S-state-age inputs match the live Terminal.
     - A training decision case is created only from the final completed 4H bar
       of each UTC day (Taiwan 08:00 post-close state).
     - Intraday partial-daily S-state flips never count as SUCCESS.
@@ -91,8 +91,6 @@ def replay_symbol(
     current_day_key: int | None = None
     previous_state = "NONE"
     state_age = 0
-    previous_dmi_relation = "UNKNOWN"
-    dmi_relation_age = 0
 
     for idx, row in enumerate(rows):
         day_key = utc_day_start_ms(int(row["time"]))
@@ -116,19 +114,11 @@ def replay_symbol(
         state = str(opportunity.get("market_state_id") or "OTHER")
         state_age = state_age + 1 if state == previous_state else 1
 
-        current_dmi_relation = dmi_relation_from_record(record)
-        if current_dmi_relation == previous_dmi_relation and current_dmi_relation != "UNKNOWN":
-            dmi_relation_age += 1
-        else:
-            dmi_relation_age = 1
-
         features = extract_features(
             record,
             opportunity,
             previous_state,
             state_age,
-            previous_dmi_relation=previous_dmi_relation,
-            dmi_relation_age_bars=dmi_relation_age,
         )
         features["market_type"] = market_type
         bandpos = float((opportunity.get("current") or {}).get("ha_band_position", 0.5) or 0.5)
@@ -167,7 +157,6 @@ def replay_symbol(
                 daily_timeline.append({k: v for k, v in point.items() if k != "source_index"})
 
         previous_state = state
-        previous_dmi_relation = current_dmi_relation
 
     if not daily_points:
         return []

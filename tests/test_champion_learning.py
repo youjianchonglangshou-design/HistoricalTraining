@@ -88,7 +88,7 @@ class ChampionLearningTests(unittest.TestCase):
             "state": "S2",
             "target": "S3",
             "entry_price": 100.0,
-            "features": {"adx": 18.2},
+            "features": {"cci": -98.2},
             "settlements": {
                 "12H": {"status": "SETTLED", "outcome": OUTCOME_ALIVE, "hit": False},
                 "24H": {"status": "SETTLED", "outcome": OUTCOME_ALIVE, "hit": False},
@@ -151,7 +151,7 @@ class ChampionLearningTests(unittest.TestCase):
                 "model_id": "MODEL001",
                 "state": "S2",
                 "target": "S3",
-                "features": {"adx": 18.4, "dmi_relation": "PLUS"},
+                "features": {"cci": -98.4, "cci_regime": "ABOVE_YELLOW"},
                 "72h": {
                     "available": True,
                     "success_probability": 0.67,
@@ -276,7 +276,7 @@ class ChampionLearningTests(unittest.TestCase):
             {
                 "generation": 1, "champion_model_id": "A", "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT", "official_scoring": True, "market_type": "CRYPTO",
                 "symbol": "BTC", "decision_time": 1000, "decision_date_tw": "2026-09-01",
-                "state": "S0.5", "features": {"dmi_adx_regime": "PLUS_RISING", "adx_turn_event": "RED_TO_GREEN"},
+                "state": "S0.5", "features": {"cci_regime": "ABOVE_YELLOW", "cci_smoothing_turn_event": "PURPLE_TO_YELLOW"},
                 "prediction": {"success_probability": 0.80},
                 "settlements": {"72H": {"status": "SETTLED", "outcome": OUTCOME_FAIL}},
                 "final_outcome": OUTCOME_FAIL, "final_settled": True,
@@ -284,7 +284,7 @@ class ChampionLearningTests(unittest.TestCase):
             {
                 "generation": 1, "champion_model_id": "A", "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT", "official_scoring": True, "market_type": "CRYPTO",
                 "symbol": "ETH", "decision_time": 2000, "decision_date_tw": "2026-09-01",
-                "state": "S0.5", "features": {"dmi_adx_regime": "PLUS_RISING", "adx_turn_event": "RED_TO_GREEN"},
+                "state": "S0.5", "features": {"cci_regime": "ABOVE_YELLOW", "cci_smoothing_turn_event": "PURPLE_TO_YELLOW"},
                 "prediction": {"success_probability": 0.75},
                 "settlements": {"72H": {"status": "SETTLED", "outcome": OUTCOME_FAIL}},
                 "final_outcome": OUTCOME_FAIL, "final_settled": True,

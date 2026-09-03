@@ -29,8 +29,8 @@ CHAMPION_GENERATION_PATH = ROOT / "data" / "champion" / "generation.json"
 
 
 
-def build_dmi_expert_report(model: dict, horizon: str = "18", top_n: int = 6) -> dict:
-    """Compact audit view of what the DMI expert learned at the primary horizon."""
+def build_cci_expert_report(model: dict, horizon: str = "18", top_n: int = 6) -> dict:
+    """Compact audit view of what the CCI expert learned at the primary horizon."""
     output = {}
     for state, state_node in (model.get("states") or {}).items():
         hnode = (state_node.get("horizons") or {}).get(str(horizon)) or {}
@@ -38,7 +38,7 @@ def build_dmi_expert_report(model: dict, horizon: str = "18", top_n: int = 6) ->
         baseline_success = float(baseline.get("probability", 0.0) or 0.0)
         baseline_fail = float(baseline.get("true_fail_probability", 0.0) or 0.0)
         facets_out = []
-        for facet in ((hnode.get("dmi_expert") or {}).get("facets") or []):
+        for facet in ((hnode.get("cci_expert") or {}).get("facets") or []):
             rows = []
             for rule in facet.get("rules") or []:
                 if not rule.get("eligible"):
@@ -71,30 +71,10 @@ def build_dmi_expert_report(model: dict, horizon: str = "18", top_n: int = 6) ->
             "baseline_success_probability": round(baseline_success, 6),
             "baseline_structural_survival_probability": round(float(baseline.get("structural_survival_probability", baseline_success) or baseline_success), 6),
             "baseline_true_fail_probability": round(baseline_fail, 6),
-            "dmi_binning": state_node.get("dmi_binning") or {},
+            "cci_binning": state_node.get("cci_binning") or {},
             "facets": facets_out,
         }
     return output
-
-ADX_STEP_FACET_NAMES = {"adx_step_regime", "adx_step_persistence", "adx_turn_handover"}
-
-
-def build_adx_step_report(model: dict, horizon: str = "18", top_n: int = 6) -> dict:
-    """Focused audit for S-state x DI-controller x red/green ADX stepline evidence."""
-    full = build_dmi_expert_report(model, horizon=horizon, top_n=top_n)
-    output = {}
-    for state, node in full.items():
-        output[state] = {
-            key: value
-            for key, value in node.items()
-            if key != "facets"
-        }
-        output[state]["facets"] = [
-            facet for facet in (node.get("facets") or [])
-            if facet.get("name") in ADX_STEP_FACET_NAMES
-        ]
-    return output
-
 
 def parse_symbols(text: str) -> list[str]:
     if not text or text.upper() == "ALL":
@@ -107,7 +87,7 @@ def parse_symbols(text: str) -> list[str]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Post-close daily S-state replay + 4-way outcome probability JSON builder")
+    parser = argparse.ArgumentParser(description="Post-close daily S-state replay + CCI/SMA14 expert + 4-way outcome JSON builder")
     parser.add_argument("--symbols", default="ALL", help="ALL or comma-separated symbols, e.g. BTC,ETH,LINK")
     parser.add_argument("--max-records", type=int, default=5000, help="Local 4H history capacity per symbol; first backfill is capped by Pionex at 10000")
     parser.add_argument("--full-refresh", action="store_true", help="Refetch full configured history instead of latest-page merge")
@@ -285,9 +265,8 @@ def main() -> int:
             for state, state_node in model.get("states", {}).items()
         },
         "outcome_note": "72H main view: success + alive_slow + true_fail + other = 100%. Existing probability remains success-within-horizon for UI compatibility.",
-        "dmi_expert_contract": model.get("dmi_expert_contract") or {},
-        "dmi_expert_72h": build_dmi_expert_report(model, primary_horizon),
-        "adx_step_regime_72h": build_adx_step_report(model, primary_horizon),
+        "cci_expert_contract": model.get("cci_expert_contract") or {},
+        "cci_expert_72h": build_cci_expert_report(model, primary_horizon),
         "evolution_policy": {
             "policy_id": evolution_policy.get("policy_id"),
             "active": policy_active,

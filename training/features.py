@@ -3,8 +3,6 @@ from __future__ import annotations
 import math
 from typing import Any
 
-DMI_AXIS = 20.0
-
 
 def _bin_bandpos(value: float) -> str:
     if value < 0.25:
@@ -57,8 +55,6 @@ def _slope_last3(values: list[Any]) -> float | None:
     series = _valid_series(values)
     if len(series) < 3:
         return None
-    # Daily DMI chart slope in indicator-points per day, using the same current
-    # partial daily candle that historical replay can see at this 4H cutoff.
     return (series[-1] - series[-3]) / 2.0
 
 
@@ -80,279 +76,159 @@ def _bandwidth_trend(record: dict[str, Any]) -> tuple[str, float]:
     return "FLAT", delta
 
 
-def dmi_relation_from_record(record: dict[str, Any]) -> str:
-    plus_series = list(record.get("_di_plus_last30") or [])
-    minus_series = list(record.get("_di_minus_last30") or [])
-    plus = _safe_float(plus_series[-1]) if plus_series else None
-    minus = _safe_float(minus_series[-1]) if minus_series else None
-    if plus is None or minus is None:
+def _cci_zone(value: float | None) -> str:
+    """Keep the visually important CCI regions explicit without assigning direction."""
+    if value is None:
         return "UNKNOWN"
-    if plus > minus:
-        return "PLUS"
-    if minus > plus:
-        return "MINUS"
+    if value < -150.0:
+        return "LT_NEG150"
+    if value < -120.0:
+        return "NEG150_NEG120"
+    if value <= -80.0:
+        return "NEG120_NEG80"
+    if value < 0.0:
+        return "NEG80_0"
+    if value < 100.0:
+        return "0_100"
+    return "GE_100"
+
+
+def _relation(cci: float | None, smoothing: float | None) -> str:
+    if cci is None or smoothing is None:
+        return "UNKNOWN"
+    if cci > smoothing:
+        return "ABOVE"
+    if cci < smoothing:
+        return "BELOW"
     return "TIE"
 
 
-def _dmi_axis_zone(di_plus: float | None, di_minus: float | None) -> str:
-    if di_plus is None or di_minus is None:
+def _relation_series(cci_values: list[Any], smoothing_values: list[Any]) -> list[str]:
+    output: list[str] = []
+    for cci, sma in zip(cci_values, smoothing_values):
+        output.append(_relation(_safe_float(cci), _safe_float(sma)))
+    return output
+
+
+def _relation_age(relations: list[str]) -> int:
+    valid = [x for x in relations if x != "UNKNOWN"]
+    if not valid:
+        return 0
+    current = valid[-1]
+    age = 1
+    for value in reversed(valid[:-1]):
+        if value != current:
+            break
+        age += 1
+    return age
+
+
+def _cross_event(relations: list[str]) -> str:
+    valid = [x for x in relations if x != "UNKNOWN"]
+    if len(valid) < 2:
         return "UNKNOWN"
-    plus_above = di_plus > DMI_AXIS
-    minus_above = di_minus > DMI_AXIS
-    plus_below = di_plus < DMI_AXIS
-    minus_below = di_minus < DMI_AXIS
-    if plus_above and minus_above:
-        return "BOTH_ABOVE_20"
-    if plus_below and minus_below:
-        return "BOTH_BELOW_20"
-    if plus_above and not minus_above:
-        return "PLUS_ONLY_ABOVE_20"
-    if minus_above and not plus_above:
-        return "MINUS_ONLY_ABOVE_20"
-    return "TOUCHING_20"
-
-
-def _cross_event(previous_relation: str | None, current_relation: str) -> str:
-    previous = str(previous_relation or "UNKNOWN")
-    current = str(current_relation or "UNKNOWN")
-    if previous == "MINUS" and current == "PLUS":
-        return "PLUS_CROSS_UP"
-    if previous == "PLUS" and current == "MINUS":
-        return "MINUS_CROSS_UP"
-    if previous == "TIE" and current == "PLUS":
-        return "PLUS_TAKES_LEAD"
-    if previous == "TIE" and current == "MINUS":
-        return "MINUS_TAKES_LEAD"
-    if current == previous and current in {"PLUS", "MINUS", "TIE"}:
+    previous, current = valid[-2], valid[-1]
+    if previous in {"BELOW", "TIE"} and current == "ABOVE":
+        return "CCI_CROSS_UP"
+    if previous in {"ABOVE", "TIE"} and current == "BELOW":
+        return "CCI_CROSS_DOWN"
+    if previous == current:
         return "NO_NEW_CROSS"
+    return "OTHER_CROSS"
+
+
+def _normalize_smoothing_color(value: Any) -> str:
+    text = str(value or "").strip().lower()
+    if text == "yellow":
+        return "YELLOW"
+    if text == "purple":
+        return "PURPLE"
+    if text == "gray":
+        return "GRAY"
     return "UNKNOWN"
 
 
-def _adx_axis_zone(adx: float | None) -> str:
-    if adx is None:
-        return "UNKNOWN"
-    if adx > DMI_AXIS:
-        return "ABOVE_20"
-    if adx < DMI_AXIS:
-        return "BELOW_20"
-    return "TOUCHING_20"
-
-
-def _round_adx_1dp(value: float | None) -> float | None:
-    if value is None:
-        return None
-    # Pine parity for non-negative ADX: math.round(ADX * 10.0) / 10.0.
-    # Avoid Python's bankers-rounding at exact x.x5 boundaries.
-    return math.floor(float(value) * 10.0 + 0.5) / 10.0
-
-
-def _adx_step_direction(previous: float | None, current: float | None) -> str:
-    """Legacy exact-value direction retained only for v2 compatibility."""
-    if previous is None or current is None:
-        return "UNKNOWN"
-    if current > previous:
-        return "RISING"
-    if current < previous:
-        return "FALLING"
-    return "FLAT"
-
-
-def _adx_step_features_legacy(values: list[Any]) -> dict[str, Any]:
-    """Old DMI Expert v2 semantics: compare full-precision ADX directly."""
-    series = [_safe_float(value) for value in values]
-    if len(series) < 2:
-        return {
-            "adx_step_direction": "UNKNOWN",
-            "adx_step_age_days": 0,
-            "adx_step_age_bin": "UNKNOWN",
-            "adx_turn_event": "UNKNOWN",
-            "adx_step_delta": None,
-        }
-    directions = [_adx_step_direction(series[i - 1], series[i]) for i in range(1, len(series))]
-    current_direction = directions[-1]
-    if current_direction == "UNKNOWN":
-        return {
-            "adx_step_direction": "UNKNOWN",
-            "adx_step_age_days": 0,
-            "adx_step_age_bin": "UNKNOWN",
-            "adx_turn_event": "UNKNOWN",
-            "adx_step_delta": None,
-        }
+def _smoothing_age(colors: list[Any]) -> int:
+    normalized = [_normalize_smoothing_color(x) for x in colors]
+    valid = [x for x in normalized if x != "UNKNOWN"]
+    if not valid:
+        return 0
+    current = valid[-1]
     age = 1
-    for direction in reversed(directions[:-1]):
-        if direction != current_direction:
+    for value in reversed(valid[:-1]):
+        if value != current:
             break
         age += 1
-    previous_direction = directions[-2] if len(directions) >= 2 else "UNKNOWN"
-    if previous_direction == "FALLING" and current_direction == "RISING":
-        turn = "RED_TO_GREEN"
-    elif previous_direction == "RISING" and current_direction == "FALLING":
-        turn = "GREEN_TO_RED"
-    elif previous_direction in {"RISING", "FALLING", "FLAT"} and previous_direction != current_direction:
-        turn = "OTHER_TURN"
-    elif previous_direction == current_direction:
-        turn = "NONE"
-    else:
-        turn = "UNKNOWN"
-    previous_value = series[-2]
-    current_value = series[-1]
-    delta = (current_value - previous_value) if previous_value is not None and current_value is not None else None
-    return {
-        "adx_step_direction": current_direction,
-        "adx_step_age_days": int(age),
-        "adx_step_age_bin": _bin_age(int(age)),
-        "adx_turn_event": turn,
-        "adx_step_delta": round(delta, 8) if delta is not None else None,
-    }
+    return age
 
 
-def _adx_step_features(values: list[Any]) -> dict[str, Any]:
-    """DMI Expert v3 ADX stepline semantics.
-
-    1) Round each DAILY ADX to one decimal exactly like Pine/Terminal.
-    2) Compare rounded values.
-    3) If equal, keep the previous effective RISING/FALLING direction instead
-       of creating a FLAT/gray step.
-
-    Historical 4H replay still uses only the partial daily candle visible at
-    that cutoff, so the change removes display-scale noise without lookahead.
-    """
-    series = [_safe_float(value) for value in values]
-    if len(series) < 2:
-        return {
-            "adx_step_direction": "UNKNOWN",
-            "adx_step_age_days": 0,
-            "adx_step_age_bin": "UNKNOWN",
-            "adx_turn_event": "UNKNOWN",
-            "adx_step_delta": None,
-        }
-
-    directions: list[str] = []
-    sticky_direction = "UNKNOWN"
-    for i in range(1, len(series)):
-        previous = _round_adx_1dp(series[i - 1])
-        current = _round_adx_1dp(series[i])
-        if previous is None or current is None:
-            direction = sticky_direction if sticky_direction in {"RISING", "FALLING"} else "UNKNOWN"
-        elif current > previous:
-            direction = "RISING"
-            sticky_direction = direction
-        elif current < previous:
-            direction = "FALLING"
-            sticky_direction = direction
-        else:
-            direction = sticky_direction if sticky_direction in {"RISING", "FALLING"} else "UNKNOWN"
-        directions.append(direction)
-
-    current_direction = directions[-1]
-    if current_direction not in {"RISING", "FALLING"}:
-        return {
-            "adx_step_direction": "UNKNOWN",
-            "adx_step_age_days": 0,
-            "adx_step_age_bin": "UNKNOWN",
-            "adx_turn_event": "UNKNOWN",
-            "adx_step_delta": None,
-        }
-
-    age = 1
-    for direction in reversed(directions[:-1]):
-        if direction != current_direction:
-            break
-        age += 1
-
-    previous_direction = directions[-2] if len(directions) >= 2 else "UNKNOWN"
-    if previous_direction == "FALLING" and current_direction == "RISING":
-        turn = "RED_TO_GREEN"
-    elif previous_direction == "RISING" and current_direction == "FALLING":
-        turn = "GREEN_TO_RED"
-    elif previous_direction == current_direction:
-        turn = "NONE"
-    else:
-        turn = "UNKNOWN"
-
-    previous_value = series[-2]
-    current_value = series[-1]
-    delta = (current_value - previous_value) if previous_value is not None and current_value is not None else None
-    return {
-        "adx_step_direction": current_direction,
-        "adx_step_age_days": int(age),
-        "adx_step_age_bin": _bin_age(int(age)),
-        "adx_turn_event": turn,
-        "adx_step_delta": round(delta, 8) if delta is not None else None,
-    }
-
-
-def _dmi_adx_regime(relation: str, adx_step_direction: str) -> str:
-    if relation not in {"PLUS", "MINUS"}:
-        return "NEUTRAL" if relation == "TIE" else "UNKNOWN"
-    if adx_step_direction not in {"RISING", "FALLING", "FLAT"}:
+def _smoothing_turn(colors: list[Any]) -> str:
+    normalized = [_normalize_smoothing_color(x) for x in colors]
+    valid = [x for x in normalized if x != "UNKNOWN"]
+    if len(valid) < 2:
         return "UNKNOWN"
-    return f"{relation}_{adx_step_direction}"
+    previous, current = valid[-2], valid[-1]
+    if previous == "PURPLE" and current == "YELLOW":
+        return "PURPLE_TO_YELLOW"
+    if previous == "YELLOW" and current == "PURPLE":
+        return "YELLOW_TO_PURPLE"
+    if previous == current:
+        return "NONE"
+    if current == "GRAY" or previous == "GRAY":
+        return "GRAY_TRANSITION"
+    return "OTHER_TURN"
 
 
-def _dmi_features(
-    record: dict[str, Any],
-    previous_dmi_relation: str | None,
-    dmi_relation_age_bars: int,
-) -> dict[str, Any]:
-    plus_series = list(record.get("_di_plus_last30") or [])
-    minus_series = list(record.get("_di_minus_last30") or [])
-    adx_series = list(record.get("_adx_last30") or [])
+def _cci_features(record: dict[str, Any]) -> dict[str, Any]:
+    cci_series = list(record.get("_cci_last30") or [])
+    smoothing_series = list(record.get("_cci_smoothing_ma_last30") or [])
+    color_series = list(record.get("_cci_smoothing_color_last30") or [])
 
-    di_plus = _safe_float(plus_series[-1]) if plus_series else None
-    di_minus = _safe_float(minus_series[-1]) if minus_series else None
-    adx = _safe_float(adx_series[-1]) if adx_series else None
-    relation = dmi_relation_from_record(record)
+    cci = _safe_float(cci_series[-1]) if cci_series else None
+    smoothing = _safe_float(smoothing_series[-1]) if smoothing_series else None
+    relations = _relation_series(cci_series, smoothing_series)
+    relation = next((x for x in reversed(relations) if x != "UNKNOWN"), "UNKNOWN")
+    cross_event = _cross_event(relations)
+    smoothing_direction = (
+        _normalize_smoothing_color(color_series[-1]) if color_series else "UNKNOWN"
+    )
+    relation_age = _relation_age(relations)
+    smoothing_age = _smoothing_age(color_series)
 
-    di_gap = (di_plus - di_minus) if di_plus is not None and di_minus is not None else None
-    di_abs_gap = abs(di_gap) if di_gap is not None else None
-    di_axis_distance = (
-        (abs(di_plus - DMI_AXIS) + abs(di_minus - DMI_AXIS)) / 2.0
-        if di_plus is not None and di_minus is not None
-        else None
+    gap = (cci - smoothing) if cci is not None and smoothing is not None else None
+    cci_slope = _slope_last3(cci_series)
+    smoothing_slope = _slope_last3(smoothing_series)
+    zone = _cci_zone(cci)
+    cross_on_yellow = (
+        "CROSS_UP_YELLOW"
+        if cross_event == "CCI_CROSS_UP" and smoothing_direction == "YELLOW"
+        else "CROSS_UP_OTHER"
+        if cross_event == "CCI_CROSS_UP"
+        else "NO_CROSS_UP"
     )
 
-    plus_slope = _slope_last3(plus_series)
-    minus_slope = _slope_last3(minus_series)
-    gap_series = [
-        float(p) - float(m)
-        for p, m in zip(plus_series, minus_series)
-        if _safe_float(p) is not None and _safe_float(m) is not None
-    ]
-    gap_slope = _slope_last3(gap_series)
-    adx_slope = _slope_last3(adx_series)
-    step = _adx_step_features(adx_series)
-    legacy_step = _adx_step_features_legacy(adx_series)
-
     return {
-        # Raw values are kept in every historical case so later research can
-        # inspect exact DI+/DI- values rather than only categorical rules.
-        "di_plus": round(di_plus, 8) if di_plus is not None else None,
-        "di_minus": round(di_minus, 8) if di_minus is not None else None,
-        "di_gap": round(di_gap, 8) if di_gap is not None else None,
-        "di_abs_gap": round(di_abs_gap, 8) if di_abs_gap is not None else None,
-        "di_axis_distance": round(di_axis_distance, 8) if di_axis_distance is not None else None,
-        "di_plus_slope_3d": round(plus_slope, 8) if plus_slope is not None else None,
-        "di_minus_slope_3d": round(minus_slope, 8) if minus_slope is not None else None,
-        "di_gap_slope_3d": round(gap_slope, 8) if gap_slope is not None else None,
-        "adx": round(adx, 8) if adx is not None else None,
-        "adx_slope_3d": round(adx_slope, 8) if adx_slope is not None else None,
-        "adx_axis_zone": _adx_axis_zone(adx),
-        **step,
-        # Compatibility snapshot for archived v2 models. New v3 models train on the generic
-        # fields above; old v2 consumers may explicitly select these legacy
-        # exact-value categories.
-        "adx_step_direction_legacy": legacy_step.get("adx_step_direction"),
-        "adx_step_age_days_legacy": legacy_step.get("adx_step_age_days"),
-        "adx_step_age_bin_legacy": legacy_step.get("adx_step_age_bin"),
-        "adx_turn_event_legacy": legacy_step.get("adx_turn_event"),
-        "dmi_relation": relation,
-        "dmi_adx_regime": _dmi_adx_regime(relation, str(step.get("adx_step_direction") or "UNKNOWN")),
-        "dmi_adx_regime_legacy": _dmi_adx_regime(relation, str(legacy_step.get("adx_step_direction") or "UNKNOWN")),
-        "dmi_axis_zone": _dmi_axis_zone(di_plus, di_minus),
-        "dmi_cross_event": _cross_event(previous_dmi_relation, relation),
-        "dmi_cross_age_bars": int(max(1, dmi_relation_age_bars)),
-        "dmi_cross_age_bin": _bin_age(int(max(1, dmi_relation_age_bars))),
+        "cci": round(cci, 8) if cci is not None else None,
+        "cci_zone": zone,
+        "cci_distance_to_neg100": round(abs(cci + 100.0), 8) if cci is not None else None,
+        "cci_smoothing_ma": round(smoothing, 8) if smoothing is not None else None,
+        "cci_sma_gap": round(gap, 8) if gap is not None else None,
+        "cci_sma_relation": relation,
+        "cci_relation_age_days": int(relation_age),
+        "cci_relation_age_bin": _bin_age(max(1, relation_age)) if relation_age else "UNKNOWN",
+        "cci_cross_event": cross_event,
+        "cci_slope_3d": round(cci_slope, 8) if cci_slope is not None else None,
+        "cci_smoothing_slope_3d": round(smoothing_slope, 8) if smoothing_slope is not None else None,
+        "cci_smoothing_direction": smoothing_direction,
+        "cci_smoothing_age_days": int(smoothing_age),
+        "cci_smoothing_age_bin": _bin_age(max(1, smoothing_age)) if smoothing_age else "UNKNOWN",
+        "cci_smoothing_turn_event": _smoothing_turn(color_series),
+        "cci_cross_on_yellow": cross_on_yellow,
+        "cci_regime": (
+            f"{relation}_{smoothing_direction}"
+            if relation != "UNKNOWN" and smoothing_direction != "UNKNOWN"
+            else "UNKNOWN"
+        ),
     }
 
 
@@ -361,8 +237,6 @@ def extract_features(
     opportunity: dict[str, Any],
     previous_state: str | None,
     state_age_bars: int,
-    previous_dmi_relation: str | None = None,
-    dmi_relation_age_bars: int = 1,
 ) -> dict[str, Any]:
     current = opportunity.get("current") or {}
     midline = opportunity.get("midline") or {}
@@ -389,5 +263,5 @@ def extract_features(
         "higher_low_base": bool(base_quality.get("qualified", False)),
         "purple2_passed": str(opportunity.get("trigger_stage") or "T0") == "T2",
     }
-    features.update(_dmi_features(record, previous_dmi_relation, dmi_relation_age_bars))
+    features.update(_cci_features(record))
     return features

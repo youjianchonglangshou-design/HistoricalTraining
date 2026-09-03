@@ -27,56 +27,47 @@ FEATURE_LEVELS = [
     ["midline_state", "bandpos_bin", "trigger_stage", "bandwidth_trend", "state_age_bin"],
 ]
 
-DMI_EXPERT_VERSION = "DMI-EXPERT-v3-ADX-1DP-STICKY"
-DMI_QUANTILE_FIELDS = {
-    "di_abs_gap": "di_abs_gap_q",
-    "di_axis_distance": "di_axis_distance_q",
-    "di_plus_slope_3d": "di_plus_slope_q",
-    "di_minus_slope_3d": "di_minus_slope_q",
-    "di_gap_slope_3d": "di_gap_slope_q",
-    "adx": "adx_q",
-    "adx_slope_3d": "adx_slope_q",
+CCI_EXPERT_VERSION = "CCI-EXPERT-v1-HLC3-20-SMA14"
+CCI_QUANTILE_FIELDS = {
+    "cci_sma_gap": "cci_sma_gap_q",
+    "cci_slope_3d": "cci_slope_q",
+    "cci_smoothing_slope_3d": "cci_smoothing_slope_q",
+    "cci_distance_to_neg100": "cci_distance_to_neg100_q",
+    "midline_slope_5d": "bb_midline_slope_q",
+    "midline_improvement": "bb_midline_improvement_q",
 }
 
-# DMI is deliberately a separate correction layer instead of Level 6/7/8...
-# This keeps sample sizes healthy and lets the learner discover several kinds of
-# DMI evidence independently: who leads/where relative to 20, recent crossover
-# motion, line convergence/divergence, and ADX trend strength.
-DMI_EXPERT_FACETS = [
+# CCI remains an independent correction layer instead of redefining S0.5/S1/S2/S3.
+# The learner sees position, cross timing, smoothing direction, BB midline context
+# and HA context independently, so historical outcomes decide which combinations
+# matter. The -100 region is represented explicitly as location, not hard-coded
+# as a bullish rule.
+CCI_EXPERT_FACETS = [
     {
-        "name": "lead_axis",
-        "fields": ["dmi_relation", "dmi_axis_zone", "di_axis_distance_q"],
+        "name": "position_cross",
+        "fields": ["cci_zone", "cci_cross_event", "cci_sma_relation"],
     },
     {
-        "name": "cross_momentum",
-        "fields": ["dmi_relation", "dmi_cross_age_bin", "di_gap_slope_q"],
+        "name": "smoothing_step",
+        "fields": ["cci_smoothing_direction", "cci_smoothing_age_bin", "cci_smoothing_turn_event"],
     },
     {
-        "name": "line_motion",
-        "fields": ["dmi_relation", "di_plus_slope_q", "di_minus_slope_q"],
+        "name": "momentum",
+        "fields": ["cci_zone", "cci_slope_q", "cci_sma_gap_q"],
     },
     {
-        "name": "trend_strength",
-        "fields": ["dmi_relation", "di_abs_gap_q", "adx_q", "adx_slope_q"],
-    },
-    # v2 ADX Step Regime: model the exact red/green stepline language used in
-    # SStateMarketTerminal. These remain independent facets so S0.5/S1/S2/S3
-    # can learn different meanings without exploding the Level 1-5 hierarchy.
-    {
-        "name": "adx_step_regime",
-        "fields": ["dmi_adx_regime", "adx_axis_zone"],
+        "name": "bb_slope_context",
+        "fields": ["cci_zone", "cci_cross_event", "bb_midline_slope_q", "bb_midline_improvement_q"],
     },
     {
-        "name": "adx_step_persistence",
-        "fields": ["dmi_adx_regime", "adx_step_age_bin"],
+        "name": "right_side_confirm",
+        "fields": ["cci_cross_on_yellow", "cci_smoothing_direction", "ha_color", "current_run_bin"],
     },
     {
-        "name": "adx_turn_handover",
-        "fields": ["dmi_relation", "dmi_cross_age_bin", "adx_turn_event"],
+        "name": "cci_regime",
+        "fields": ["cci_regime", "cci_smoothing_slope_q", "bb_midline_slope_q"],
     },
 ]
-
-ADX_STEP_FACET_NAMES = {"adx_step_regime", "adx_step_persistence", "adx_turn_handover"}
 
 
 def _wilson(wins: int, total: int, z: float = 1.96) -> tuple[float, float]:
@@ -226,15 +217,15 @@ def _quantile(values: list[float], q: float) -> float:
     return ordered[low] * (1.0 - weight) + ordered[high] * weight
 
 
-def _build_dmi_binning(group: list[dict[str, Any]]) -> dict[str, Any]:
-    """Learn state-specific tercile cuts from raw DMI values.
+def _build_cci_binning(group: list[dict[str, Any]]) -> dict[str, Any]:
+    """Learn state-specific tercile cuts from raw CCI/context values.
 
-    No bullish/bearish threshold is hard-coded here.  The only fixed reference
-    is the indicator's own 20 axis, already represented by dmi_axis_zone.
-    Magnitude/slope/ADX buckets are learned from the historical distribution.
+    No bullish/bearish outcome is hard-coded here. CCI's visual -100 region is
+    kept as an explicit position feature, while magnitude/slope/context buckets
+    are learned from the historical distribution.
     """
     output: dict[str, Any] = {}
-    for raw_field, q_field in DMI_QUANTILE_FIELDS.items():
+    for raw_field, q_field in CCI_QUANTILE_FIELDS.items():
         values = []
         for case in group:
             value = _safe_float((case.get("features") or {}).get(raw_field))
@@ -251,9 +242,9 @@ def _build_dmi_binning(group: list[dict[str, Any]]) -> dict[str, Any]:
     return output
 
 
-def _apply_dmi_binning(features: dict[str, Any], binning: dict[str, Any]) -> dict[str, Any]:
+def _apply_cci_binning(features: dict[str, Any], binning: dict[str, Any]) -> dict[str, Any]:
     enriched = dict(features)
-    for raw_field, q_field in DMI_QUANTILE_FIELDS.items():
+    for raw_field, q_field in CCI_QUANTILE_FIELDS.items():
         value = _safe_float(features.get(raw_field))
         node = binning.get(raw_field) or {}
         q33 = _safe_float(node.get("q33"))
@@ -323,16 +314,16 @@ def _lookup_base_rule(
     }
 
 
-def _lookup_dmi_facets(
+def _lookup_cci_facets(
     state_node: dict[str, Any],
     hnode: dict[str, Any],
     features: dict[str, Any],
     min_samples: int,
 ) -> list[dict[str, Any]]:
-    expert = hnode.get("dmi_expert") or {}
+    expert = hnode.get("cci_expert") or {}
     if not expert:
         return []
-    enriched = _apply_dmi_binning(features, state_node.get("dmi_binning") or {})
+    enriched = _apply_cci_binning(features, state_node.get("cci_binning") or {})
     matches: list[dict[str, Any]] = []
     for facet in expert.get("facets") or []:
         fields = list(facet.get("fields") or [])
@@ -349,16 +340,16 @@ def _lookup_dmi_facets(
     return matches
 
 
-def _combine_with_dmi(
+def _combine_with_cci(
     base_node: dict[str, Any],
     baseline_node: dict[str, Any],
-    dmi_matches: list[dict[str, Any]],
+    cci_matches: list[dict[str, Any]],
     *,
     prior_strength: float,
     raw: bool = False,
 ) -> tuple[dict[str, float], float, list[dict[str, Any]]]:
     base_probs = _outcome_probs(base_node, raw=raw)
-    if not dmi_matches:
+    if not cci_matches:
         return base_probs, 0.0, []
 
     baseline_probs = _outcome_probs(baseline_node, raw=raw)
@@ -367,7 +358,7 @@ def _combine_with_dmi(
     weights: list[float] = []
     audit: list[dict[str, Any]] = []
 
-    for match in dmi_matches:
+    for match in cci_matches:
         rule = match["rule"]
         n = int(rule.get("samples", 0))
         reliability = n / (n + max(1.0, float(prior_strength)))
@@ -393,7 +384,7 @@ def _combine_with_dmi(
 
     # Facets overlap, so do not multiply all likelihood ratios at full strength.
     # Use their reliability-weighted geometric mean, then let the average
-    # reliability control how strongly DMI can move the original BB/HA model.
+    # reliability controls how strongly CCI can move the original BB/HA model.
     blend_strength = min(1.0, weight_sum / len(weights))
     logs: dict[str, float] = {}
     for key in OUTCOME_KEYS:
@@ -411,21 +402,21 @@ def _prediction_payload(
     base_node: dict[str, Any],
     base_meta: dict[str, Any],
     baseline_node: dict[str, Any],
-    dmi_matches: list[dict[str, Any]],
+    cci_matches: list[dict[str, Any]],
     *,
     prior_strength: float,
 ) -> dict[str, Any]:
-    combined, blend_strength, audit = _combine_with_dmi(
+    combined, blend_strength, audit = _combine_with_cci(
         base_node,
         baseline_node,
-        dmi_matches,
+        cci_matches,
         prior_strength=prior_strength,
         raw=False,
     )
-    raw_combined, _, _ = _combine_with_dmi(
+    raw_combined, _, _ = _combine_with_cci(
         base_node,
         baseline_node,
-        dmi_matches,
+        cci_matches,
         prior_strength=prior_strength,
         raw=True,
     )
@@ -457,9 +448,9 @@ def _prediction_payload(
         "true_fail_probability": float(combined[OUTCOME_FAIL]),
         "other_probability": float(combined[OUTCOME_OTHER]),
         "late_success_4_7d": base_node.get("late_success_4_7d"),
-        "dmi_expert": {
-            "available": bool(dmi_matches),
-            "version": DMI_EXPERT_VERSION,
+        "cci_expert": {
+            "available": bool(cci_matches),
+            "version": CCI_EXPERT_VERSION,
             "matched_facets": audit,
             "matched_facet_count": len(audit),
             "blend_strength": round(blend_strength, 6),
@@ -482,13 +473,13 @@ def build_model(
             if str(h) in case.get("labels", {}):
                 by_state_h[(state, h)].append(case)
 
-    dmi_binning_by_state = {
-        state: _build_dmi_binning(group)
+    cci_binning_by_state = {
+        state: _build_cci_binning(group)
         for state, group in by_state.items()
     }
 
     model: dict[str, Any] = {
-        "schema_version": 3,
+        "schema_version": 4,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "engine_contract": "S-state rules fixed; probability/outcome parameters evolve in JSON",
         "settlement_contract": "POST_CLOSE_DAILY_ROUTE_V2: 12H is observation-only; 24H/48H/72H score only completed UTC daily closes (Taiwan 08:00). Settlement is route-aware: S1/S3 may expire to OTHER after successful upward expansion, and that must not be counted as failure.",
@@ -500,16 +491,15 @@ def build_model(
         "horizon_hours": {str(h): int(h * 4) for h in horizons},
         "primary_swing_horizon_bars": 18,
         "primary_swing_horizon_hours": 72,
-        "dmi_expert_contract": {
-            "version": DMI_EXPERT_VERSION,
-            "role": "Independent DMI evidence corrects the existing BB/HA/S-state probability; it never changes the S-state itself.",
-            "source_formula": "Pine-equivalent period14 recursive TR/DM smoothing; DI+/DI-; DX; ADX=SMA14(DX)",
-            "axis": 20,
-            "binning": "Per-state terciles learned from historical raw DMI values; no fixed bullish/bearish magnitude threshold.",
-            "adx_step_definition": "Terminal/Pine parity v3: round each daily ADX to 1 decimal first; rounded increase = RISING/green, rounded decrease = FALLING/red, rounded equality keeps the previous effective red/green direction. Production probability cases are sampled only after the daily candle is complete.",
-            "adx_step_semantics": "DI controller and ADX step direction are learned jointly per S-state. Green/red is not hard-coded bullish/bearish; PLUS_RISING, PLUS_FALLING, MINUS_RISING and MINUS_FALLING may have different outcomes in S0.5/S1/S2/S3.",
-            "facets": DMI_EXPERT_FACETS,
-            "adx_step_facets": sorted(ADX_STEP_FACET_NAMES),
+        "cci_expert_contract": {
+            "version": CCI_EXPERT_VERSION,
+            "role": "Independent CCI/SMA14 evidence corrects the existing BB/HA/S-state probability; it never changes the S-state itself.",
+            "source_formula": "TradingView parity: src=hlc3; CCI20=(src-SMA20(src))/(0.015*mean absolute deviation20); smoothingMA=SMA14(CCI).",
+            "reference_levels": [-100, 0, 100],
+            "smoothing_step_definition": "smoothingMA current > previous = YELLOW; current < previous = PURPLE; equality/unready = GRAY.",
+            "position_semantics": "CCI zones including -120..-80 are explicit research locations only; no zone/cross/smoothing color is hard-coded bullish or bearish.",
+            "bb_context": "The model receives both BB midline 5d slope and slope improvement so it can learn whether a still-falling but decelerating midline changes CCI outcomes.",
+            "facets": CCI_EXPERT_FACETS,
             "combiner": "Reliability-weighted geometric mean of facet likelihood ratios relative to the state baseline, applied as a conservative correction to the legacy BB/HA rule.",
         },
         "states": {},
@@ -525,15 +515,15 @@ def build_model(
             state,
             {
                 "target": group[0]["target"],
-                "dmi_binning": dmi_binning_by_state.get(state) or {},
+                "cci_binning": cci_binning_by_state.get(state) or {},
                 "horizons": {},
             },
         )
         horizon_node: dict[str, Any] = {
             "baseline": baseline_node,
             "levels": [],
-            "dmi_expert": {
-                "version": DMI_EXPERT_VERSION,
+            "cci_expert": {
+                "version": CCI_EXPERT_VERSION,
                 "facets": [],
             },
         }
@@ -559,13 +549,13 @@ def build_model(
             rules.sort(key=lambda r: (-int(r["samples"]), r["signature"]))
             horizon_node["levels"].append({"level": level_idx, "fields": fields, "rules": rules})
 
-        # DMI expert facets are intentionally independent, not cumulative levels.
-        binning = state_node.get("dmi_binning") or {}
-        for facet in DMI_EXPERT_FACETS:
+        # CCI expert facets are intentionally independent, not cumulative levels.
+        binning = state_node.get("cci_binning") or {}
+        for facet in CCI_EXPERT_FACETS:
             fields = list(facet["fields"])
             buckets: dict[str, list[dict[str, Any]]] = defaultdict(list)
             for case in group:
-                enriched = _apply_dmi_binning(case.get("features") or {}, binning)
+                enriched = _apply_cci_binning(case.get("features") or {}, binning)
                 buckets[_signature(enriched, fields)].append(case)
             rules = []
             for sig, bucket in buckets.items():
@@ -581,7 +571,7 @@ def build_model(
                 })
                 rules.append(node)
             rules.sort(key=lambda r: (-int(r["samples"]), r["signature"]))
-            horizon_node["dmi_expert"]["facets"].append({
+            horizon_node["cci_expert"]["facets"].append({
                 "name": facet["name"],
                 "fields": fields,
                 "rules": rules,
@@ -595,25 +585,8 @@ def build_model(
 
 
 def _features_for_model_version(model: dict[str, Any], features: dict[str, Any]) -> dict[str, Any]:
-    """Select the ADX Step semantic contract expected by the model.
-
-    Newly replayed v3 cases carry generic 1dp-sticky fields plus explicit
-    *_legacy v2 fields. This preserves exact legacy feature semantics for any archived v2 model while new v3 models use the generic 1dp Sticky fields.
-    """
-    output = dict(features or {})
-    version = str((model.get("dmi_expert_contract") or {}).get("version") or "")
-    if version == "DMI-EXPERT-v2-ADX-STEP" and output.get("adx_step_direction_legacy"):
-        mapping = {
-            "adx_step_direction": "adx_step_direction_legacy",
-            "adx_step_age_days": "adx_step_age_days_legacy",
-            "adx_step_age_bin": "adx_step_age_bin_legacy",
-            "adx_turn_event": "adx_turn_event_legacy",
-            "dmi_adx_regime": "dmi_adx_regime_legacy",
-        }
-        for target, source in mapping.items():
-            if output.get(source) is not None:
-                output[target] = output.get(source)
-    return output
+    """CCI v1 has one production feature contract; keep a tiny bridge hook."""
+    return dict(features or {})
 
 
 def lookup_probability(model: dict[str, Any], state: str, horizon: int, features: dict[str, Any]) -> dict[str, Any]:
@@ -628,9 +601,9 @@ def lookup_probability(model: dict[str, Any], state: str, horizon: int, features
     min_samples = int(model.get("default_min_samples", 50))
     base_node, base_meta = _lookup_base_rule(hnode, model_features, min_samples)
 
-    # Schema v1/v2 and any model without DMI remain exactly backward-compatible.
-    dmi_matches = _lookup_dmi_facets(state_node, hnode, model_features, min_samples)
-    if not dmi_matches:
+    # Any model without CCI expert evidence falls back to the original BB/HA/S-state rule.
+    cci_matches = _lookup_cci_facets(state_node, hnode, model_features, min_samples)
+    if not cci_matches:
         return {
             "available": True,
             "probability": float(base_node["probability"]),
@@ -647,9 +620,9 @@ def lookup_probability(model: dict[str, Any], state: str, horizon: int, features
             "true_fail_probability": float(base_node.get("true_fail_probability", 0.0)),
             "other_probability": float(base_node.get("other_probability", 0.0)),
             "late_success_4_7d": base_node.get("late_success_4_7d"),
-            "dmi_expert": {
+            "cci_expert": {
                 "available": False,
-                "version": (model.get("dmi_expert_contract") or {}).get("version"),
+                "version": (model.get("cci_expert_contract") or {}).get("version"),
                 "matched_facets": [],
                 "matched_facet_count": 0,
                 "blend_strength": 0.0,
@@ -660,7 +633,7 @@ def lookup_probability(model: dict[str, Any], state: str, horizon: int, features
         base_node,
         base_meta,
         hnode["baseline"],
-        dmi_matches,
+        cci_matches,
         prior_strength=float(model.get("prior_strength", 20.0)),
     )
 
