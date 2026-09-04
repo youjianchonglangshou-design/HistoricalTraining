@@ -1,4 +1,4 @@
-name: Manual Historical S-state CCI Full Rebuild v3.7.1
+name: Manual Historical CCI PRIMARY Path Full Rebuild v3.8.0
 
 on:
   workflow_dispatch:
@@ -66,7 +66,7 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
 
-      - name: Historical replay + CCI20 / SMA14 Expert model
+      - name: Historical replay + CCI PRIMARY path-tree (Crypto + US-stock)
         shell: bash
         run: |
           EXTRA=""
@@ -82,12 +82,26 @@ jobs:
           model_id=str(m.get('model_id') or '')
           if not model_id:
               raise SystemExit('model_id missing')
-          if int(m.get('schema_version') or 0) != 4:
-              raise SystemExit('schema_version must be 4')
-          version=str((m.get('cci_expert_contract') or {}).get('version') or '')
-          if version != 'CCI-EXPERT-v1-HLC3-20-SMA14':
-              raise SystemExit(f'CCI Expert contract mismatch: {version}')
-          print('New CCI Champion:', model_id)
+          if int(m.get('schema_version') or 0) != 5:
+              raise SystemExit('schema_version must be 5')
+          version=str((m.get('cci_primary_contract') or {}).get('version') or '')
+          if version != 'CCI-PRIMARY-v2-PATH-TREE-HLC3-20-SMA14':
+              raise SystemExit(f'CCI PRIMARY contract mismatch: {version}')
+          for state in ('S0.5','S1','S2','S3'):
+              h=(((m.get('states') or {}).get(state) or {}).get('horizons') or {}).get('18') or {}
+              if not isinstance(h.get('path_tree'), dict):
+                  raise SystemExit(f'{state} 72H path_tree missing')
+              if h.get('levels'):
+                  raise SystemExit(f'{state} still contains legacy Level probability rules')
+          report=json.load(open('reports/training_report.json', encoding='utf-8'))
+          if int(report.get('successful_us_stock_symbol_count') or 0) <= 0:
+              raise SystemExit('US-stock/RWA historical replay produced no successful symbols')
+          if int(report.get('us_stock_case_count') or 0) <= 0:
+              raise SystemExit('US-stock/RWA historical replay produced no supervised cases')
+          print('Training symbols:', report.get('symbol_count'), 'crypto cases:', report.get('crypto_case_count'), 'US-stock cases:', report.get('us_stock_case_count'))
+          wf=report.get('walk_forward') or {}
+          print('Walk-forward holdout:', (wf.get('holdout') or {}))
+          print('New CCI PRIMARY Champion:', model_id)
           with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
               f.write('NEW_MODEL_ID=' + model_id + '\n')
           PY
@@ -131,7 +145,7 @@ jobs:
               'evolution_policy_version': 'EVOLUTION-POLICY-v1',
               'settlement_contract': 'POST_CLOSE_DAILY_ROUTE_V2',
               'checkpoint_taiwan': '08:25',
-              'reset_reason': 'CCI_CHAMPION_FULL_REBUILD',
+              'reset_reason': 'CCI_PRIMARY_PATH_FULL_REBUILD',
           })
 
           # Empty rows = this Champion starts from 0 recent exams. Previous generation
@@ -169,7 +183,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No learned-data changes."
           else
-            git commit -m "training: promote CCI20 SMA14 full rebuild as new Champion"
+            git commit -m "training: promote CCI PRIMARY path-tree full rebuild as new Champion"
             git fetch origin main
             git rebase origin/main
             git push origin HEAD:main
@@ -226,7 +240,7 @@ jobs:
           print('Fresh snapshots  :', snapshots)
           print('Fresh recent rows:', recent)
           if got != expected:
-              raise SystemExit('New CCI Champion publish verification failed')
+              raise SystemExit('New CCI PRIMARY Champion publish verification failed')
           if snapshots != 0 or recent != 0:
               raise SystemExit('Champion recent performance was not cleared')
           PY
