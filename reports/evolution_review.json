@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
-  "champion_model_id": "cab21fa6195f0b6c",
-  "generation": 2,
+  "champion_model_id": "e321f6d35445798b",
+  "generation": 3,
   "settled_72h": 0,
   "legacy_excluded": 0,
   "minimum_settled_72h": 120,
@@ -17,9 +17,9 @@
   },
   "state_review": {
     "S0.5": {
-      "snapshots": 29,
+      "snapshots": 0,
       "settled_72h": 0,
-      "pending_72h": 29,
+      "pending_72h": 0,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -31,9 +31,9 @@
       "other_rate": null
     },
     "S1": {
-      "snapshots": 15,
+      "snapshots": 0,
       "settled_72h": 0,
-      "pending_72h": 15,
+      "pending_72h": 0,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -45,9 +45,9 @@
       "other_rate": null
     },
     "S2": {
-      "snapshots": 20,
+      "snapshots": 0,
       "settled_72h": 0,
-      "pending_72h": 20,
+      "pending_72h": 0,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -59,9 +59,9 @@
       "other_rate": null
     },
     "S3": {
-      "snapshots": 33,
+      "snapshots": 0,
       "settled_72h": 0,
-      "pending_72h": 33,
+      "pending_72h": 0,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -75,9 +75,9 @@
   },
   "market_review": {
     "CRYPTO": {
-      "snapshots": 43,
+      "snapshots": 0,
       "settled_72h": 0,
-      "pending_72h": 43,
+      "pending_72h": 0,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -89,9 +89,9 @@
       "other_rate": null
     },
     "US_STOCK": {
-      "snapshots": 54,
+      "snapshots": 0,
       "settled_72h": 0,
-      "pending_72h": 54,
+      "pending_72h": 0,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -108,7 +108,11 @@
     "state": {},
     "market": {},
     "state_regime": {},
-    "state_turn": {}
+    "state_turn": {},
+    "state_cross_cycle": {},
+    "state_midline_phase": {},
+    "state_retest": {},
+    "state_divergence": {}
   },
   "overconfident_failures": [],
   "next_action": "keep_collecting_frozen_settlements"

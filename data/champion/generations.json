@@ -14,5 +14,21 @@
     "checkpoint_taiwan": "08:25",
     "ended_at": "2026-09-03T17:41:06.288525+00:00",
     "end_reason": "active_champion_changed"
+  },
+  {
+    "schema_version": 1,
+    "generation": 2,
+    "champion_model_id": "cab21fa6195f0b6c",
+    "started_at": "2026-09-03T17:41:06.288525+00:00",
+    "evolution_min_settled_72h": 120,
+    "frozen_live_reinforcement_weight": 10,
+    "ledger_source": "R2 champion/ledger/GENxxx/YYYY-MM-DD.json",
+    "ledger_recent_cache_days": 90,
+    "evolution_policy_version": "EVOLUTION-POLICY-v1",
+    "settlement_contract": "POST_CLOSE_DAILY_ROUTE_V2",
+    "checkpoint_taiwan": "08:25",
+    "reset_reason": "CCI_CHAMPION_FULL_REBUILD",
+    "ended_at": "2026-09-04T02:25:32.822248+00:00",
+    "end_reason": "active_champion_changed"
   }
 ]

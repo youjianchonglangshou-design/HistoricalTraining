@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "policy_version": "EVOLUTION-POLICY-v1",
-  "policy_id": "EVOLUTION-POLICY-v1-GEN002-0",
+  "policy_id": "EVOLUTION-POLICY-v1-GEN003-0",
   "active_for_next_training": false,
   "source_review": {
-    "champion_model_id": "cab21fa6195f0b6c",
-    "generation": 2,
+    "champion_model_id": "e321f6d35445798b",
+    "generation": 3,
     "settled_72h": 0,
     "minimum_settled_72h": 120
   },
