@@ -44,14 +44,24 @@ def _update_daily(current: dict[str, float], row: dict[str, Any]) -> None:
 
 def _timeline_features(features: dict[str, Any], market_type: str) -> dict[str, Any]:
     keys = [
-        "midline_state", "midline_slope_5d", "midline_improvement", "bandpos", "bandpos_bin",
-        "trigger_stage", "bandwidth_trend", "bandwidth_delta_3d", "state_age_bars", "state_age_bin",
-        "ha_color", "current_run_length", "current_run_bin",
-        "cci", "cci_zone", "cci_distance_to_neg100", "cci_smoothing_ma", "cci_sma_gap",
-        "cci_sma_relation", "cci_relation_age_days", "cci_relation_age_bin", "cci_cross_event",
-        "cci_slope_3d", "cci_smoothing_slope_3d", "cci_smoothing_direction",
-        "cci_smoothing_age_days", "cci_smoothing_age_bin", "cci_smoothing_turn_event",
-        "cci_cross_on_yellow", "cci_regime",
+        "midline_state", "midline_slope_5d", "midline_improvement",
+        "midline_path_phase", "midline_slope_1d", "midline_slope_3d", "midline_slope_change_3d",
+        "bandpos", "bandpos_bin", "trigger_stage", "bandwidth_trend", "bandwidth_delta_3d",
+        "state_age_bars", "state_age_bin", "ha_color", "current_run_length", "current_run_bin",
+        "cci", "cci_zone", "cci_distance_to_neg100", "cci_distance_to_zero",
+        "cci_smoothing_ma", "cci_sma_gap", "cci_sma_relation",
+        "cci_relation_age_days", "cci_relation_age_bin", "cci_cross_event", "cci_cross_cycle",
+        "cci_days_since_last_cross", "cci_last_cross_type", "cci_last_cross_zone",
+        "cci_last_cross_value", "cci_last_cross_sma_direction", "cci_last_cross_midline_phase",
+        "cci_previous_same_cross_zone", "cci_previous_same_cross_value",
+        "cci_up_cross_count_21d", "cci_down_cross_count_21d",
+        "cci_up_cross_count_bin", "cci_down_cross_count_bin",
+        "cci_gap_motion", "cci_gap_velocity_1d", "cci_gap_acceleration", "cci_retest_state",
+        "cci_slope_1d", "cci_slope_2d", "cci_slope_3d", "cci_acceleration",
+        "cci_smoothing_slope_1d", "cci_smoothing_slope_3d",
+        "cci_smoothing_direction", "cci_smoothing_age_days", "cci_smoothing_age_bin",
+        "cci_smoothing_turn_event", "cci_cross_on_yellow", "cci_regime",
+        "cci_divergence", "price_high_delta_pct", "cci_high_delta", "price_low_delta_pct", "cci_low_delta",
     ]
     out = {key: features.get(key) for key in keys}
     out["market_type"] = market_type
@@ -83,7 +93,6 @@ def replay_symbol(
 
     market_type = str(market_type or "CRYPTO").upper()
     rows = sorted(rows_4h, key=lambda x: int(x["time"]))
-    snapshots: list[dict[str, Any] | None] = [None] * len(rows)
     daily_points: list[dict[str, Any]] = []
 
     completed_days: list[dict[str, float]] = []
@@ -114,24 +123,18 @@ def replay_symbol(
         state = str(opportunity.get("market_state_id") or "OTHER")
         state_age = state_age + 1 if state == previous_state else 1
 
-        features = extract_features(
-            record,
-            opportunity,
-            previous_state,
-            state_age,
-        )
-        features["market_type"] = market_type
-        bandpos = float((opportunity.get("current") or {}).get("ha_band_position", 0.5) or 0.5)
-        snap = {
-            "state": state,
-            "features": features,
-            "bandpos": bandpos,
-            "price": float(record["_price"]),
-        }
-        snapshots[idx] = snap
-
         next_day_key = utc_day_start_ms(int(rows[idx + 1]["time"])) if idx + 1 < len(rows) else None
         if next_day_key != day_key:
+            # Expensive path features are only needed for the formal completed-daily
+            # decision point. State age still updates every 4H above, preserving live parity.
+            features = extract_features(
+                record,
+                opportunity,
+                previous_state,
+                state_age,
+            )
+            features["market_type"] = market_type
+            bandpos = float((opportunity.get("current") or {}).get("ha_band_position", 0.5) or 0.5)
             # The row timestamp is the OPEN of the last 4H candle. Once its OHLC
             # is present, the completed daily close is the next UTC midnight,
             # which is Taiwan 08:00.

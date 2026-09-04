@@ -161,6 +161,7 @@ class ChampionLearningTests(unittest.TestCase):
                     "other_probability": 0.07,
                     "matched_samples": 321,
                     "level": 5,
+                    "cci_primary": {"version": "CCI-PRIMARY-v2-PATH-TREE-HLC3-20-SMA14", "depth": 5},
                 },
             },
         }
@@ -177,6 +178,7 @@ class ChampionLearningTests(unittest.TestCase):
         self.assertEqual(frozen["decision_time"], expected_ms)
         self.assertEqual(frozen["prediction"]["success_probability"], 0.67)
         self.assertEqual(frozen["prediction"]["true_fail_probability"], 0.14)
+        self.assertEqual(frozen["prediction"]["cci_primary"]["depth"], 5)
         self.assertEqual(frozen["checkpoint_time_tw"], "2026-09-01T08:25:08+08:00")
 
     def test_checkpoint_from_wrong_model_is_not_misattributed(self):
@@ -276,7 +278,7 @@ class ChampionLearningTests(unittest.TestCase):
             {
                 "generation": 1, "champion_model_id": "A", "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT", "official_scoring": True, "market_type": "CRYPTO",
                 "symbol": "BTC", "decision_time": 1000, "decision_date_tw": "2026-09-01",
-                "state": "S0.5", "features": {"cci_regime": "ABOVE_YELLOW", "cci_smoothing_turn_event": "PURPLE_TO_YELLOW"},
+                "state": "S0.5", "features": {"cci_regime": "ABOVE_YELLOW", "cci_smoothing_turn_event": "PURPLE_TO_YELLOW", "cci_cross_cycle": "UP_SECOND_PLUS_21D", "midline_path_phase": "FALLING_IMPROVE", "cci_retest_state": "YELLOW_RETEST_NEAR_SMA", "cci_divergence": "NONE"},
                 "prediction": {"success_probability": 0.80},
                 "settlements": {"72H": {"status": "SETTLED", "outcome": OUTCOME_FAIL}},
                 "final_outcome": OUTCOME_FAIL, "final_settled": True,
@@ -284,7 +286,7 @@ class ChampionLearningTests(unittest.TestCase):
             {
                 "generation": 1, "champion_model_id": "A", "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT", "official_scoring": True, "market_type": "CRYPTO",
                 "symbol": "ETH", "decision_time": 2000, "decision_date_tw": "2026-09-01",
-                "state": "S0.5", "features": {"cci_regime": "ABOVE_YELLOW", "cci_smoothing_turn_event": "PURPLE_TO_YELLOW"},
+                "state": "S0.5", "features": {"cci_regime": "ABOVE_YELLOW", "cci_smoothing_turn_event": "PURPLE_TO_YELLOW", "cci_cross_cycle": "UP_SECOND_PLUS_21D", "midline_path_phase": "FALLING_IMPROVE", "cci_retest_state": "YELLOW_RETEST_NEAR_SMA", "cci_divergence": "NONE"},
                 "prediction": {"success_probability": 0.75},
                 "settlements": {"72H": {"status": "SETTLED", "outcome": OUTCOME_FAIL}},
                 "final_outcome": OUTCOME_FAIL, "final_settled": True,

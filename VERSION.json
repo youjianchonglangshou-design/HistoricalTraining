@@ -1,24 +1,24 @@
 {
-  "version": "3.7.2",
-  "label": "CCI20 + SMA14 Champion — manual checkpoint date repair",
-  "champion_baseline": "ACTION_GENERATES_NEW_CCI_CHAMPION",
+  "version": "3.8.0",
+  "label": "CCI PRIMARY Path Tree — cross memory / retest / divergence / Crypto+US-stock",
+  "champion_baseline": "ACTION_GENERATES_NEW_CCI_PRIMARY_CHAMPION",
   "daily_review_taiwan": "08:25",
   "daily_review_cron_utc": "25 0 * * *",
   "evolution_min_settled_72h": 120,
   "challenger_flow": false,
   "frozen_live_reinforcement_weight": 10,
-  "markets": [
-    "CRYPTO",
-    "US_STOCK"
-  ],
-  "generation_rule": "Manual Historical CCI Full Rebuild immediately promotes the generated model as a fresh Champion generation; later each Champion evolves once after 120 new 72H Frozen settlements.",
+  "markets": ["CRYPTO", "US_STOCK"],
+  "generation_rule": "Manual Historical CCI PRIMARY Full Rebuild immediately promotes the generated Schema 5 model as a fresh Champion generation; later each Champion evolves after 120 new 72H Frozen settlements.",
   "schedule_owner": "Cloudflare Worker",
   "checkpoint_taiwan": "08:25",
   "checkpoint_source": "SStateMarketTerminal R2 runs/champion/YYYY-MM-DD_0825",
-  "cci_contract": "CCI-EXPERT-v1-HLC3-20-SMA14",
+  "cci_contract": "CCI-PRIMARY-v2-PATH-TREE-HLC3-20-SMA14",
   "cci_formula": "hlc3 -> CCI20 -> SMA14 smoothingMA; yellow if smoothing rises, purple if it falls.",
+  "primary_model_rule": "S-state only selects the target/question. CCI/SMA path memory + BB midline path + HA context directly supplies the 4-way probability; the legacy BB/HA Level 1-5 probability base is removed from Schema 5.",
+  "path_memory": "30 daily points: first/second cross cycle, days since cross, cross location, cross-time midline phase, approaching/separating gap, yellow/purple retest/reclaim, slopes/acceleration, divergence and HA context.",
+  "all_training_symbols": "ALL = current Crypto EXAM_SYMBOLS + all currently unlocked Pionex US-stock/RWA symbols.",
   "reset_rule": "A manual full rebuild starts a new Champion generation with 0 recent snapshots/recent_records while retaining closed generation history separately.",
   "settlement_contract": "POST_CLOSE_DAILY_ROUTE_V2: 12H observation-only; 24H/48H/72H use completed daily checkpoints.",
-  "historical_training_contract": "Historical replay and live settlement use the same completed-daily-close target logic; CCI is learned as an independent correction layer without changing S-state definitions.",
-  "manual_checkpoint_repair": "Daily Champion workflow accepts checkpoint_date_tw so an already-stored R2 checkpoint can be frozen as the requested exam date."
+  "walk_forward": "Chronological 70/15/15 diagnostic reports Brier/calibration on unseen validation and holdout periods; production Champion is then rebuilt on all available cases.",
+  "manual_checkpoint_repair": "Daily Champion workflow still accepts checkpoint_date_tw for exact-date repair. After replacing the Champion, the old-model 08:25 checkpoint must not be reused; rerun Terminal Auto Market Batch for that date with the new Active model."
 }

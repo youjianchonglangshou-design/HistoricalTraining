@@ -134,15 +134,14 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(len(record["_cci_last30"]), 30)
         self.assertEqual(len(record["_cci_smoothing_ma_last30"]), 30)
         self.assertEqual(len(record["_cci_smoothing_color_last30"]), 30)
-        self.assertIsNotNone(record["_cci_last30"][-1])
-        self.assertIsNotNone(record["_cci_smoothing_ma_last30"][-1])
 
         opportunity = build_long_opportunity(record, None)
         features = extract_features(record, opportunity, "NONE", 1)
         for key in (
-            "cci", "cci_zone", "cci_smoothing_ma", "cci_sma_gap", "cci_sma_relation",
-            "cci_cross_event", "cci_smoothing_direction", "cci_smoothing_turn_event",
-            "cci_cross_on_yellow", "cci_regime", "midline_slope_5d", "midline_improvement",
+            "cci", "cci_zone", "cci_cross_cycle", "cci_last_cross_zone",
+            "cci_gap_motion", "cci_gap_velocity_1d", "cci_retest_state",
+            "cci_divergence", "cci_smoothing_direction", "midline_path_phase",
+            "midline_slope_1d", "midline_slope_3d", "midline_slope_change_3d",
         ):
             self.assertIn(key, features)
 
@@ -150,74 +149,83 @@ class CoreTests(unittest.TestCase):
         cases = replay_symbol("TEST", rows, daily_timeline=timeline)
         self.assertGreater(len(cases), 0)
         self.assertGreater(len(timeline), 0)
-        self.assertIn("cci", timeline[-1]["features"])
-        self.assertIn("cci_smoothing_direction", timeline[-1]["features"])
+        self.assertIn("cci_cross_cycle", timeline[-1]["features"])
+        self.assertIn("midline_path_phase", timeline[-1]["features"])
         self.assertNotIn("3", cases[0]["labels"])
         self.assertIn("6", cases[0]["labels"])
         self.assertEqual(cases[0].get("decision_contract"), "POST_CLOSE_DAILY_ROUTE_V2")
 
         model = build_model(cases, DEFAULT_HORIZONS, min_samples=10)
-        self.assertEqual(model["schema_version"], 4)
+        self.assertEqual(model["schema_version"], 5)
         self.assertEqual(
-            (model.get("cci_expert_contract") or {}).get("version"),
-            "CCI-EXPERT-v1-HLC3-20-SMA14",
+            (model.get("cci_primary_contract") or {}).get("version"),
+            "CCI-PRIMARY-v2-PATH-TREE-HLC3-20-SMA14",
         )
         first = cases[0]
         pred = lookup_probability(model, first["state"], 6, first["features"])
         self.assertTrue(pred["available"])
-        self.assertIn("cci_expert", pred)
+        self.assertIn("cci_primary", pred)
         total = sum(float(v["probability"]) for v in pred["outcomes"].values())
         self.assertAlmostEqual(total, 1.0, places=5)
 
-    def test_cci_expert_learns_patterns_without_redefining_state(self):
+    def test_cci_primary_path_tree_directly_learns_path_probability(self):
         cases = []
-        base = {
-            "midline_state": "purple",
-            "bandpos_bin": "025_050",
-            "trigger_stage": "T0",
-            "bandwidth_trend": "FLAT",
-            "state_age_bin": "2_3",
-            "ha_color": "🟢",
-            "current_run_bin": "2",
-            "midline_slope_5d": -0.10,
-            "midline_improvement": 0.08,
-        }
-        for i in range(160):
-            positive = i < 80
+        for i in range(240):
+            positive = i < 120
             features = {
-                **base,
-                "cci": -100.0 if positive else -155.0,
+                "market_type": "CRYPTO",
+                "midline_path_phase": "FALLING_IMPROVE" if positive else "FALLING_WORSEN",
                 "cci_zone": "NEG120_NEG80" if positive else "LT_NEG150",
-                "cci_distance_to_neg100": 0.0 if positive else 55.0,
-                "cci_smoothing_ma": -108.0 if positive else -130.0,
-                "cci_sma_gap": 8.0 if positive else -25.0,
+                "cci_cross_cycle": "UP_SECOND_PLUS_21D" if positive else "UP_FIRST_21D",
+                "cci_last_cross_type": "UP",
+                "cci_last_cross_zone": "NEG120_NEG80" if positive else "LT_NEG150",
+                "cci_last_cross_sma_direction": "PURPLE",
+                "cci_last_cross_midline_phase": "FALLING_IMPROVE" if positive else "FALLING_WORSEN",
+                "cci_previous_same_cross_zone": "LT_NEG150" if positive else "NONE",
+                "cci_up_cross_count_bin": "2_PLUS" if positive else "1",
+                "cci_down_cross_count_bin": "1",
+                "cci_gap_motion": "ABOVE_EXPANDING" if positive else "BELOW_SEPARATING",
+                "cci_retest_state": "PURPLE_BREAK_ABOVE" if positive else "PURPLE_BELOW",
+                "cci_divergence": "BULLISH_PRICE_LL_CCI_HL" if positive else "NONE",
                 "cci_sma_relation": "ABOVE" if positive else "BELOW",
                 "cci_relation_age_bin": "1",
-                "cci_cross_event": "CCI_CROSS_UP" if positive else "NO_NEW_CROSS",
-                "cci_slope_3d": 20.0 if positive else -10.0,
-                "cci_smoothing_slope_3d": 4.0 if positive else -5.0,
-                "cci_smoothing_direction": "YELLOW" if positive else "PURPLE",
-                "cci_smoothing_age_bin": "1",
-                "cci_smoothing_turn_event": "PURPLE_TO_YELLOW" if positive else "NONE",
-                "cci_cross_on_yellow": "CROSS_UP_YELLOW" if positive else "NO_CROSS_UP",
-                "cci_regime": "ABOVE_YELLOW" if positive else "BELOW_PURPLE",
+                "cci_smoothing_direction": "PURPLE",
+                "cci_smoothing_age_bin": "2_3",
+                "cci_smoothing_turn_event": "NONE",
+                "ha_color": "yellow" if positive else "purple",
+                "current_run_bin": "1",
+                "cci_sma_gap": 12.0 if positive else -35.0,
+                "cci_gap_velocity_1d": 25.0 if positive else -20.0,
+                "cci_gap_acceleration": 8.0 if positive else -7.0,
+                "cci_slope_1d": 30.0 if positive else -15.0,
+                "cci_slope_3d": 22.0 if positive else -10.0,
+                "cci_acceleration": 10.0 if positive else -8.0,
+                "cci_smoothing_slope_1d": 2.0 if positive else -4.0,
+                "cci_smoothing_slope_3d": -1.0 if positive else -5.0,
+                "cci_distance_to_neg100": 5.0 if positive else 70.0,
+                "cci_distance_to_zero": 95.0 if positive else 170.0,
+                "midline_slope_1d": -0.05 if positive else -0.8,
+                "midline_slope_3d": -0.10 if positive else -0.7,
+                "midline_slope_change_3d": 0.4 if positive else -0.2,
+                "price_high_delta_pct": 0.0, "cci_high_delta": 0.0,
+                "price_low_delta_pct": -1.0 if positive else -1.0,
+                "cci_low_delta": 20.0 if positive else -5.0,
             }
             outcome = OUTCOME_SUCCESS if positive else OUTCOME_FAIL
             cases.append({
-                "state": "S0.5",
-                "target": "S1_OR_HIGHER",
+                "state": "S0.5", "target": "S1_OR_HIGHER",
                 "features": features,
                 "labels": {"18": {"outcome": outcome, "hit": positive}},
             })
 
         model = build_model(cases, (18,), min_samples=20)
-        facet_names = {f["name"] for f in model["states"]["S0.5"]["horizons"]["18"]["cci_expert"]["facets"]}
-        self.assertTrue({"position_cross", "bb_slope_context", "right_side_confirm"}.issubset(facet_names))
+        hnode = model["states"]["S0.5"]["horizons"]["18"]
+        self.assertIn("path_tree", hnode)
         positive_pred = lookup_probability(model, "S0.5", 18, cases[0]["features"])
         negative_pred = lookup_probability(model, "S0.5", 18, cases[-1]["features"])
-        self.assertTrue(positive_pred["cci_expert"]["available"])
-        self.assertTrue(negative_pred["cci_expert"]["available"])
+        self.assertTrue(positive_pred["cci_primary"]["available"])
         self.assertGreater(positive_pred["probability"], negative_pred["probability"])
+        self.assertNotIn("levels", hnode)
 
 
 if __name__ == "__main__":

@@ -17,57 +17,95 @@ from .outcomes import (
     OUTCOME_SUCCESS,
 )
 
-# Existing BB / HA / S-state hierarchy remains untouched for backward compatibility.
-FEATURE_LEVELS = [
-    [],
-    ["midline_state"],
-    ["midline_state", "bandpos_bin"],
-    ["midline_state", "bandpos_bin", "trigger_stage"],
-    ["midline_state", "bandpos_bin", "trigger_stage", "bandwidth_trend"],
-    ["midline_state", "bandpos_bin", "trigger_stage", "bandwidth_trend", "state_age_bin"],
-]
+CCI_PRIMARY_VERSION = "CCI-PRIMARY-v2-PATH-TREE-HLC3-20-SMA14"
 
-CCI_EXPERT_VERSION = "CCI-EXPERT-v1-HLC3-20-SMA14"
-CCI_QUANTILE_FIELDS = {
+# Continuous path variables are cut into state-specific quartiles learned from
+# the historical distribution. The model never hard-codes which quartile is
+# bullish/bearish; the tree chooses useful branches from outcomes.
+PATH_QUANTILE_FIELDS = {
     "cci_sma_gap": "cci_sma_gap_q",
-    "cci_slope_3d": "cci_slope_q",
-    "cci_smoothing_slope_3d": "cci_smoothing_slope_q",
+    "cci_gap_velocity_1d": "cci_gap_velocity_q",
+    "cci_gap_acceleration": "cci_gap_acceleration_q",
+    "cci_slope_1d": "cci_slope_1d_q",
+    "cci_slope_3d": "cci_slope_3d_q",
+    "cci_acceleration": "cci_acceleration_q",
+    "cci_smoothing_slope_1d": "cci_smoothing_slope_1d_q",
+    "cci_smoothing_slope_3d": "cci_smoothing_slope_3d_q",
     "cci_distance_to_neg100": "cci_distance_to_neg100_q",
-    "midline_slope_5d": "bb_midline_slope_q",
-    "midline_improvement": "bb_midline_improvement_q",
+    "cci_distance_to_zero": "cci_distance_to_zero_q",
+    "midline_slope_1d": "midline_slope_1d_q",
+    "midline_slope_3d": "midline_slope_3d_q",
+    "midline_slope_change_3d": "midline_slope_change_q",
+    "price_high_delta_pct": "price_high_delta_q",
+    "cci_high_delta": "cci_high_delta_q",
+    "price_low_delta_pct": "price_low_delta_q",
+    "cci_low_delta": "cci_low_delta_q",
 }
 
-# CCI remains an independent correction layer instead of redefining S0.5/S1/S2/S3.
-# The learner sees position, cross timing, smoothing direction, BB midline context
-# and HA context independently, so historical outcomes decide which combinations
-# matter. The -100 region is represented explicitly as location, not hard-coded
-# as a bullish rule.
-CCI_EXPERT_FACETS = [
-    {
-        "name": "position_cross",
-        "fields": ["cci_zone", "cci_cross_event", "cci_sma_relation"],
-    },
-    {
-        "name": "smoothing_step",
-        "fields": ["cci_smoothing_direction", "cci_smoothing_age_bin", "cci_smoothing_turn_event"],
-    },
-    {
-        "name": "momentum",
-        "fields": ["cci_zone", "cci_slope_q", "cci_sma_gap_q"],
-    },
-    {
-        "name": "bb_slope_context",
-        "fields": ["cci_zone", "cci_cross_event", "bb_midline_slope_q", "bb_midline_improvement_q"],
-    },
-    {
-        "name": "right_side_confirm",
-        "fields": ["cci_cross_on_yellow", "cci_smoothing_direction", "ha_color", "current_run_bin"],
-    },
-    {
-        "name": "cci_regime",
-        "fields": ["cci_regime", "cci_smoothing_slope_q", "bb_midline_slope_q"],
-    },
+# S-state only defines the question/target. These pools define what the learner
+# is allowed to inspect while answering. The split order itself is learned.
+COMMON_PATH_FIELDS = [
+    "market_type",
+    "midline_path_phase",
+    "cci_zone",
+    "cci_cross_cycle",
+    "cci_last_cross_type",
+    "cci_last_cross_zone",
+    "cci_last_cross_sma_direction",
+    "cci_last_cross_midline_phase",
+    "cci_previous_same_cross_zone",
+    "cci_up_cross_count_bin",
+    "cci_down_cross_count_bin",
+    "cci_gap_motion",
+    "cci_retest_state",
+    "cci_divergence",
+    "cci_sma_relation",
+    "cci_relation_age_bin",
+    "cci_smoothing_direction",
+    "cci_smoothing_age_bin",
+    "cci_smoothing_turn_event",
+    "ha_color",
+    "current_run_bin",
+    "cci_sma_gap_q",
+    "cci_gap_velocity_q",
+    "cci_gap_acceleration_q",
+    "cci_slope_1d_q",
+    "cci_slope_3d_q",
+    "cci_acceleration_q",
+    "cci_smoothing_slope_1d_q",
+    "cci_smoothing_slope_3d_q",
+    "cci_distance_to_neg100_q",
+    "cci_distance_to_zero_q",
+    "midline_slope_1d_q",
+    "midline_slope_3d_q",
+    "midline_slope_change_q",
 ]
+
+STATE_PATH_FIELDS = {
+    "S0.5": COMMON_PATH_FIELDS,
+    "S1": [
+        "market_type", "midline_path_phase", "cci_zone", "cci_cross_cycle",
+        "cci_gap_motion", "cci_retest_state", "cci_sma_relation",
+        "cci_smoothing_direction", "cci_smoothing_turn_event", "ha_color",
+        "current_run_bin", "cci_slope_1d_q", "cci_slope_3d_q",
+        "cci_smoothing_slope_1d_q", "cci_sma_gap_q", "midline_slope_3d_q",
+        "midline_slope_change_q", "cci_divergence",
+    ],
+    "S2": COMMON_PATH_FIELDS + [
+        "price_high_delta_q", "cci_high_delta_q", "price_low_delta_q", "cci_low_delta_q",
+    ],
+    "S3": [
+        "market_type", "midline_path_phase", "cci_zone", "cci_cross_cycle",
+        "cci_gap_motion", "cci_retest_state", "cci_divergence",
+        "cci_sma_relation", "cci_smoothing_direction", "cci_smoothing_turn_event",
+        "ha_color", "current_run_bin", "cci_sma_gap_q", "cci_gap_velocity_q",
+        "cci_slope_1d_q", "cci_slope_3d_q", "cci_smoothing_slope_1d_q",
+        "midline_slope_3d_q", "midline_slope_change_q", "price_high_delta_q",
+        "cci_high_delta_q",
+    ],
+}
+
+STATE_MAX_DEPTH = {"S0.5": 6, "S1": 5, "S2": 6, "S3": 5}
 
 
 def _wilson(wins: int, total: int, z: float = 1.96) -> tuple[float, float]:
@@ -80,19 +118,11 @@ def _wilson(wins: int, total: int, z: float = 1.96) -> tuple[float, float]:
     return max(0.0, center - margin), min(1.0, center + margin)
 
 
-def _signature(features: dict[str, Any], fields: list[str]) -> str:
-    if not fields:
-        return "BASELINE"
-    return "|".join(f"{field}={features.get(field)}" for field in fields)
-
-
 def _outcome_for(case: dict[str, Any], horizon: int) -> str:
     label = (case.get("labels") or {}).get(str(horizon)) or {}
     outcome = str(label.get("outcome") or "")
     if outcome in OUTCOME_KEYS:
         return outcome
-    # Backward compatibility for an old cached cases artifact if someone feeds
-    # it into the newer builder manually.
     return OUTCOME_SUCCESS if bool(label.get("hit")) else OUTCOME_OTHER
 
 
@@ -137,11 +167,9 @@ def _distribution_payload(
     else:
         probs = {
             key: ((counts[key] + baseline_probs.get(key, 0.0) * prior_strength) / (total + prior_strength))
-            if total > 0
-            else baseline_probs.get(key, 0.0)
+            if total > 0 else baseline_probs.get(key, 0.0)
             for key in OUTCOME_KEYS
         }
-
     payload = {
         key: {
             "label_zh": OUTCOME_LABELS_ZH[key],
@@ -164,27 +192,23 @@ def _stats_node(
     n = len(group)
     counts = _counts(group, horizon)
     outcomes, probs = _distribution_payload(
-        counts,
-        n,
-        baseline_probs=baseline_probs,
-        prior_strength=prior_strength,
+        counts, n, baseline_probs=baseline_probs, prior_strength=prior_strength
     )
     wins = int(counts[OUTCOME_SUCCESS])
     raw_success = wins / n if n else 0.0
-    success_prob = probs[OUTCOME_SUCCESS]
     low, high = _wilson(wins, n)
-    raw_survival = raw_success + (counts[OUTCOME_ALIVE] / n if n else 0.0)
-    survival_prob = probs[OUTCOME_SUCCESS] + probs[OUTCOME_ALIVE]
+    survival = probs[OUTCOME_SUCCESS] + probs[OUTCOME_ALIVE]
     node: dict[str, Any] = {
         "samples": n,
-        # Backward-compatible binary fields used by the current live reader.
         "wins": wins,
         "raw_probability": round(raw_success, 6),
-        "probability": round(success_prob, 6),
+        "probability": round(probs[OUTCOME_SUCCESS], 6),
         "wilson95": [round(low, 6), round(high, 6)],
         "outcomes": outcomes,
-        "raw_structural_survival_probability": round(raw_survival, 6),
-        "structural_survival_probability": round(survival_prob, 6),
+        "raw_structural_survival_probability": round(
+            raw_success + (counts[OUTCOME_ALIVE] / n if n else 0.0), 6
+        ),
+        "structural_survival_probability": round(survival, 6),
         "true_fail_probability": round(probs[OUTCOME_FAIL], 6),
         "other_probability": round(probs[OUTCOME_OTHER], 6),
     }
@@ -217,245 +241,186 @@ def _quantile(values: list[float], q: float) -> float:
     return ordered[low] * (1.0 - weight) + ordered[high] * weight
 
 
-def _build_cci_binning(group: list[dict[str, Any]]) -> dict[str, Any]:
-    """Learn state-specific tercile cuts from raw CCI/context values.
-
-    No bullish/bearish outcome is hard-coded here. CCI's visual -100 region is
-    kept as an explicit position feature, while magnitude/slope/context buckets
-    are learned from the historical distribution.
-    """
+def _build_path_binning(group: list[dict[str, Any]]) -> dict[str, Any]:
     output: dict[str, Any] = {}
-    for raw_field, q_field in CCI_QUANTILE_FIELDS.items():
-        values = []
-        for case in group:
-            value = _safe_float((case.get("features") or {}).get(raw_field))
-            if value is not None:
-                values.append(value)
-        q33 = _quantile(values, 1.0 / 3.0)
-        q67 = _quantile(values, 2.0 / 3.0)
+    for raw_field, q_field in PATH_QUANTILE_FIELDS.items():
+        values = [
+            value for value in (
+                _safe_float((case.get("features") or {}).get(raw_field)) for case in group
+            ) if value is not None
+        ]
         output[raw_field] = {
             "derived_field": q_field,
-            "q33": round(q33, 8),
-            "q67": round(q67, 8),
+            "q25": round(_quantile(values, 0.25), 8),
+            "q50": round(_quantile(values, 0.50), 8),
+            "q75": round(_quantile(values, 0.75), 8),
             "samples": len(values),
         }
     return output
 
 
-def _apply_cci_binning(features: dict[str, Any], binning: dict[str, Any]) -> dict[str, Any]:
-    enriched = dict(features)
-    for raw_field, q_field in CCI_QUANTILE_FIELDS.items():
+def _apply_path_binning(features: dict[str, Any], binning: dict[str, Any]) -> dict[str, Any]:
+    enriched = dict(features or {})
+    for raw_field, q_field in PATH_QUANTILE_FIELDS.items():
         value = _safe_float(features.get(raw_field))
         node = binning.get(raw_field) or {}
-        q33 = _safe_float(node.get("q33"))
-        q67 = _safe_float(node.get("q67"))
-        if value is None or q33 is None or q67 is None:
+        q25 = _safe_float(node.get("q25"))
+        q50 = _safe_float(node.get("q50"))
+        q75 = _safe_float(node.get("q75"))
+        if value is None or q25 is None or q50 is None or q75 is None:
             enriched[q_field] = "UNKNOWN"
-        elif value <= q33:
-            enriched[q_field] = "LOW"
-        elif value <= q67:
-            enriched[q_field] = "MID"
+        elif value <= q25:
+            enriched[q_field] = "Q1"
+        elif value <= q50:
+            enriched[q_field] = "Q2"
+        elif value <= q75:
+            enriched[q_field] = "Q3"
         else:
-            enriched[q_field] = "HIGH"
+            enriched[q_field] = "Q4"
     return enriched
 
 
-def _outcome_probs(node: dict[str, Any], *, raw: bool = False) -> dict[str, float]:
-    outcomes = node.get("outcomes") or {}
-    field = "raw_probability" if raw else "probability"
-    values: dict[str, float] = {}
-    for key in OUTCOME_KEYS:
-        item = outcomes.get(key) or {}
-        value = _safe_float(item.get(field))
-        if value is None and raw:
-            value = _safe_float(item.get("probability"))
-        values[key] = max(0.0, float(value or 0.0))
-    total = sum(values.values())
+def _gini(counts: Counter[str]) -> float:
+    total = sum(counts.values())
     if total <= 0:
-        # Old binary model fallback.
-        success = max(0.0, min(1.0, float(node.get("probability", 0.0) or 0.0)))
-        return {
-            OUTCOME_SUCCESS: success,
-            OUTCOME_ALIVE: 0.0,
-            OUTCOME_FAIL: 0.0,
-            OUTCOME_OTHER: 1.0 - success,
-        }
-    return {key: value / total for key, value in values.items()}
+        return 0.0
+    return 1.0 - sum((counts[key] / total) ** 2 for key in OUTCOME_KEYS)
 
 
-def _find_rule(rules: list[dict[str, Any]], signature: str, min_samples: int) -> dict[str, Any] | None:
-    for rule in rules:
-        if rule.get("signature") == signature and int(rule.get("samples", 0)) >= min_samples:
-            return rule
-    return None
+def _feature_value(case: dict[str, Any], field: str, binning: dict[str, Any]) -> str:
+    features = _apply_path_binning(case.get("features") or {}, binning)
+    value = features.get(field)
+    if value is None or value == "":
+        return "UNKNOWN"
+    return str(value)
 
 
-def _lookup_base_rule(
-    hnode: dict[str, Any],
-    features: dict[str, Any],
-    min_samples: int,
-) -> tuple[dict[str, Any], dict[str, Any]]:
-    for level in reversed(hnode.get("levels", [])):
-        fields = list(level.get("fields") or [])
-        sig = _signature(features, fields)
-        rule = _find_rule(list(level.get("rules") or []), sig, min_samples)
-        if rule is not None:
-            return rule, {
-                "level": int(level.get("level", 0)),
-                "fields": fields,
-                "signature": sig,
-                "fallback": False,
-            }
-    return hnode["baseline"], {
-        "level": 0,
-        "fields": [],
-        "signature": "BASELINE",
-        "fallback": True,
-    }
+def _best_split(
+    group: list[dict[str, Any]],
+    horizon: int,
+    fields: list[str],
+    binning: dict[str, Any],
+    min_leaf: int,
+) -> tuple[str | None, float, dict[str, list[dict[str, Any]]]]:
+    if len(group) < min_leaf * 2:
+        return None, 0.0, {}
+    parent_counts = _counts(group, horizon)
+    parent_impurity = _gini(parent_counts)
+    if parent_impurity <= 1e-12:
+        return None, 0.0, {}
 
+    best_field: str | None = None
+    best_gain = 0.0
+    best_children: dict[str, list[dict[str, Any]]] = {}
+    n_total = len(group)
 
-def _lookup_cci_facets(
-    state_node: dict[str, Any],
-    hnode: dict[str, Any],
-    features: dict[str, Any],
-    min_samples: int,
-) -> list[dict[str, Any]]:
-    expert = hnode.get("cci_expert") or {}
-    if not expert:
-        return []
-    enriched = _apply_cci_binning(features, state_node.get("cci_binning") or {})
-    matches: list[dict[str, Any]] = []
-    for facet in expert.get("facets") or []:
-        fields = list(facet.get("fields") or [])
-        sig = _signature(enriched, fields)
-        rule = _find_rule(list(facet.get("rules") or []), sig, min_samples)
-        if rule is None:
+    for field in fields:
+        buckets: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for case in group:
+            buckets[_feature_value(case, field, binning)].append(case)
+        eligible = {key: rows for key, rows in buckets.items() if len(rows) >= min_leaf}
+        if len(eligible) < 2:
             continue
-        matches.append({
-            "name": str(facet.get("name") or "facet"),
-            "fields": fields,
-            "signature": sig,
-            "rule": rule,
-        })
-    return matches
+        modeled = sum(len(rows) for rows in eligible.values())
+        rare = n_total - modeled
+        weighted = 0.0
+        for rows in eligible.values():
+            weighted += (len(rows) / n_total) * _gini(_counts(rows, horizon))
+        # Rare/unseen values fall back to the parent at inference, so they earn
+        # no artificial gain during training either.
+        if rare > 0:
+            weighted += (rare / n_total) * parent_impurity
+        gain = parent_impurity - weighted
+        if gain > best_gain + 1e-12:
+            best_field = field
+            best_gain = gain
+            best_children = eligible
+
+    return best_field, best_gain, best_children
 
 
-def _combine_with_cci(
-    base_node: dict[str, Any],
-    baseline_node: dict[str, Any],
-    cci_matches: list[dict[str, Any]],
+def _build_tree(
+    group: list[dict[str, Any]],
+    horizon: int,
     *,
+    fields: list[str],
+    binning: dict[str, Any],
+    baseline_probs: dict[str, float],
+    min_leaf: int,
     prior_strength: float,
-    raw: bool = False,
-) -> tuple[dict[str, float], float, list[dict[str, Any]]]:
-    base_probs = _outcome_probs(base_node, raw=raw)
-    if not cci_matches:
-        return base_probs, 0.0, []
-
-    baseline_probs = _outcome_probs(baseline_node, raw=raw)
-    eps = 1e-9
-    weighted_logs = {key: 0.0 for key in OUTCOME_KEYS}
-    weights: list[float] = []
-    audit: list[dict[str, Any]] = []
-
-    for match in cci_matches:
-        rule = match["rule"]
-        n = int(rule.get("samples", 0))
-        reliability = n / (n + max(1.0, float(prior_strength)))
-        weights.append(reliability)
-        facet_probs = _outcome_probs(rule, raw=raw)
-        for key in OUTCOME_KEYS:
-            ratio = max(eps, facet_probs[key]) / max(eps, baseline_probs[key])
-            weighted_logs[key] += reliability * math.log(ratio)
-        audit.append({
-            "name": match["name"],
-            "fields": match["fields"],
-            "signature": match["signature"],
-            "samples": n,
-            "reliability": round(reliability, 6),
-            "success_probability": round(facet_probs[OUTCOME_SUCCESS], 6),
-            "structural_survival_probability": round(facet_probs[OUTCOME_SUCCESS] + facet_probs[OUTCOME_ALIVE], 6),
-            "true_fail_probability": round(facet_probs[OUTCOME_FAIL], 6),
-        })
-
-    weight_sum = sum(weights)
-    if weight_sum <= 0:
-        return base_probs, 0.0, audit
-
-    # Facets overlap, so do not multiply all likelihood ratios at full strength.
-    # Use their reliability-weighted geometric mean, then let the average
-    # reliability controls how strongly CCI can move the original BB/HA model.
-    blend_strength = min(1.0, weight_sum / len(weights))
-    logs: dict[str, float] = {}
-    for key in OUTCOME_KEYS:
-        avg_log_ratio = weighted_logs[key] / weight_sum
-        logs[key] = math.log(max(eps, base_probs[key])) + blend_strength * avg_log_ratio
-
-    peak = max(logs.values())
-    exp_values = {key: math.exp(value - peak) for key, value in logs.items()}
-    total = sum(exp_values.values())
-    combined = {key: exp_values[key] / total for key in OUTCOME_KEYS}
-    return combined, blend_strength, audit
-
-
-def _prediction_payload(
-    base_node: dict[str, Any],
-    base_meta: dict[str, Any],
-    baseline_node: dict[str, Any],
-    cci_matches: list[dict[str, Any]],
-    *,
-    prior_strength: float,
+    max_depth: int,
+    min_gain: float,
+    depth: int = 0,
+    used_fields: tuple[str, ...] = (),
 ) -> dict[str, Any]:
-    combined, blend_strength, audit = _combine_with_cci(
-        base_node,
-        baseline_node,
-        cci_matches,
-        prior_strength=prior_strength,
-        raw=False,
+    node = _stats_node(
+        group, horizon, baseline_probs=baseline_probs, prior_strength=prior_strength
     )
-    raw_combined, _, _ = _combine_with_cci(
-        base_node,
-        baseline_node,
-        cci_matches,
-        prior_strength=prior_strength,
-        raw=True,
-    )
+    node.update({"depth": depth})
+    if depth >= max_depth or len(group) < min_leaf * 2:
+        node["leaf"] = True
+        return node
 
-    outcome_payload = {
-        key: {
-            "label_zh": OUTCOME_LABELS_ZH[key],
-            "probability": round(combined[key], 6),
-            "raw_probability": round(raw_combined[key], 6),
-        }
-        for key in OUTCOME_KEYS
-    }
-    success = combined[OUTCOME_SUCCESS]
-    survival = combined[OUTCOME_SUCCESS] + combined[OUTCOME_ALIVE]
+    remaining = [field for field in fields if field not in used_fields]
+    split_field, gain, children = _best_split(group, horizon, remaining, binning, min_leaf)
+    if split_field is None or gain < min_gain:
+        node["leaf"] = True
+        return node
 
+    node.update({
+        "leaf": False,
+        "split_field": split_field,
+        "gain": round(gain, 8),
+        "children": {},
+    })
+    for value, rows in sorted(children.items(), key=lambda item: (-len(item[1]), item[0])):
+        node["children"][value] = _build_tree(
+            rows,
+            horizon,
+            fields=fields,
+            binning=binning,
+            baseline_probs=baseline_probs,
+            min_leaf=min_leaf,
+            prior_strength=prior_strength,
+            max_depth=max_depth,
+            min_gain=min_gain,
+            depth=depth + 1,
+            used_fields=used_fields + (split_field,),
+        )
+    return node
+
+
+def _node_outcome_payload(node: dict[str, Any]) -> dict[str, Any]:
+    outcomes = node.get("outcomes") or {}
+    success = float((outcomes.get(OUTCOME_SUCCESS) or {}).get("probability", node.get("probability", 0.0)) or 0.0)
+    alive = float((outcomes.get(OUTCOME_ALIVE) or {}).get("probability", 0.0) or 0.0)
+    fail = float((outcomes.get(OUTCOME_FAIL) or {}).get("probability", node.get("true_fail_probability", 0.0)) or 0.0)
+    other = float((outcomes.get(OUTCOME_OTHER) or {}).get("probability", node.get("other_probability", 0.0)) or 0.0)
     return {
-        "available": True,
-        "probability": float(success),
-        "raw_probability": float(raw_combined[OUTCOME_SUCCESS]),
-        "samples": int(base_node.get("samples", 0)),
-        "wins": int(base_node.get("wins", 0)),
-        "level": int(base_meta["level"]),
-        "fields": list(base_meta["fields"]),
-        "signature": str(base_meta["signature"]),
-        "wilson95": base_node.get("wilson95"),
-        "fallback": bool(base_meta.get("fallback", False)),
-        "outcomes": outcome_payload,
-        "structural_survival_probability": float(survival),
-        "true_fail_probability": float(combined[OUTCOME_FAIL]),
-        "other_probability": float(combined[OUTCOME_OTHER]),
-        "late_success_4_7d": base_node.get("late_success_4_7d"),
-        "cci_expert": {
-            "available": bool(cci_matches),
-            "version": CCI_EXPERT_VERSION,
-            "matched_facets": audit,
-            "matched_facet_count": len(audit),
-            "blend_strength": round(blend_strength, 6),
-        },
+        "outcomes": outcomes,
+        "success_probability": success,
+        "alive_slow_probability": alive,
+        "true_fail_probability": fail,
+        "other_probability": other,
+        "structural_survival_probability": success + alive,
+        "late_success_4_7d": node.get("late_success_4_7d"),
     }
+
+
+def _walk_tree(tree: dict[str, Any], features: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, str]]]:
+    node = tree
+    path: list[dict[str, str]] = []
+    while isinstance(node, dict) and not bool(node.get("leaf", True)):
+        field = str(node.get("split_field") or "")
+        if not field:
+            break
+        value = str(features.get(field) if features.get(field) is not None else "UNKNOWN")
+        child = (node.get("children") or {}).get(value)
+        if not isinstance(child, dict):
+            break
+        path.append({"field": field, "value": value})
+        node = child
+    return node, path
 
 
 def build_model(
@@ -463,6 +428,7 @@ def build_model(
     horizons: tuple[int, ...],
     min_samples: int = 50,
     prior_strength: float = 20.0,
+    min_gain: float = 0.002,
 ) -> dict[str, Any]:
     by_state: dict[str, list[dict[str, Any]]] = defaultdict(list)
     by_state_h: dict[tuple[str, int], list[dict[str, Any]]] = defaultdict(list)
@@ -473,34 +439,35 @@ def build_model(
             if str(h) in case.get("labels", {}):
                 by_state_h[(state, h)].append(case)
 
-    cci_binning_by_state = {
-        state: _build_cci_binning(group)
-        for state, group in by_state.items()
+    path_binning_by_state = {
+        state: _build_path_binning(group) for state, group in by_state.items()
     }
 
     model: dict[str, Any] = {
-        "schema_version": 4,
+        "schema_version": 5,
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "engine_contract": "S-state rules fixed; probability/outcome parameters evolve in JSON",
-        "settlement_contract": "POST_CLOSE_DAILY_ROUTE_V2: 12H is observation-only; 24H/48H/72H score only completed UTC daily closes (Taiwan 08:00). Settlement is route-aware: S1/S3 may expire to OTHER after successful upward expansion, and that must not be counted as failure.",
+        "engine_contract": "S-state defines only the target/question; CCI/BB-midline/HA path tree directly estimates the 4-way outcome.",
+        "settlement_contract": "POST_CLOSE_DAILY_ROUTE_V2: 12H observation-only; 24H/48H/72H score only completed UTC daily closes (Taiwan 08:00).",
         "outcome_keys": list(OUTCOME_KEYS),
         "outcome_labels_zh": OUTCOME_LABELS_ZH,
         "default_min_samples": int(min_samples),
         "prior_strength": float(prior_strength),
+        "path_min_gain": float(min_gain),
         "horizons_bars": list(horizons),
         "horizon_hours": {str(h): int(h * 4) for h in horizons},
         "primary_swing_horizon_bars": 18,
         "primary_swing_horizon_hours": 72,
-        "cci_expert_contract": {
-            "version": CCI_EXPERT_VERSION,
-            "role": "Independent CCI/SMA14 evidence corrects the existing BB/HA/S-state probability; it never changes the S-state itself.",
+        "cci_primary_contract": {
+            "version": CCI_PRIMARY_VERSION,
+            "role": "PRIMARY probability model. S0.5/S1/S2/S3 only select the target; legacy BB/HA Level 1-5 probability no longer sets the base probability.",
             "source_formula": "TradingView parity: src=hlc3; CCI20=(src-SMA20(src))/(0.015*mean absolute deviation20); smoothingMA=SMA14(CCI).",
-            "reference_levels": [-100, 0, 100],
-            "smoothing_step_definition": "smoothingMA current > previous = YELLOW; current < previous = PURPLE; equality/unready = GRAY.",
-            "position_semantics": "CCI zones including -120..-80 are explicit research locations only; no zone/cross/smoothing color is hard-coded bullish or bearish.",
-            "bb_context": "The model receives both BB midline 5d slope and slope improvement so it can learn whether a still-falling but decelerating midline changes CCI outcomes.",
-            "facets": CCI_EXPERT_FACETS,
-            "combiner": "Reliability-weighted geometric mean of facet likelihood ratios relative to the state baseline, applied as a conservative correction to the legacy BB/HA rule.",
+            "path_memory": "30 daily points: first/second cross cycle, days since cross, cross location, SMA color at cross, BB midline phase at cross, gap approach/retest/reclaim, divergence, CCI/SMA slopes and acceleration.",
+            "tree": "Per-state/per-horizon categorical decision tree using multiclass Gini gain; state-specific quartile cuts are learned from history; unseen/rare branches fall back to the nearest parent node.",
+            "min_leaf_samples": int(min_samples),
+            "min_gain": float(min_gain),
+            "state_max_depth": STATE_MAX_DEPTH,
+            "state_candidate_fields": STATE_PATH_FIELDS,
+            "quantile_fields": PATH_QUANTILE_FIELDS,
         },
         "states": {},
     }
@@ -508,134 +475,150 @@ def build_model(
     for (state, h), group in sorted(by_state_h.items()):
         baseline_node = _stats_node(group, h)
         baseline_probs = {
-            key: float((baseline_node["outcomes"].get(key) or {}).get("probability", 0.0))
+            key: float((baseline_node.get("outcomes", {}).get(key) or {}).get("probability", 0.0) or 0.0)
             for key in OUTCOME_KEYS
         }
         state_node = model["states"].setdefault(
             state,
             {
                 "target": group[0]["target"],
-                "cci_binning": cci_binning_by_state.get(state) or {},
+                "path_binning": path_binning_by_state.get(state) or {},
                 "horizons": {},
             },
         )
-        horizon_node: dict[str, Any] = {
+        fields = list(STATE_PATH_FIELDS.get(state) or COMMON_PATH_FIELDS)
+        tree = _build_tree(
+            group,
+            h,
+            fields=fields,
+            binning=state_node.get("path_binning") or {},
+            baseline_probs=baseline_probs,
+            min_leaf=max(10, int(min_samples)),
+            prior_strength=max(0.0, float(prior_strength)),
+            max_depth=int(STATE_MAX_DEPTH.get(state, 5)),
+            min_gain=max(0.0, float(min_gain)),
+        )
+        state_node["horizons"][str(h)] = {
             "baseline": baseline_node,
-            "levels": [],
-            "cci_expert": {
-                "version": CCI_EXPERT_VERSION,
-                "facets": [],
-            },
+            "path_tree": tree,
         }
-
-        # Existing structural hierarchy: unchanged Level 1-5 behavior.
-        for level_idx, fields in enumerate(FEATURE_LEVELS[1:], start=1):
-            buckets: dict[str, list[dict[str, Any]]] = defaultdict(list)
-            for case in group:
-                buckets[_signature(case["features"], fields)].append(case)
-            rules = []
-            for sig, bucket in buckets.items():
-                node = _stats_node(
-                    bucket,
-                    h,
-                    baseline_probs=baseline_probs,
-                    prior_strength=prior_strength,
-                )
-                node.update({
-                    "signature": sig,
-                    "eligible": int(node["samples"]) >= min_samples,
-                })
-                rules.append(node)
-            rules.sort(key=lambda r: (-int(r["samples"]), r["signature"]))
-            horizon_node["levels"].append({"level": level_idx, "fields": fields, "rules": rules})
-
-        # CCI expert facets are intentionally independent, not cumulative levels.
-        binning = state_node.get("cci_binning") or {}
-        for facet in CCI_EXPERT_FACETS:
-            fields = list(facet["fields"])
-            buckets: dict[str, list[dict[str, Any]]] = defaultdict(list)
-            for case in group:
-                enriched = _apply_cci_binning(case.get("features") or {}, binning)
-                buckets[_signature(enriched, fields)].append(case)
-            rules = []
-            for sig, bucket in buckets.items():
-                node = _stats_node(
-                    bucket,
-                    h,
-                    baseline_probs=baseline_probs,
-                    prior_strength=prior_strength,
-                )
-                node.update({
-                    "signature": sig,
-                    "eligible": int(node["samples"]) >= min_samples,
-                })
-                rules.append(node)
-            rules.sort(key=lambda r: (-int(r["samples"]), r["signature"]))
-            horizon_node["cci_expert"]["facets"].append({
-                "name": facet["name"],
-                "fields": fields,
-                "rules": rules,
-            })
-
-        state_node["horizons"][str(h)] = horizon_node
 
     digest_src = json.dumps(model["states"], ensure_ascii=False, sort_keys=True).encode("utf-8")
     model["model_id"] = hashlib.sha256(digest_src).hexdigest()[:16]
     return model
 
 
-def _features_for_model_version(model: dict[str, Any], features: dict[str, Any]) -> dict[str, Any]:
-    """CCI v1 has one production feature contract; keep a tiny bridge hook."""
-    return dict(features or {})
-
-
 def lookup_probability(model: dict[str, Any], state: str, horizon: int, features: dict[str, Any]) -> dict[str, Any]:
-    model_features = _features_for_model_version(model, features)
-    state_node = model.get("states", {}).get(state)
+    state_node = (model.get("states") or {}).get(state)
     if not state_node:
         return {"available": False, "reason": "state_missing"}
-    hnode = state_node.get("horizons", {}).get(str(horizon))
+    hnode = (state_node.get("horizons") or {}).get(str(horizon))
     if not hnode:
         return {"available": False, "reason": "horizon_missing"}
 
-    min_samples = int(model.get("default_min_samples", 50))
-    base_node, base_meta = _lookup_base_rule(hnode, model_features, min_samples)
+    enriched = _apply_path_binning(features or {}, state_node.get("path_binning") or {})
+    tree = hnode.get("path_tree") or hnode.get("baseline") or {}
+    node, path = _walk_tree(tree, enriched)
+    payload = _node_outcome_payload(node)
+    depth = int(node.get("depth", len(path)) or len(path))
+    fields = [item["field"] for item in path]
+    signature = "|".join(f"{item['field']}={item['value']}" for item in path) or "STATE_BASELINE"
+    primary_meta = {
+        "available": bool(path) or bool(tree),
+        "version": (model.get("cci_primary_contract") or {}).get("version"),
+        "depth": depth,
+        "matched_path": path,
+        "matched_path_count": len(path),
+        "bins": {q_field: enriched.get(q_field) for q_field in PATH_QUANTILE_FIELDS.values()},
+        "path_features": {
+            key: enriched.get(key)
+            for key in (
+                "market_type", "midline_path_phase", "cci_zone", "cci_cross_cycle",
+                "cci_last_cross_zone", "cci_last_cross_midline_phase", "cci_gap_motion",
+                "cci_retest_state", "cci_divergence", "cci_smoothing_direction",
+                "cci_smoothing_turn_event", "ha_color",
+            )
+        },
+    }
+    # cci_expert is retained only as a compatibility alias for existing Frozen
+    # ledger code; it now identifies PRIMARY_PATH instead of a correction layer.
+    compatibility = {
+        "available": True,
+        "version": primary_meta["version"],
+        "mode": "PRIMARY_PATH",
+        "matched_facets": [],
+        "matched_facet_count": 0,
+        "blend_strength": 1.0,
+        "bins": primary_meta["bins"],
+        "matched_path": path,
+    }
+    return {
+        "available": True,
+        "probability": float(payload["success_probability"]),
+        "raw_probability": float(node.get("raw_probability", payload["success_probability"]) or 0.0),
+        "samples": int(node.get("samples", 0) or 0),
+        "wins": int(node.get("wins", 0) or 0),
+        "level": depth,
+        "fields": fields,
+        "signature": signature,
+        "wilson95": node.get("wilson95"),
+        "fallback": len(path) == 0,
+        **payload,
+        "cci_primary": primary_meta,
+        "cci_expert": compatibility,
+    }
 
-    # Any model without CCI expert evidence falls back to the original BB/HA/S-state rule.
-    cci_matches = _lookup_cci_facets(state_node, hnode, model_features, min_samples)
-    if not cci_matches:
-        return {
-            "available": True,
-            "probability": float(base_node["probability"]),
-            "raw_probability": float(base_node["raw_probability"]),
-            "samples": int(base_node["samples"]),
-            "wins": int(base_node["wins"]),
-            "level": int(base_meta["level"]),
-            "fields": list(base_meta["fields"]),
-            "signature": str(base_meta["signature"]),
-            "wilson95": base_node.get("wilson95"),
-            "fallback": bool(base_meta.get("fallback", False)),
-            "outcomes": base_node.get("outcomes") or {},
-            "structural_survival_probability": float(base_node.get("structural_survival_probability", base_node["probability"])),
-            "true_fail_probability": float(base_node.get("true_fail_probability", 0.0)),
-            "other_probability": float(base_node.get("other_probability", 0.0)),
-            "late_success_4_7d": base_node.get("late_success_4_7d"),
-            "cci_expert": {
-                "available": False,
-                "version": (model.get("cci_expert_contract") or {}).get("version"),
-                "matched_facets": [],
-                "matched_facet_count": 0,
-                "blend_strength": 0.0,
-            },
+
+def _collect_tree_paths(
+    node: dict[str, Any],
+    path: list[dict[str, str]] | None = None,
+) -> list[dict[str, Any]]:
+    current_path = list(path or [])
+    children = node.get("children") or {}
+    split_field = node.get("split_field")
+    if not children or not split_field:
+        return [{
+            "path": current_path,
+            "depth": int(node.get("depth", len(current_path)) or len(current_path)),
+            "samples": int(node.get("samples", 0) or 0),
+            "success_probability": float(node.get("probability", 0.0) or 0.0),
+            "structural_survival_probability": float(node.get("structural_survival_probability", 0.0) or 0.0),
+            "true_fail_probability": float(node.get("true_fail_probability", 0.0) or 0.0),
+        }]
+    output: list[dict[str, Any]] = []
+    for value, child in children.items():
+        output.extend(_collect_tree_paths(child, current_path + [{"field": str(split_field), "value": str(value)}]))
+    return output
+
+
+def summarize_path_tree(model: dict[str, Any], horizon: str = "18", top_n: int = 10) -> dict[str, Any]:
+    output: dict[str, Any] = {}
+    for state, state_node in (model.get("states") or {}).items():
+        hnode = (state_node.get("horizons") or {}).get(str(horizon)) or {}
+        baseline = hnode.get("baseline") or {}
+        baseline_success = float(baseline.get("probability", 0.0) or 0.0)
+        baseline_fail = float(baseline.get("true_fail_probability", 0.0) or 0.0)
+        tree = hnode.get("path_tree") or {}
+        paths = _collect_tree_paths(tree)
+        for row in paths:
+            row["success_delta_vs_state"] = round(row["success_probability"] - baseline_success, 6)
+            row["true_fail_delta_vs_state"] = round(row["true_fail_probability"] - baseline_fail, 6)
+            row["direction_score"] = round(
+                row["success_delta_vs_state"] - row["true_fail_delta_vs_state"], 6
+            )
+        output[state] = {
+            "baseline_samples": int(baseline.get("samples", 0) or 0),
+            "baseline_success_probability": round(baseline_success, 6),
+            "baseline_structural_survival_probability": round(float(baseline.get("structural_survival_probability", baseline_success) or baseline_success), 6),
+            "baseline_true_fail_probability": round(baseline_fail, 6),
+            "root_split_field": tree.get("split_field"),
+            "root_gain": tree.get("gain"),
+            "leaf_count": len(paths),
+            "strongest_positive": sorted(paths, key=lambda x: (-x["direction_score"], -x["samples"]))[:top_n],
+            "strongest_negative": sorted(paths, key=lambda x: (x["direction_score"], -x["samples"]))[:top_n],
+            "path_binning": state_node.get("path_binning") or {},
         }
-
-    return _prediction_payload(
-        base_node,
-        base_meta,
-        hnode["baseline"],
-        cci_matches,
-        prior_strength=float(model.get("prior_strength", 20.0)),
-    )
+    return output
 
 
 def save_json(path: Path, payload: dict[str, Any]) -> None:

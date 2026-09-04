@@ -163,6 +163,7 @@ def make_frozen_record(
             "samples": int(prediction.get("samples", 0) or 0),
             "level": int(prediction.get("level", 0) or 0),
             "signature": prediction.get("signature"),
+            "cci_primary": prediction.get("cci_primary") or {},
             "cci_expert": prediction.get("cci_expert") or {},
         },
         "features": dict(timeline_row.get("features") or {}),
@@ -685,6 +686,10 @@ def build_evolution_review(rows: list[dict[str, Any]], manifest: dict[str, Any])
                 "cci_zone": (r.get("features") or {}).get("cci_zone"),
                 "cci_cross_event": (r.get("features") or {}).get("cci_cross_event"),
                 "cci_smoothing_direction": (r.get("features") or {}).get("cci_smoothing_direction"),
+                "cci_cross_cycle": (r.get("features") or {}).get("cci_cross_cycle"),
+                "midline_path_phase": (r.get("features") or {}).get("midline_path_phase"),
+                "cci_retest_state": (r.get("features") or {}).get("cci_retest_state"),
+                "cci_divergence": (r.get("features") or {}).get("cci_divergence"),
             })
     overconfident_failures.sort(key=lambda x: x["predicted_success"], reverse=True)
 
@@ -698,6 +703,25 @@ def build_evolution_review(rows: list[dict[str, Any]], manifest: dict[str, Any])
         "state_turn": _group_calibration(
             settled,
             lambda r: f"{r.get('state')}|{(r.get('features') or {}).get('cci_smoothing_turn_event')}",
+        ),
+        # Schema 5 CCI PRIMARY path groups. These let the next generation
+        # reinforce the exact path mistakes (left/right V, first/second cross,
+        # retest/reclaim, midline phase and divergence), not only static regime.
+        "state_cross_cycle": _group_calibration(
+            settled,
+            lambda r: f"{r.get('state')}|{(r.get('features') or {}).get('cci_cross_cycle')}",
+        ),
+        "state_midline_phase": _group_calibration(
+            settled,
+            lambda r: f"{r.get('state')}|{(r.get('features') or {}).get('midline_path_phase')}",
+        ),
+        "state_retest": _group_calibration(
+            settled,
+            lambda r: f"{r.get('state')}|{(r.get('features') or {}).get('cci_retest_state')}",
+        ),
+        "state_divergence": _group_calibration(
+            settled,
+            lambda r: f"{r.get('state')}|{(r.get('features') or {}).get('cci_divergence')}",
         ),
     }
 
@@ -735,7 +759,10 @@ def build_evolution_policy(
     group_rules: list[dict[str, Any]] = []
     groups = review.get("error_groups") or {}
 
-    for group_type in ("state", "market", "state_regime", "state_turn"):
+    for group_type in (
+        "state", "market", "state_regime", "state_turn",
+        "state_cross_cycle", "state_midline_phase", "state_retest", "state_divergence",
+    ):
         for key, stats in (groups.get(group_type) or {}).items():
             n = int(stats.get("samples", 0) or 0)
             gap = stats.get("calibration_gap")
@@ -807,11 +834,19 @@ def _case_group_keys(case: dict[str, Any]) -> dict[str, str]:
     market = str(case.get("market_type") or features.get("market_type") or "CRYPTO")
     regime = str(features.get("cci_regime") or "UNKNOWN")
     turn = str(features.get("cci_smoothing_turn_event") or "UNKNOWN")
+    cross_cycle = str(features.get("cci_cross_cycle") or "UNKNOWN")
+    midline_phase = str(features.get("midline_path_phase") or "UNKNOWN")
+    retest = str(features.get("cci_retest_state") or "UNKNOWN")
+    divergence = str(features.get("cci_divergence") or "UNKNOWN")
     return {
         "state": state,
         "market": market,
         "state_regime": f"{state}|{regime}",
         "state_turn": f"{state}|{turn}",
+        "state_cross_cycle": f"{state}|{cross_cycle}",
+        "state_midline_phase": f"{state}|{midline_phase}",
+        "state_retest": f"{state}|{retest}",
+        "state_divergence": f"{state}|{divergence}",
     }
 
 

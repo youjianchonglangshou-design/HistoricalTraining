@@ -1,137 +1,131 @@
-# HistoricalTraining v3.7.2 — CCI20 + SMA14 Champion Full Rebuild
+# HistoricalTraining v3.8.0 — CCI PRIMARY Path Tree
 
-這版的目的只有一個：用 CCI 取代原本 ADX/DMI Expert，重新跑完整 HistoricalTraining，Action 完成後直接把新模型發布成新的 Champion。
+這版把 CCI 從「舊 BB/HA 機率的修正器」改成真正的主模型。
 
-## CCI 同源公式
+## 核心規則
 
-- Source：`hlc3`
-- CCI：20
-- smoothingMA：SMA14
-- smoothingMA 上升：YELLOW
-- smoothingMA 下降：PURPLE
-- 參考位置：-100 / 0 / +100
-- CCI 的 -120～-80 區域被保留成明確位置特徵，但模型不會被硬寫成「此區一定上漲」。
-- BB 中軌的 `midline_slope_5d` 與 `midline_improvement` 一起交給模型，讓模型自行學「仍下斜但下斜正在減速」是否有意義。
-- HA 黃紫、CCI 是否穿越 smoothingMA、smoothingMA 黃紫轉換與持續時間也都進模型。
+S-state 只負責定義考題：
+
+- S0.5：72H 內能否到 S1 或更高。
+- S1：72H 內能否完成上攻 / BandPos > 0.75。
+- S2：72H 內能否到 S3。
+- S3：72H 內能否續強 / BandPos > 0.75。
+
+最後的成功 / 還活著 / 真失敗 / 其他機率，直接由 CCI PRIMARY Path Tree 回答；Schema 5 不再先用舊 Level 1-5 BB/HA probability 當 base 再讓 CCI 小幅修正。
 
 模型合約：
 
-`CCI-EXPERT-v1-HLC3-20-SMA14`
+`CCI-PRIMARY-v2-PATH-TREE-HLC3-20-SMA14`
 
-Schema：
+Schema：`5`
 
-`4`
+CCI 公式不變：`hlc3 -> CCI20 -> SMA14 smoothingMA`。
 
-## 沒有改 S-state
+## 模型現在會看「怎麼走到今天」
 
-S0.5 / S1 / S2 / S3 的原本定義、BB/HA Level 1～5、24H/48H/72H 結算方式都不改。
+每個正式日收線 case 都保留 30 日 CCI / SMA / BB / HA 路徑，包括：
 
-CCI 是第二層歷史證據，用來取代原本 ADX/DMI Expert 對機率的修正角色。
+- 最近 21 日是第一次或第二次以上金叉 / 死叉。
+- 距離最近一次交叉幾天。
+- 最近一次交叉發生在哪個 CCI 區域。
+- 交叉當時 SMA 是黃 / 紫。
+- 交叉當時 BB 中軌是上升加速、上升減速、平緩、下斜改善、下斜惡化。
+- CCI 與 SMA gap 是正在接近、拉開、上方回踩或上方擴張。
+- 黃 SMA 回踩、短暫跌破後 reclaim；以及紫 SMA 的鏡像狀態。
+- CCI / SMA 1日、3日斜率與加速度。
+- BB 中軌 1日、3日斜率與斜率變化。
+- Price HH + CCI LH / Price LL + CCI HL 背離。
+- HA 黃紫與連續長度。
+- Crypto / US-stock 市場類型。
 
-## 正式重訓 Action
+這些不是硬寫「哪一種一定漲」。每個 S-state 的樹會依歷史 outcome 自己選出最有辨識力的 split。
 
-GitHub Actions：
+## S0.5 / S2 對應使用目的
 
-`Manual Historical S-state CCI Full Rebuild v3.7.1`
+模型現在有能力把原本會混在一起的案例拆開：
 
-預設直接使用：
+- S0.5：第一次深位金叉 + 中軌仍陡降，與後續第二次金叉 + 中軌下斜改善 / 平緩，不再只是同一個 `CCI_CROSS_UP`。
+- S0.5：CCI 把 SMA 帶黃後的回踩 / reclaim 可獨立成路徑特徵。
+- S2：高位第一次死叉 + BB 中軌仍強上斜，可與第二次死叉 + 中軌減速 / 平緩 / 下斜 + 頂背離拆開學習。
+- 中軌平緩本身不會被硬判失敗；CCI 重新接近 / 金叉與衰竭死叉會由歷史結果決定不同分支。
+
+## ALL 現在真的包含美股/RWA
+
+v3.7 的 `--symbols ALL` 實際只使用 Crypto `EXAM_SYMBOLS`。v3.8.0 修正為：
+
+`ALL = 90 個 Crypto + 目前已解鎖 US-stock/RWA`
+
+目前設定共 206 個標的。每筆 case 保留 `market_type`，樹可以自己學同一個 CCI 路徑在 Crypto / US-stock 是否有不同結果。
+
+若 Pionex 單一 continuation request 暫時失敗，但 repository 已有有效 cache，Full Rebuild 會使用既有 cache 繼續 replay，不會直接丟掉該標的。
+
+## 正式 HistoricalTraining Action
+
+到 GitHub Actions 執行：
+
+`Manual Historical CCI PRIMARY Path Full Rebuild v3.8.0`
+
+預設：
 
 - `symbols = ALL`
 - `max_records = 20000`
 - `step_bars = 1`
 - `full_refresh = false`
 
-Action 會依序：
+Action 會：
 
-1. 跑 Python compile + unit tests。
-2. 用現有 HistoricalTraining cache 做完整歷史 replay。
-3. 產生 Schema 4 CCI 模型。
-4. 驗證 `CCI-EXPERT-v1-HLC3-20-SMA14`。
-5. 新模型 ID 開一個全新的 Champion generation。
-6. 把新 generation 的近期戰績重設為 0。
-7. Commit 新模型、training report、generation/performance。
-8. 直接 PUT 到 R2 Active，Action 完成時新模型就是 Champion。
-9. 同步上傳空白的新 generation performance / evolution review / policy。
-10. 驗證 R2 Active model_id 等於剛產生的新模型，且 recent records = 0。
+1. compile + 21 個 unit tests。
+2. replay Crypto + US-stock/RWA 完整歷史 cache。
+3. 建立 Schema 5 CCI PRIMARY Path Tree。
+4. 產生 70/15/15 chronological walk-forward diagnostic。
+5. 驗證 US-stock/RWA 確實產生 supervised cases。
+6. 產生新的 model_id。
+7. 直接開新的 Champion generation，近期 performance 歸零。
+8. commit 新模型 / report / generation / performance。
+9. PUT 新模型到 R2 Active。
+10. 驗證 Active model_id = 新模型、snapshots=0、recent_records=0。
 
-因此不需要再額外跑 `Publish Current Model as Champion`；該 workflow 只保留作為手動補發備援。
+因此這個 Action 成功後，新模型就是新的 Active Champion，不需要另外跑 Publish Current Model。
 
-## 新模型會學哪些 CCI 規律
+## 訓練報告
 
-CCI Expert 使用六組獨立 facets，不改 S-state：
+重點看：
 
-1. `position_cross`
-   - CCI 位置區域
-   - CCI / smoothingMA 交叉
-   - CCI 在 smoothingMA 上方或下方
+`reports/training_report.json`
 
-2. `smoothing_step`
-   - smoothingMA 黃 / 紫
-   - 階梯持續時間
-   - 紫→黃 / 黃→紫
+- `cci_primary_72h`：每個 S-state 的 root split、最強 / 最弱歷史路徑、樣本與機率。
+- `walk_forward.validation`
+- `walk_forward.holdout`
+- `crypto_case_count`
+- `us_stock_case_count`
 
-3. `momentum`
-   - CCI 位置
-   - CCI 斜率
-   - CCI 與 smoothingMA 距離
+這次不要只看 in-sample 高機率。`walk_forward.holdout` 才用來檢查新的 CCI path 邏輯在後段沒看過的歷史是否仍有改善。
 
-4. `bb_slope_context`
-   - CCI 位置 / 交叉
-   - BB 中軌斜率
-   - BB 中軌斜率改善幅度
+## Champion 之後仍會自己檢討進化
 
-5. `right_side_confirm`
-   - CCI 是否在黃色 smoothingMA 上形成上穿確認
-   - smoothingMA 顏色
-   - HA 顏色 / 連續長度
+每 120 筆正式 72H Frozen settlement 後，Evolution Review 除了 state / market / CCI regime，現在也會分析：
 
-6. `cci_regime`
-   - ABOVE/BELOW × YELLOW/PURPLE
-   - smoothingMA 斜率
-   - BB 中軌斜率
+- `state_cross_cycle`
+- `state_midline_phase`
+- `state_retest`
+- `state_divergence`
 
-訓練後請看：
+下一代會對這些實際高估 / 低估的路徑提高 live feedback reinforcement，再重新訓練。
 
-`reports/training_report.json -> cci_expert_72h`
+## 本次新 Champion 的第一份 9/4 考卷
 
-裡面會列每個 S-state、每個 facet 的 strongest_positive / strongest_negative、樣本數、成功率、結構存活率與真失敗率。這份報告才用來決定 Terminal 原本判斷膠囊下一版要改寫成什麼。
+早上 08:25 已經存在的 checkpoint 是舊 Champion 產生的，不能直接掛到新 model_id；`champion_daily.py` 會拒絕模型 ID 不一致的 Frozen Snapshot。
 
-## 近期戰績重置
+所以正確順序是：
 
-Full Rebuild 不會刪除舊世代歷史，而是：
+1. 先部署 HistoricalTraining v3.8.0 與支援 Schema 5 的 Terminal v0.1.81。
+2. 跑 `Manual Historical CCI PRIMARY Path Full Rebuild v3.8.0`，確認新 Active Champion、performance=0。
+3. 到 SStateMarketTerminal → Actions → `Auto Market Batch` 手動重跑同一個 9/4 完整日收線：
+   - `mode = pair`
+   - `batch_id = cci_primary_20260904`
+   - `checkpoint_date_tw = 2026-09-04`
+   - `run_learning_after = true`
+4. 這次會用新的 Active Champion 重算 9/4 Crypto + US-stock checkpoint，並自動觸發 HistoricalTraining Daily Champion freeze。
+5. 回 performance.html 更新戰績；9/4 應成為新世代第一份 Frozen Snapshot，72H 尚未到期則維持待結算。
 
-- 舊 Champion generation 關閉並存入 `data/champion/generations.json`
-- 新 CCI Champion generation 從 0 開始
-- `data/champion/performance.json` 的新世代 snapshots / recent_records = 0
-- R2 舊 ledger shards 保留，但不會計入新的 generation
-
-這樣既能「洗掉近期戰績重新考試」，又不破壞舊世代稽核資料。
-
-## 9/3 第一份新考卷
-
-等 CCI Full Rebuild Action 成功、R2 Active 已是新 CCI Champion 後，再到 SStateMarketTerminal 手動跑正式 Champion checkpoint，日期指定 `2026-09-03`。這會讓 9/3 成為新 generation 的第一份正式考卷。
-
-Terminal 必須使用支援 Schema 4 / CCI Expert 的 probability reader，否則只會讀到 base Level 1～5，無法套用 CCI Expert 修正。
-
-
-## v3.7.2 手動補寫指定日期考卷
-
-`Daily Champion 08:25 Daily-Confirmed Settlement & Evolution` 現在多一個 `checkpoint_date_tw` 輸入。
-
-- 留空：維持原本行為，使用台灣今天。
-- 指定 `2026-09-03`：直接讀 R2 已存在的 9/3 Crypto / US-stock 正式 checkpoint，並把它凍結成目前 Champion generation 的 Frozen Snapshot 考卷。
-- 不需要重跑 Auto Market Batch；已存在的 9/3 checkpoint 會直接被使用。
-- 模型、CCI 公式、Champion ID 都不會因此重新訓練或更換。
-
-本次 9/3 補寫請到 HistoricalTraining → Actions → `Daily Champion 08:25 Daily-Confirmed Settlement & Evolution` → Run workflow，填：
-
-- `run_id`：留空
-- `checkpoint_date_tw`：`2026-09-03`
-
-Action 完成後，GEN002 的 performance ledger 應新增 9/3 Frozen Snapshot；72H 尚未到期的欄位維持待結算。
-
-
-## v3.7.1 bugfix
-
-- 修正 HistoricalTraining Action 在建立新 Champion generation 時呼叫 `build_performance()` 漏傳 `now_ms`，導致全量訓練完成後於清空近期戰績步驟失敗。
-- CCI 訓練公式、模型結構、Champion 發布流程皆不變。
+不要把舊 Champion 的早上 checkpoint 直接補寫到新世代。
