@@ -521,3 +521,27 @@ summary{color:#dbe6f7;cursor:pointer;font-weight:750}
   h1{font-size:20px}
   .prompt-note{display:none}
 }
+
+
+/* QUIZ v4.0 — CCI PRIMARY panel / same reading semantics as SStateMarketTerminal. */
+.chip.cci{border-color:#64748b;color:#e2e8f0}
+.quiz-cci-hud{position:absolute;left:16px;right:82px;z-index:11;height:24px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 0 0 2px;pointer-events:none}
+.cci-title{font-size:8.5px;font-weight:950;letter-spacing:.6px;color:#94a3b8;white-space:nowrap}
+.cci-head-right{display:flex;align-items:center;justify-content:flex-end;gap:7px;min-width:0}
+.cci-state-pill{display:inline-flex;align-items:center;justify-content:center;max-width:330px;min-width:0;padding:4px 9px;border:1px solid #475569;border-radius:999px;background:#0f172acc;color:#cbd5e1;font-size:9.5px;font-weight:950;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 0 0 1px #0f172a44}
+/* SSR palette used by current Terminal path comments. */
+.cci-path-strong{border-color:#facc15;color:#fef3c7;background:#713f12c7;box-shadow:0 0 11px #facc1540}
+.cci-path-positive{border-color:#a855f7;color:#f3e8ff;background:#581c87b8;box-shadow:0 0 10px #a855f738}
+.cci-path-setup{border-color:#3b82f6;color:#dbeafe;background:#1e3a8ab8;box-shadow:0 0 8px #3b82f62b}
+.cci-path-caution{border-color:#f97316;color:#ffedd5;background:#7c2d12b8;box-shadow:0 0 8px #f973162b}
+.cci-path-risk{border-color:#ef4444;color:#fee2e2;background:#7f1d1db8;box-shadow:0 0 10px #ef444438}
+.cci-path-neutral{border-color:#cbd5e1;color:#f8fafc;background:#334155b8;box-shadow:0 0 0 1px #f8fafc12}
+.cci-live-pill{display:inline-flex;align-items:center;gap:4px;min-width:68px;justify-content:center;padding:4px 7px;border:1px solid #475569;border-radius:7px;background:#0f172a99;color:#94a3b8;font-size:8.5px;font-weight:950;line-height:1}
+.cci-live-pill strong{font:950 9.5px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.cci-sma-yellow{border-color:#fde047;background:#fde04720;color:#fde68a;box-shadow:0 0 8px #fde04720}.cci-sma-yellow strong{color:#fde047}
+.cci-sma-purple{border-color:#bba4e8;background:#bba4e820;color:#ddd0f7;box-shadow:0 0 8px #bba4e820}.cci-sma-purple strong{color:#c4b5fd}
+.cci-sma-neutral,.cci-pill-neutral{border-color:#475569;background:#0f172a99;color:#94a3b8}.cci-sma-neutral strong,.cci-pill-neutral strong{color:#e2e8f0}
+/* Latest Terminal rule: CCI > SMA green; CCI < SMA red; tie stays neutral. */
+.cci-pill-above{border-color:#22c55e;background:#14532d80;color:#bbf7d0;box-shadow:0 0 8px #22c55e33}.cci-pill-above strong{color:#86efac}
+.cci-pill-below{border-color:#ef4444;background:#7f1d1d80;color:#fecaca;box-shadow:0 0 8px #ef444433}.cci-pill-below strong{color:#fca5a5}
+@media(max-width:760px){.quiz-cci-hud{left:12px;right:74px}.cci-state-pill{max-width:180px;font-size:8.5px;padding:4px 7px}.cci-live-pill{min-width:58px;font-size:8px;padding:4px 6px}.cci-title{display:none}}

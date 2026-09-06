@@ -1,81 +1,62 @@
-# S-State 歷史行情考題｜Trading Replay + R2 Active
+# S-State 歷史行情考題｜Trading Replay + R2 Champion CCI PRIMARY
 
-> QUIZ v3.0｜ADX-1DP-STICKY
+> QUIZ v4.0｜CCI-PRIMARY-PATH
 
-`quiz/index.html` 直接讀取本 repository 的 `data/cache/4h/*.csv` 真實歷史資料，並使用 `quiz/model_timeline/*.json` 還原每一個歷史日當下的 S-state 特徵。
+`quiz/index.html` 讀取本 repository 的 `data/cache/4h/*.csv` 真實歷史資料，並使用 `quiz/model_timeline/*.json` 還原每一個歷史日當下的正式 S-state + CCI PRIMARY replay 特徵。
 
-## 操作方式
+## 這版改了什麼
 
-部署 GitHub Pages 後開啟：
+- 移除畫面上的 ADX / DMI 副圖，改成與 SStateMarketTerminal 同語意的 **CCI20 / SMA14**。
+- 白線：CCI20（`hlc3`）。
+- SMA14 smoothingMA：上升＝黃階梯；下降＝紫階梯。
+- CCI 膠囊：`CCI > SMA` 綠色；`CCI < SMA` 紅色；相等/無資料維持中性。
+- CCI 路徑評語與 Terminal 使用同一套規則，例如 `高檔回踩｜中軌仍上斜`、`右V共振｜二次上穿・中軌改善`、`健康回踩｜CCI守住黃階梯`。
+- 模型改為 **Schema 5 CCI PRIMARY path tree**：S-state 只選擇考題；CCI/SMA 路徑 + BB 中軌路徑 + HA context 直接輸出 4-way probability。
+- Quiz 每次載入都從 Worker `/api/model/active` 讀取目前 **R2 Active Champion**，不是把 model_id 寫死在前端。
 
-```text
-/quiz/
-```
+## 模型 HUD
 
-- 隨機抽一段真實歷史行情，畫面固定顯示最近 30 根日 K。
-- `▶ 播放下一天` **每按一次只增加 1 天**，不預選 3 / 7 / 12 天。
-- 沒有進場條件就繼續播放。
-- 看到進場點時才按 `做多` 或 `做空`；沒有「觀望」按鈕。
-- 進場後仍可逐日播放，並顯示目前損益、MFE / MAE、持有天數與進場後第 3 天方向結果。
+每播放到一個交易日，使用當日 `quiz/model_timeline/<SYMBOL>.json` 的正式 replay features，套目前 Active Champion 72H (`18 x 4H`) path tree，顯示：
 
-## R2 Active 模型
+- 3日成功率
+- 真失敗率
+- 結構存活率
+- Path 樣本數
+- Path Level（S0.5 / S2 最深可 L6；S1 / S3 最深 L5，實際以 Active model 為準）
 
-頁面啟動時直接讀取目前 Cloudflare Worker 的：
+若該日是 S0 / OTHER，仍顯示 CCI 路徑評語，但不偽造正式機率。
 
-```text
-/api/model/active
-```
+## CCI 路徑評語色系
 
-也就是 R2：
+- SSR 金黃：`strong`
+- SR 紫：`positive`
+- R 藍：`setup`
+- N 灰白：`neutral`
+- 警戒橘：`caution`
+- 危險紅：`risk`
 
-```text
-models/active/probability_model.json
-```
+## 歷史資料契約
 
-每播放到一個新交易日，模型 HUD 都會用「那一天最後一根 4H」的歷史 S-state 特徵重新匹配目前 Active model，顯示：
+`quiz/model_timeline` 是由 `run_training.py` 同一輪 HistoricalTraining replay 產生，已包含：
 
-- 失敗率：72H `TRUE_FAIL`
-- 存活率：72H `structural_survival_probability`
-- 樣本數：該條件實際匹配樣本
-- Level：目前匹配到的模型層級，最高 L5
-- DMI Expert：依 Active model 的 facets 對四分類機率做 reliability-weighted geometric mean 修正；HUD 顯示 `DMI×N` 與 Blend 強度
+- `cci`, `cci_smoothing_ma`, `cci_smoothing_direction`, `cci_sma_relation`
+- first / second cross cycle、days since cross、cross zone
+- approaching / separating gap、retest / reclaim
+- CCI / SMA slopes + acceleration
+- BB midline path phase / slopes
+- divergence
+- HA context / market_type
 
-若該日不是 S0.5 / S1 / S2 / S3 的可建模狀態，畫面明確顯示「非模型狀態｜無統計」，不偽造機率。
+因此 Quiz 不在瀏覽器猜測 CCI path features；前端只負責把正式 replay feature 套進目前 Champion path tree。
 
-## 歷史模型時間線
+## 操作
 
-`run_training.py` 已在既有正式 4H replay 的同一輪運算中同步輸出：
+部署 GitHub Pages 後開啟 `/quiz/`：
 
-```text
-quiz/model_timeline/<SYMBOL>.json
-```
+1. 隨機抽真實歷史片段。
+2. 每按一次「播放下一天」只增加 1 天。
+3. 觀察 S-state、BB/HA、CCI path comment、SMA/CCI 膠囊與 Champion 機率。
+4. 看到進場點才按做多/做空；之後自行決定平倉。
+5. 平倉後才計入本頁 session 勝負與累積損益；重新整理歸零。
 
-保留：
-
-- `midline_state`
-- `bandpos` / `bandpos_bin`
-- `trigger_stage`
-- `bandwidth_trend`
-- `state_age_bars` / `state_age_bin`
-
-因此模型可以正常匹配到 L5，而不是由 HTML / JS 另外猜 S-state。
-
-Daily Learning / Historical Training workflow 也已把 `quiz/model_timeline` 加入 commit，之後每天更新歷史資料時會同步更新考題時間線。
-
-## 圖表契約
-
-- 普通日 K：4H cache 依 UTC 日聚合。
-- BB20：普通日 K close、20 日、母體標準差、±2σ。
-- 平均 K：Heikin-Ashi。
-- 黃階梯：HA close > HA open。
-- 紫階梯：HA close < HA open。
-- 圖表採 rolling 30-day 視窗，新的一天從右側進入，最舊一天從左側移出。
-- ADX / DMI 直接讀取 `quiz/model_timeline` 的正式 replay 特徵：DI+ 黃、DI− 紫；ADX 先四捨五入到 1 位小數，RISING 綠階梯、FALLING 紅階梯，1 位小數相等時沿用上一個有效方向；20 為白色虛線。
-- ADX 四態膠囊：DI 主導決定黃／紫語意，ADX 階梯增減決定綠／紅點與 `↗↗ / ↘↘ / ←→`。
-
-這個頁面不修改 `engine/scoring_rules.py`，不改既有 S-state 判斷公式，也不把使用者的考題答案寫回模型。
-
-
-## DMI Expert combiner + ADX 1DP Sticky（v3.0）
-
-Quiz 不再只顯示舊 Level 1～5 機率。若 R2 Active 是 Schema v3 DMI Expert，會先匹配既有 BB/HA Level 規則，再使用 state-specific DMI facets（包含 ADX Step Regime）做與 HistoricalTraining / Terminal 相同的 reliability-weighted geometric-mean likelihood-ratio correction。`quiz/model_timeline` 直接來自同一輪 HistoricalTraining replay，因此 4H DI cross age、ADX step direction / persistence / turn event 均不由前端猜測。
+這個 Quiz 不修改 Champion、不修改 `engine/scoring_rules.py`，也不把使用者答案寫回模型。

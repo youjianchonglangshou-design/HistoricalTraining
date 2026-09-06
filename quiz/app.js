@@ -7,21 +7,31 @@
   const MIN_CUTOFF_INDEX = (CONTEXT_DAYS - 1) + (BB_PERIOD - 1);
   const DAY_MS = 24 * 60 * 60 * 1000;
   const MODEL_HORIZON = 18; // 72H = 18 x 4H
-  const MAX_MODEL_LEVEL = 5;
-  const DMI_AXIS = 20;
+  const MAX_MODEL_LEVEL = 6;
   const OUTCOME_SUCCESS = 'SUCCESS_WITHIN_HORIZON';
   const OUTCOME_ALIVE = 'ALIVE_SLOW';
   const OUTCOME_FAIL = 'TRUE_FAIL';
   const OUTCOME_OTHER = 'OTHER';
   const OUTCOME_KEYS = [OUTCOME_SUCCESS, OUTCOME_ALIVE, OUTCOME_FAIL, OUTCOME_OTHER];
-  const DMI_QUANTILE_FIELDS = {
-    di_abs_gap: 'di_abs_gap_q',
-    di_axis_distance: 'di_axis_distance_q',
-    di_plus_slope_3d: 'di_plus_slope_q',
-    di_minus_slope_3d: 'di_minus_slope_q',
-    di_gap_slope_3d: 'di_gap_slope_q',
-    adx: 'adx_q',
-    adx_slope_3d: 'adx_slope_q',
+  // Must match HistoricalTraining/training/model_builder.py PATH_QUANTILE_FIELDS.
+  const PATH_QUANTILE_FIELDS = {
+    cci_sma_gap: 'cci_sma_gap_q',
+    cci_gap_velocity_1d: 'cci_gap_velocity_q',
+    cci_gap_acceleration: 'cci_gap_acceleration_q',
+    cci_slope_1d: 'cci_slope_1d_q',
+    cci_slope_3d: 'cci_slope_3d_q',
+    cci_acceleration: 'cci_acceleration_q',
+    cci_smoothing_slope_1d: 'cci_smoothing_slope_1d_q',
+    cci_smoothing_slope_3d: 'cci_smoothing_slope_3d_q',
+    cci_distance_to_neg100: 'cci_distance_to_neg100_q',
+    cci_distance_to_zero: 'cci_distance_to_zero_q',
+    midline_slope_1d: 'midline_slope_1d_q',
+    midline_slope_3d: 'midline_slope_3d_q',
+    midline_slope_change_3d: 'midline_slope_change_q',
+    price_high_delta_pct: 'price_high_delta_q',
+    cci_high_delta: 'cci_high_delta_q',
+    price_low_delta_pct: 'price_low_delta_q',
+    cci_low_delta: 'cci_low_delta_q',
   };
   const cfg = window.SSTATE_QUIZ_CONFIG || {};
   const workerUrl = String(cfg.workerUrl || '').replace(/\/$/, '');
@@ -223,7 +233,7 @@
   function renderModelStatus() {
     const el = $('modelStatus');
     if (state.activeModel) {
-      el.textContent = `R2 Active｜${state.activeModel.model_id}`;
+      el.textContent = `R2 Champion｜${state.activeModel.model_id}｜Schema ${state.activeModel.schema_version || '?'} CCI PRIMARY`;
       el.classList.remove('error');
     } else {
       el.textContent = `R2 Active 讀取失敗${state.modelError ? `｜${state.modelError}` : ''}`;
@@ -616,23 +626,23 @@
       level: pred.level,
       fail: pred.trueFail,
       survival: pred.survival,
+      success: pred.success,
       samples: pred.samples,
-      dmiFacets: pred.dmiExpert ? Number(pred.dmiExpert.matchedFacetCount || 0) : 0,
-      dmiVersion: pred.dmiExpert ? String(pred.dmiExpert.version || '') : '',
+      pathSignature: pred.pathSignature || 'STATE_BASELINE',
+      modelId: state.activeModel.model_id || '',
     };
   }
 
   function formatModelSnapshot(s) {
     if (!s || !s.available) return `${s && s.state ? s.state : 'NON_MODEL'}｜無統計`;
-    const dmi = Number(s.dmiFacets || 0) > 0 ? `｜DMI×${Number(s.dmiFacets)}` : '';
-    return `${s.state} L${s.level}${dmi}｜失敗 ${fmtModelPct(s.fail)}｜存活 ${fmtModelPct(s.survival)}｜樣本 ${Number(s.samples || 0).toLocaleString()}`;
+    return `${s.state} L${s.level}｜成功 ${fmtModelPct(s.success)}｜失敗 ${fmtModelPct(s.fail)}｜存活 ${fmtModelPct(s.survival)}｜樣本 ${Number(s.samples || 0).toLocaleString()}`;
   }
 
   function renderModelHud() {
     const timeline = currentTimelineRow();
     if (!state.question) return;
     if (!state.activeModel) {
-      $('modelState').textContent = 'R2 Active 模型無法讀取';
+      $('modelState').textContent = 'R2 Champion 模型無法讀取';
       $('modelLevel').textContent = '—';
       setModelStat('modelFail', null);
       setModelStat('modelSurvival', null);
@@ -646,21 +656,20 @@
       setModelStat('modelFail', null);
       setModelStat('modelSurvival', null);
       $('modelSamples').textContent = '—';
-      $('modelHint').textContent = '此日沒有可匹配的 S0.5 / S1 / S2 / S3；可繼續播放下一天';
+      $('modelHint').textContent = '此日沒有 replay 特徵；可繼續播放下一天';
       return;
     }
 
     const pred = lookupProbability(state.activeModel, timeline.state, MODEL_HORIZON, timeline.features || {});
-    const stateText = `${timeline.state}｜${stateLabel(timeline.state)}`;
-    $('modelState').textContent = stateText;
+    $('modelState').textContent = `${timeline.state}｜${stateLabel(timeline.state)}`;
     if (!pred.available) {
       $('modelLevel').textContent = '—';
       setModelStat('modelFail', null);
       setModelStat('modelSurvival', null);
       $('modelSamples').textContent = '—';
       $('modelHint').textContent = timeline.state === 'S0' || timeline.state === 'OTHER' || timeline.state === 'NON_MODEL'
-        ? '目前不是 S0.5 / S1 / S2 / S3 模型狀態'
-        : `目前模型無匹配：${pred.reason || 'unknown'}`;
+        ? '目前不是 S0.5 / S1 / S2 / S3 正式機率考題；CCI 結構評語仍可閱讀'
+        : `目前 Champion 無匹配：${pred.reason || 'unknown'}`;
       return;
     }
 
@@ -668,204 +677,90 @@
     setModelStat('modelFail', pred.trueFail);
     setModelStat('modelSurvival', pred.survival);
     $('modelSamples').textContent = Number(pred.samples || 0).toLocaleString();
-    const dmiText = pred.dmiExpert && pred.dmiExpert.available
-      ? `DMI×${pred.dmiExpert.matchedFacetCount}｜Blend ${(Number(pred.dmiExpert.blendStrength || 0) * 100).toFixed(0)}%`
-      : 'DMI未匹配';
-    $('modelHint').textContent = `3日成功 ${fmtModelPct(pred.success)}｜${dmiText}｜${featureSummary(timeline.features || {})}`;
+    const path = pred.matchedPath?.length
+      ? `CCI Path ${pred.matchedPath.length}層`
+      : 'State baseline';
+    $('modelHint').textContent = `3日成功 ${fmtModelPct(pred.success)}｜${path}｜${featureSummary(timeline.features || {})}`;
   }
 
-  function featuresForModelVersion(model, features) {
+  function applyPathBinning(features, binning) {
     const out = { ...(features || {}) };
-    const version = String(((model && model.dmi_expert_contract) || {}).version || '');
-    // During the v2 -> v3 migration the regenerated quiz timeline stores both
-    // semantics. Keep R2 Active v2 mathematically compatible until a v3 model
-    // is actually promoted.
-    if (version === 'DMI-EXPERT-v2-ADX-STEP' && out.adx_step_direction_legacy) {
-      out.adx_step_direction = out.adx_step_direction_legacy;
-      out.adx_step_age_days = out.adx_step_age_days_legacy;
-      out.adx_step_age_bin = out.adx_step_age_bin_legacy;
-      out.adx_turn_event = out.adx_turn_event_legacy;
-      out.dmi_adx_regime = out.dmi_adx_regime_legacy;
-    }
+    Object.entries(PATH_QUANTILE_FIELDS).forEach(([rawField, qField]) => {
+      const value = finiteNumber(out[rawField]);
+      const node = (binning || {})[rawField] || {};
+      const q25 = finiteNumber(node.q25), q50 = finiteNumber(node.q50), q75 = finiteNumber(node.q75);
+      if (value === null || q25 === null || q50 === null || q75 === null) out[qField] = 'UNKNOWN';
+      else if (value <= q25) out[qField] = 'Q1';
+      else if (value <= q50) out[qField] = 'Q2';
+      else if (value <= q75) out[qField] = 'Q3';
+      else out[qField] = 'Q4';
+    });
     return out;
   }
 
+  function walkPathTree(tree, features) {
+    let node = tree || {};
+    const path = [];
+    while (node && typeof node === 'object' && !Boolean(node.leaf ?? true)) {
+      const field = String(node.split_field || '');
+      if (!field) break;
+      const raw = features[field];
+      const value = String(raw === null || raw === undefined || raw === '' ? 'UNKNOWN' : raw);
+      const child = (node.children || {})[value];
+      if (!child || typeof child !== 'object') break;
+      path.push({ field, value });
+      node = child;
+    }
+    return { node, path };
+  }
+
   function lookupProbability(model, marketState, horizon, features) {
-    const modelFeatures = featuresForModelVersion(model, features);
     const stateNode = (model.states || {})[marketState];
     if (!stateNode) return { available:false, reason:'state_missing' };
     const hnode = (stateNode.horizons || {})[String(horizon)];
     if (!hnode) return { available:false, reason:'horizon_missing' };
-    const minSamples = Number(model.default_min_samples || 50);
 
-    const base = lookupBaseRule(hnode, modelFeatures, minSamples, MAX_MODEL_LEVEL);
-    if (!base || !base.node) return { available:false, reason:'baseline_missing' };
-    const basePred = normalizePrediction(base.node, base.level, base.fallback);
-
-    // Schema v1/v2 remains backward compatible. Schema v3 DMI Expert is an
-    // independent correction layer on top of the legacy BB/HA Level 1-5 rule.
-    const dmi = lookupDmiFacets(stateNode, hnode, modelFeatures, minSamples);
-    const dmiVersion = String(((model.dmi_expert_contract || {}).version) || '');
-    if (!dmi.matches.length || !hnode.baseline) {
+    // Schema 5 CCI PRIMARY: S-state selects the question; the CCI/BB/HA path tree
+    // directly supplies the four probabilities. No legacy ADX/DMI correction layer.
+    if (Number(model.schema_version || 0) >= 5 && (hnode.path_tree || hnode.baseline)) {
+      const enriched = applyPathBinning(features || {}, stateNode.path_binning || {});
+      const tree = hnode.path_tree || hnode.baseline || {};
+      const walked = walkPathTree(tree, enriched);
+      const node = walked.node || tree;
+      const probs = nodeOutcomeProbabilities(node);
+      const depth = Number(node.depth ?? walked.path.length ?? 0);
+      const pathSignature = walked.path.map(x => `${x.field}=${x.value}`).join('|') || 'STATE_BASELINE';
       return {
-        ...basePred,
-        dmiExpert: {
-          available: false,
-          version: dmiVersion,
-          matchedFacetCount: 0,
-          blendStrength: 0,
-          matchedFacets: [],
-          bins: dmi.enriched,
-        },
+        available: true,
+        samples: Number(node.samples || 0),
+        level: depth,
+        fallback: walked.path.length === 0,
+        success: probs[OUTCOME_SUCCESS],
+        trueFail: probs[OUTCOME_FAIL],
+        survival: probs[OUTCOME_SUCCESS] + probs[OUTCOME_ALIVE],
+        other: probs[OUTCOME_OTHER],
+        enrichedFeatures: enriched,
+        matchedPath: walked.path,
+        pathSignature,
+        cciPrimaryVersion: String((model.cci_primary_contract || {}).version || ''),
       };
     }
 
-    const combined = combineWithDmi(
-      base.node,
-      hnode.baseline,
-      dmi.matches,
-      Number(model.prior_strength || 20),
-    );
+    return { available:false, reason:`unsupported_model_schema_${model.schema_version || 'unknown'}` };
+  }
+
+  function nodeOutcomeProbabilities(node) {
+    const outcomes = (node && node.outcomes) || {};
+    const success = finiteNumber((outcomes[OUTCOME_SUCCESS] || {}).probability);
+    const alive = finiteNumber((outcomes[OUTCOME_ALIVE] || {}).probability);
+    const fail = finiteNumber((outcomes[OUTCOME_FAIL] || {}).probability);
+    const other = finiteNumber((outcomes[OUTCOME_OTHER] || {}).probability);
     return {
-      ...basePred,
-      success: combined.probabilities[OUTCOME_SUCCESS],
-      survival: combined.probabilities[OUTCOME_SUCCESS] + combined.probabilities[OUTCOME_ALIVE],
-      trueFail: combined.probabilities[OUTCOME_FAIL],
-      other: combined.probabilities[OUTCOME_OTHER],
-      dmiExpert: {
-        available: true,
-        version: dmiVersion,
-        matchedFacetCount: combined.audit.length,
-        blendStrength: combined.blendStrength,
-        matchedFacets: combined.audit,
-        bins: dmi.enriched,
-      },
+      [OUTCOME_SUCCESS]: success === null ? Number(node?.probability || 0) : success,
+      [OUTCOME_ALIVE]: alive === null ? 0 : alive,
+      [OUTCOME_FAIL]: fail === null ? Number(node?.true_fail_probability || 0) : fail,
+      [OUTCOME_OTHER]: other === null ? Number(node?.other_probability || 0) : other,
     };
-  }
-
-  function lookupBaseRule(hnode, features, minSamples, maxLevel) {
-    const levels = (hnode.levels || []).filter(x => Number(x.level || 0) <= Number(maxLevel));
-    for (let li = levels.length - 1; li >= 0; li--) {
-      const level = levels[li];
-      const fields = Array.isArray(level.fields) ? level.fields : [];
-      const sig = signature(features, fields);
-      const rule = findRule(level.rules || [], sig, minSamples);
-      if (rule) return { node:rule, level:Number(level.level || 0), fields, signature:sig, fallback:false };
-    }
-    return hnode.baseline
-      ? { node:hnode.baseline, level:0, fields:[], signature:'BASELINE', fallback:true }
-      : null;
-  }
-
-  function normalizePrediction(node, level, fallback) {
-    const probs = outcomeProbs(node);
-    return {
-      available: true,
-      samples: Number(node.samples || 0),
-      level,
-      fallback,
-      success: probs[OUTCOME_SUCCESS],
-      trueFail: probs[OUTCOME_FAIL],
-      survival: probs[OUTCOME_SUCCESS] + probs[OUTCOME_ALIVE],
-      other: probs[OUTCOME_OTHER],
-    };
-  }
-
-  function enrichDmiRawFeatures(features) {
-    const out = { ...(features || {}) };
-    const plus = finiteNumber(out.di_plus);
-    const minus = finiteNumber(out.di_minus);
-    const gap = finiteNumber(out.di_gap);
-    if (finiteNumber(out.di_abs_gap) === null) {
-      const rawGap = gap !== null ? gap : (plus !== null && minus !== null ? plus - minus : null);
-      out.di_abs_gap = rawGap === null ? null : Math.abs(rawGap);
-    }
-    if (finiteNumber(out.di_axis_distance) === null) {
-      out.di_axis_distance = plus !== null && minus !== null
-        ? (Math.abs(plus - DMI_AXIS) + Math.abs(minus - DMI_AXIS)) / 2
-        : null;
-    }
-    return out;
-  }
-
-  function applyDmiBinning(features, binning) {
-    const out = enrichDmiRawFeatures(features);
-    Object.entries(DMI_QUANTILE_FIELDS).forEach(([rawField, qField]) => {
-      const value = finiteNumber(out[rawField]);
-      const node = (binning || {})[rawField] || {};
-      const q33 = finiteNumber(node.q33);
-      const q67 = finiteNumber(node.q67);
-      if (value === null || q33 === null || q67 === null) out[qField] = 'UNKNOWN';
-      else if (value <= q33) out[qField] = 'LOW';
-      else if (value <= q67) out[qField] = 'MID';
-      else out[qField] = 'HIGH';
-    });
-    return out;
-  }
-
-  function lookupDmiFacets(stateNode, hnode, features, minSamples) {
-    const expert = hnode.dmi_expert || null;
-    const enriched = applyDmiBinning(features, stateNode.dmi_binning || {});
-    if (!expert) return { matches:[], enriched };
-    const matches = [];
-    for (const facet of (expert.facets || [])) {
-      const name = String(facet.name || 'facet');
-      const fields = Array.isArray(facet.fields) ? facet.fields : [];
-      // Quiz model_timeline comes directly from HistoricalTraining replay, so
-      // dmi_cross_age_bin is the exact 4H relation-age feature. If an older
-      // timeline lacks it, skip cross-age facets rather than fabricate data.
-      if ((name === 'cross_momentum' || name === 'adx_turn_handover') && !enriched.dmi_cross_age_bin) continue;
-      const sig = signature(enriched, fields);
-      const rule = findRule(facet.rules || [], sig, minSamples);
-      if (!rule) continue;
-      matches.push({ name, fields, signature:sig, rule });
-    }
-    return { matches, enriched };
-  }
-
-  function combineWithDmi(baseNode, baselineNode, matches, priorStrength) {
-    const base = outcomeProbs(baseNode);
-    if (!matches.length) return { probabilities:base, blendStrength:0, audit:[] };
-    const baseline = outcomeProbs(baselineNode);
-    const eps = 1e-9;
-    const weightedLogs = Object.fromEntries(OUTCOME_KEYS.map(k => [k, 0]));
-    const weights = [];
-    const audit = [];
-
-    for (const match of matches) {
-      const n = Number(match.rule.samples || 0);
-      const reliability = n / (n + Math.max(1, Number(priorStrength || 20)));
-      weights.push(reliability);
-      const facet = outcomeProbs(match.rule);
-      OUTCOME_KEYS.forEach(key => {
-        const ratio = Math.max(eps, facet[key]) / Math.max(eps, baseline[key]);
-        weightedLogs[key] += reliability * Math.log(ratio);
-      });
-      audit.push({
-        name: match.name,
-        fields: match.fields,
-        signature: match.signature,
-        samples: n,
-        reliability,
-        success: facet[OUTCOME_SUCCESS],
-        survival: facet[OUTCOME_SUCCESS] + facet[OUTCOME_ALIVE],
-        trueFail: facet[OUTCOME_FAIL],
-      });
-    }
-
-    const weightSum = weights.reduce((a,b) => a + b, 0);
-    if (!(weightSum > 0)) return { probabilities:base, blendStrength:0, audit };
-    const blendStrength = Math.min(1, weightSum / weights.length);
-    const logs = {};
-    OUTCOME_KEYS.forEach(key => {
-      const avgLogRatio = weightedLogs[key] / weightSum;
-      logs[key] = Math.log(Math.max(eps, base[key])) + blendStrength * avgLogRatio;
-    });
-    const peak = Math.max(...OUTCOME_KEYS.map(k => logs[k]));
-    const expValues = Object.fromEntries(OUTCOME_KEYS.map(k => [k, Math.exp(logs[k] - peak)]));
-    const total = OUTCOME_KEYS.reduce((sum,k) => sum + expValues[k], 0);
-    const probabilities = Object.fromEntries(OUTCOME_KEYS.map(k => [k, expValues[k] / total]));
-    return { probabilities, blendStrength, audit };
   }
 
   function outcomeProbs(node) {
@@ -928,96 +823,142 @@
   }
 
 
-  function timelineFeaturesForRow(row) {
+  function timelineRowForRow(row) {
     const q = state.question;
     if (!q || !row) return null;
-    const timeline = q.modelByDay.get(Number(row.time)) || null;
+    return q.modelByDay.get(Number(row.time)) || null;
+  }
+
+  function timelineFeaturesForRow(row) {
+    const timeline = timelineRowForRow(row);
     return timeline && timeline.features ? timeline.features : null;
   }
 
-  function dmiPointForRow(row) {
+  function cciPointForRow(row) {
     const f = timelineFeaturesForRow(row);
     if (!f) return null;
-    const diPlus = Number(f.di_plus);
-    const diMinus = Number(f.di_minus);
-    const adx = Number(f.adx);
+    const cci = finiteNumber(f.cci);
+    const sma = finiteNumber(f.cci_smoothing_ma);
     return {
-      diPlus: Number.isFinite(diPlus) ? diPlus : NaN,
-      diMinus: Number.isFinite(diMinus) ? diMinus : NaN,
-      adx: Number.isFinite(adx) ? adx : NaN,
-      relation: String(f.dmi_relation || ''),
-      stepDirection: String(f.adx_step_direction || ''),
-      regime: String(f.dmi_adx_regime || ''),
-      axisZone: String(f.adx_axis_zone || ''),
-      turnEvent: String(f.adx_turn_event || ''),
-      stepAgeBin: String(f.adx_step_age_bin || ''),
+      cci: cci === null ? NaN : cci,
+      sma: sma === null ? NaN : sma,
+      smoothingDirection: String(f.cci_smoothing_direction || 'UNKNOWN').toUpperCase(),
+      relation: String(f.cci_sma_relation || 'UNKNOWN').toUpperCase(),
+      features: f,
     };
   }
 
-  function roundedAdx1(v) {
-    return Number.isFinite(Number(v)) ? Math.round(Number(v) * 10) / 10 : NaN;
+  function cciRelationClass(cci, sma) {
+    if (!Number.isFinite(cci) || !Number.isFinite(sma) || cci === sma) return 'cci-pill-neutral';
+    return cci > sma ? 'cci-pill-above' : 'cci-pill-below';
   }
 
-  function stickyRoundedStepDirection(points, index) {
-    if (!Array.isArray(points) || index <= 0 || index >= points.length) return 'UNKNOWN';
-    // Pine/Terminal v3 semantics: when 1dp values are equal, scan backward to
-    // the last effective rounded movement and keep that red/green direction.
-    for (let i=index; i>=1; i--) {
-      const prev = points[i-1], curr = points[i];
-      if (!prev || !curr) continue;
-      const a = roundedAdx1(prev.adx), b = roundedAdx1(curr.adx);
-      if (!Number.isFinite(a) || !Number.isFinite(b)) continue;
-      if (b > a) return 'RISING';
-      if (b < a) return 'FALLING';
-    }
-    return 'UNKNOWN';
+  function cciSmaClass(direction) {
+    const d = String(direction || '').toUpperCase();
+    if (d === 'YELLOW') return 'cci-sma-yellow';
+    if (d === 'PURPLE') return 'cci-sma-purple';
+    return 'cci-sma-neutral';
   }
 
-  function adxDominanceStateFromPoint(point, stepOverride='') {
-    if (!point || !Number.isFinite(point.diPlus) || !Number.isFinite(point.diMinus) || point.diPlus === point.diMinus) {
-      return { text:'方向膠著｜ADX待確認', controllerClass:'adx-controller-neutral', trendClass:'adx-trend-neutral' };
+  function buildCciPathCommentary(marketState, features, pred=null) {
+    const f = features || {};
+    const st = String(marketState || 'OTHER');
+    const mid = String(f.midline_path_phase || 'UNKNOWN');
+    const cycle = String(f.cci_cross_cycle || 'NO_CROSS_30D');
+    const retest = String(f.cci_retest_state || 'UNKNOWN');
+    const gapMotion = String(f.cci_gap_motion || 'UNKNOWN');
+    const divergence = String(f.cci_divergence || 'NONE');
+    const sma = String(f.cci_smoothing_direction || 'UNKNOWN').toUpperCase();
+    const ha = String(f.ha_color || 'unknown').toLowerCase();
+    const relation = String(f.cci_sma_relation || 'UNKNOWN').toUpperCase();
+    const lastCrossZone = String(f.cci_last_cross_zone || 'UNKNOWN');
+    const upCount = Number(f.cci_up_cross_count_21d || 0);
+    const downCount = Number(f.cci_down_cross_count_21d || 0);
+
+    const risingMid = ['RISING_ACCEL','RISING_DECEL'].includes(mid);
+    const improvingMid = ['FLAT','FALLING_IMPROVE','RISING_ACCEL','RISING_DECEL'].includes(mid);
+    const weakMid = ['FLAT','FALLING_IMPROVE','FALLING_WORSEN'].includes(mid);
+    const hardFalling = mid === 'FALLING_WORSEN';
+    const secondUp = cycle === 'UP_SECOND_PLUS_21D' || (upCount >= 2 && cycle.startsWith('POST_UP'));
+    const firstUp = cycle === 'UP_FIRST_21D' || (upCount === 1 && cycle.startsWith('POST_UP'));
+    const secondDown = cycle === 'DOWN_SECOND_PLUS_21D' || (downCount >= 2 && cycle.startsWith('POST_DOWN'));
+    const firstDown = cycle === 'DOWN_FIRST_21D' || (downCount === 1 && cycle.startsWith('POST_DOWN'));
+    const deepLowCross = ['LT_NEG150','NEG150_NEG120','NEG120_NEG80'].includes(lastCrossZone);
+    const nearZeroCross = ['NEG80_0','0_100'].includes(lastCrossZone);
+    const bullishHa = ['yellow','green','bullish'].includes(ha);
+
+    let label='結構觀察｜等待CCI路徑確認', tone='neutral';
+    if (st === 'S0.5') {
+      if (retest === 'YELLOW_RECLAIM_AFTER_BREAK' && risingMid) [label,tone]=['假跌破回收｜多方結構仍在','positive'];
+      else if (retest === 'YELLOW_RETEST_NEAR_SMA' && improvingMid) [label,tone]=['黃階梯承接｜右側回踩守住','positive'];
+      else if (secondUp && improvingMid && (sma === 'YELLOW' || bullishHa)) [label,tone]=['右V共振｜二次上穿・中軌改善','strong'];
+      else if (secondUp && improvingMid) [label,tone]=['右V確認｜二次上穿・中軌改善','positive'];
+      else if (firstUp && hardFalling && deepLowCross) [label,tone]=['左V反彈｜首次低位上穿','caution'];
+      else if (firstUp && improvingMid) [label,tone]=['首次上穿｜反轉仍待二次確認','setup'];
+      else if (gapMotion === 'BELOW_APPROACHING' && improvingMid) [label,tone]=['右V醞釀｜CCI快速逼近SMA','setup'];
+      else if (sma === 'YELLOW' && relation === 'ABOVE') [label,tone]=['黃階梯建立｜多方動能接管','positive'];
+      else if (hardFalling) [label,tone]=['築底反彈｜中軌仍有下壓','caution'];
+      else [label,tone]=['築底觀察｜等待右V共振','setup'];
+    } else if (st === 'S1') {
+      if (retest === 'YELLOW_RECLAIM_AFTER_BREAK' && risingMid) [label,tone]=['回踩收復｜趨勢結構延續','positive'];
+      else if (retest === 'YELLOW_RETEST_NEAR_SMA' && risingMid) [label,tone]=['健康回踩｜CCI守住黃階梯','positive'];
+      else if (divergence === 'BEARISH_PRICE_HH_CCI_LH' && ['RISING_DECEL','FLAT'].includes(mid)) [label,tone]=['動能放緩｜留意頂背離','caution'];
+      else if (sma === 'YELLOW' && relation === 'ABOVE' && risingMid) [label,tone]=['趨勢建立｜黃階梯延伸','strong'];
+      else if (gapMotion === 'BELOW_APPROACHING' && improvingMid) [label,tone]=['動能重整｜等待CCI再上穿','setup'];
+      else if (mid === 'RISING_DECEL') [label,tone]=['趨勢續行｜中軌升勢放緩','setup'];
+      else [label,tone]=['趨勢建立｜觀察CCI延伸','neutral'];
+    } else if (st === 'S2') {
+      if (secondDown && divergence === 'BEARISH_PRICE_HH_CCI_LH' && weakMid) [label,tone]=['二次衰竭｜頂背離・中軌降速','risk'];
+      else if (secondDown && ['FLAT','FALLING_IMPROVE','FALLING_WORSEN'].includes(mid)) [label,tone]=['二次死叉｜轉弱風險升高','risk'];
+      else if (firstDown && risingMid) [label,tone]=['二浪回踩｜中軌仍上斜','positive'];
+      else if (['UP_FIRST_21D','UP_SECOND_PLUS_21D'].includes(cycle) && nearZeroCross && improvingMid) [label,tone]=['再蓄力｜CCI零軸附近重上穿','strong'];
+      else if (['YELLOW_RETEST_NEAR_SMA','YELLOW_RECLAIM_AFTER_BREAK'].includes(retest) && risingMid) [label,tone]=['二浪承接｜三浪仍有空間','positive'];
+      else if (risingMid) [label,tone]=['回踩整理｜上升結構未破','setup'];
+      else if (mid === 'FLAT') [label,tone]=['高檔整理｜等待再啟動或衰竭','neutral'];
+      else [label,tone]=['結構轉弱｜留意二次死叉','caution'];
+    } else if (st === 'S3') {
+      if (secondDown && divergence === 'BEARISH_PRICE_HH_CCI_LH') [label,tone]=['末浪衰竭｜二次死叉・頂背離','risk'];
+      else if (divergence === 'BEARISH_PRICE_HH_CCI_LH' && ['RISING_DECEL','FLAT'].includes(mid)) [label,tone]=['高檔背離｜末浪動能降速','caution'];
+      else if (['YELLOW_RETEST_NEAR_SMA','YELLOW_RECLAIM_AFTER_BREAK'].includes(retest) && risingMid) [label,tone]=['趨勢續航｜黃階梯回踩承接','positive'];
+      else if (sma === 'YELLOW' && relation === 'ABOVE' && gapMotion === 'ABOVE_EXPANDING') [label,tone]=['三浪延伸｜CCI動能仍擴張','strong'];
+      else if (sma === 'PURPLE' && risingMid) [label,tone]=['高檔回踩｜中軌仍上斜','setup'];
+      else if (['FLAT','FALLING_IMPROVE','FALLING_WORSEN'].includes(mid) && sma === 'PURPLE') [label,tone]=['高檔降速｜保護既有趨勢成果','caution'];
+      else [label,tone]=['趨勢成熟｜觀察CCI衰竭訊號','neutral'];
+    } else if (st === 'S0') {
+      if (firstUp && hardFalling && deepLowCross) [label,tone]=['左V反彈｜中軌仍明顯下壓','caution'];
+      else if (secondUp && improvingMid) [label,tone]=['底部反轉醞釀｜等待升級S0.5','setup'];
+      else if (gapMotion === 'BELOW_APPROACHING') [label,tone]=['超賣修復｜CCI逼近SMA','setup'];
+      else [label,tone]=['反彈區｜結構尚未升級','neutral'];
+    } else {
+      if (divergence === 'BEARISH_PRICE_HH_CCI_LH' && weakMid) [label,tone]=['未分類弱化｜CCI背離・中軌失速','risk'];
+      else if (sma === 'YELLOW' && risingMid) [label,tone]=['趨勢存在｜尚未符合S-state考題','setup'];
+      else if (gapMotion === 'BELOW_APPROACHING' || gapMotion === 'ABOVE_PULLBACK') [label,tone]=['整理等待｜CCI正在接近關鍵交叉','neutral'];
+      else [label,tone]=['結構未分類｜等待有效S-state','neutral'];
     }
-    const plus = point.diPlus > point.diMinus;
-    const controllerClass = plus ? 'adx-controller-plus' : 'adx-controller-minus';
-    const effectiveStep = stepOverride || point.stepDirection;
-    const rising = effectiveStep === 'RISING';
-    const falling = effectiveStep === 'FALLING';
-    if (!rising && !falling) {
-      return { text:`${plus?'多方':'空方'}控制｜力道持平 ←→`, controllerClass, trendClass:'adx-trend-neutral' };
-    }
-    if (plus && rising) return { text:'多方控制｜趨勢強度增強 ↗↗', controllerClass, trendClass:'adx-trend-rising' };
-    if (plus && falling) return { text:'多方仍控制｜力量衰退 ↘↘', controllerClass, trendClass:'adx-trend-falling' };
-    if (!plus && rising) return { text:'空方控制｜趨勢強度增強 ↗↗', controllerClass, trendClass:'adx-trend-rising' };
-    return { text:'空方仍控制｜力量衰退 ↘↘', controllerClass, trendClass:'adx-trend-falling' };
+    return { label, tone, level:pred?.level || 0, samples:pred?.samples || 0 };
   }
 
-  function updateAdxHud(rows) {
-    const hud = $('adxHud');
+  function updateCciHud(rows) {
+    const hud = $('cciHud');
     if (!hud || !Array.isArray(rows) || !rows.length) return;
     const index = state.hoverIndex !== null && state.hoverIndex >= 0 && state.hoverIndex < rows.length ? state.hoverIndex : rows.length - 1;
-    const point = dmiPointForRow(rows[index]);
-    const allPoints = rows.map(r => dmiPointForRow(r));
-    const derivedStep = stickyRoundedStepDirection(allPoints, index);
-    const displayStep = (derivedStep === 'RISING' || derivedStep === 'FALLING') ? derivedStep : point.stepDirection;
-    if (!point || (!Number.isFinite(point.diPlus) && !Number.isFinite(point.diMinus) && !Number.isFinite(point.adx))) {
+    const row = rows[index];
+    const timeline = timelineRowForRow(row);
+    const point = cciPointForRow(row);
+    if (!timeline || !point || (!Number.isFinite(point.cci) && !Number.isFinite(point.sma))) {
       hud.classList.add('hidden');
       return;
     }
     hud.classList.remove('hidden');
-    const dominance = adxDominanceStateFromPoint(point, displayStep);
-    const statePill = $('adxStatePill');
-    statePill.className = `adx-state-pill ${dominance.controllerClass} ${dominance.trendClass}`;
-    $('adxStateText').textContent = dominance.text;
-    $('adxPlusValue').textContent = Number.isFinite(point.diPlus) ? point.diPlus.toFixed(1) : '—';
-    $('adxMinusValue').textContent = Number.isFinite(point.diMinus) ? point.diMinus.toFixed(1) : '—';
-    const plusPill = $('adxPlusPill');
-    const minusPill = $('adxMinusPill');
-    plusPill.className = 'adx-live-pill adx-pill-plus adx-pill-neutral';
-    minusPill.className = 'adx-live-pill adx-pill-minus adx-pill-neutral';
-    if (Number.isFinite(point.diPlus) && Number.isFinite(point.diMinus) && point.diPlus !== point.diMinus) {
-      if (point.diPlus > point.diMinus) plusPill.className = 'adx-live-pill adx-pill-plus adx-pill-strong-plus';
-      else minusPill.className = 'adx-live-pill adx-pill-minus adx-pill-strong-minus';
-    }
+    const pred = state.activeModel ? lookupProbability(state.activeModel, timeline.state, MODEL_HORIZON, timeline.features || {}) : null;
+    const comment = buildCciPathCommentary(timeline.state, timeline.features || {}, pred);
+    const statePill = $('cciStatePill');
+    statePill.className = `cci-state-pill cci-path-${comment.tone}`;
+    $('cciStateText').textContent = comment.label;
+    $('cciSmaValue').textContent = Number.isFinite(point.sma) ? point.sma.toFixed(1) : '—';
+    $('cciValue').textContent = Number.isFinite(point.cci) ? point.cci.toFixed(1) : '—';
+    $('cciSmaPill').className = `cci-live-pill cci-sma-pill ${cciSmaClass(point.smoothingDirection)}`;
+    $('cciValuePill').className = `cci-live-pill cci-value-pill ${cciRelationClass(point.cci, point.sma)}`;
   }
 
   function resizeCanvas() {
@@ -1050,16 +991,16 @@
     const rows = visibleRows();
     if (!rows.length) return;
 
-    const dmiHeight = Math.max(124, Math.min(158, h * 0.29));
+    const cciHeight = Math.max(124, Math.min(158, h * 0.29));
     const gap = 26;
     const pad = { left:16, right:82, top:18, bottom:28 };
-    const dmi = {
+    const cci = {
       left: pad.left,
       right: pad.right,
-      top: Math.max(170, h - pad.bottom - dmiHeight),
+      top: Math.max(170, h - pad.bottom - cciHeight),
       bottom: pad.bottom,
     };
-    const priceBottom = dmi.top - gap;
+    const priceBottom = cci.top - gap;
     const plotW = w - pad.left - pad.right;
     const plotH = Math.max(120, priceBottom - pad.top);
     const values = [];
@@ -1121,18 +1062,18 @@
       if (state.trade.closed && Number.isInteger(state.trade.exitIndex)) drawMarkerForAbsoluteIndex(rows, state.trade.exitIndex, xAt, pad, plotH, '#ffd84b', '平倉', false);
     }
 
-    const dmiLayout = drawDmiPanel(rows, xAt, dmi, plotW);
+    const cciLayout = drawCciPanel(rows, xAt, cci, plotW);
 
     if (state.hoverIndex !== null && state.hoverIndex >= 0 && state.hoverIndex < rows.length) {
       const x = xAt(state.hoverIndex);
       ctx.strokeStyle='rgba(221,232,247,.38)'; ctx.lineWidth=1; ctx.setLineDash([5,5]);
-      ctx.beginPath(); ctx.moveTo(x,pad.top); ctx.lineTo(x,dmiLayout.bottomY); ctx.stroke(); ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(x,pad.top); ctx.lineTo(x,cciLayout.bottomY); ctx.stroke(); ctx.setLineDash([]);
     }
 
-    canvas._layout = { rows, pad, plotW, plotH, min, max, xAt, yAt, dmiLayout, hoverTop:pad.top, hoverBottom:dmiLayout.bottomY };
-    updateAdxHud(rows);
-    const hud = $('adxHud');
-    if (hud && !hud.classList.contains('hidden')) hud.style.top = `${Math.round(canvas.offsetTop + dmi.top - 2)}px`;
+    canvas._layout = { rows, pad, plotW, plotH, min, max, xAt, yAt, cciLayout, hoverTop:pad.top, hoverBottom:cciLayout.bottomY };
+    updateCciHud(rows);
+    const hud = $('cciHud');
+    if (hud && !hud.classList.contains('hidden')) hud.style.top = `${Math.round(canvas.offsetTop + cci.top - 2)}px`;
     const modelHud = $('modelHud');
     if (modelHud) modelHud.style.bottom = `${Math.round(h - priceBottom + 10)}px`;
   }
@@ -1180,63 +1121,64 @@
     ctx.restore();
   }
 
-  function drawDmiPanel(rows, xAt, dmi, plotW) {
-    const points = rows.map(r => dmiPointForRow(r));
-    const vals = [20, 40];
+  function drawCciPanel(rows, xAt, cciLayout, plotW) {
+    const points = rows.map(r => cciPointForRow(r));
+    const vals = [-100, 0, 100];
     points.forEach(p => {
       if (!p) return;
-      if (Number.isFinite(p.diPlus)) vals.push(p.diPlus);
-      if (Number.isFinite(p.diMinus)) vals.push(p.diMinus);
-      if (Number.isFinite(p.adx)) vals.push(p.adx);
+      if (Number.isFinite(p.cci)) vals.push(p.cci);
+      if (Number.isFinite(p.sma)) vals.push(p.sma);
     });
-    const maxVal = Math.max(40, Math.ceil(Math.max(...vals) / 10) * 10);
-    const topY = dmi.top + 22;
-    const bottomY = (canvas._cssHeight || canvas.clientHeight) - dmi.bottom;
+    const rawMin = Math.min(...vals), rawMax = Math.max(...vals);
+    const range = Math.max(1, rawMax - rawMin);
+    const minVal = Math.min(-150, Math.floor((rawMin - range * .08) / 50) * 50);
+    const maxVal = Math.max(150, Math.ceil((rawMax + range * .08) / 50) * 50);
+    const topY = cciLayout.top + 22;
+    const bottomY = (canvas._cssHeight || canvas.clientHeight) - cciLayout.bottom;
     const innerH = Math.max(76, bottomY - topY);
-    const y = v => topY + (maxVal - Number(v)) / maxVal * innerH;
+    const y = v => topY + (maxVal - Number(v)) / (maxVal - minVal) * innerH;
 
     ctx.save();
-    ctx.strokeStyle='rgba(139,158,188,.14)'; ctx.fillStyle='#77859b'; ctx.font='9px sans-serif'; ctx.lineWidth=1;
-    [0, maxVal/2, maxVal].forEach(v => {
-      const yy=y(v); ctx.beginPath(); ctx.moveTo(dmi.left,yy); ctx.lineTo(dmi.left+plotW,yy); ctx.stroke();
-      ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.fillText(String(Math.round(v)), dmi.left+plotW+8, yy);
+    ctx.strokeStyle='rgba(139,158,188,.10)'; ctx.fillStyle='#77859b'; ctx.font='9px sans-serif'; ctx.lineWidth=1;
+    [100,0,-100].forEach(v => {
+      const yy=y(v);
+      ctx.setLineDash(v===0 ? [4,6] : [7,7]);
+      ctx.strokeStyle=v===0?'rgba(100,116,139,.48)':'rgba(148,163,184,.66)';
+      ctx.beginPath(); ctx.moveTo(cciLayout.left,yy); ctx.lineTo(cciLayout.left+plotW,yy); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle='#7890ad'; ctx.textAlign='right'; ctx.textBaseline='middle'; ctx.fillText(String(v), cciLayout.left-5, yy);
     });
-    const y20=y(20);
-    ctx.setLineDash([7,7]); ctx.strokeStyle='rgba(248,250,252,.82)'; ctx.lineWidth=1.15;
-    ctx.beginPath(); ctx.moveTo(dmi.left,y20); ctx.lineTo(dmi.left+plotW,y20); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle='#e2e8f0'; ctx.font='bold 9px sans-serif'; ctx.textAlign='right'; ctx.fillText('20', dmi.left-5, y20+3);
 
-    // ADX stepline: color comes from the same replay feature used by HistoricalTraining.
+    // SMA14 stepline: yellow when smoothing rises, purple when it falls.
     for (let i=1;i<points.length;i++) {
       const prev=points[i-1], curr=points[i];
-      if (!prev || !curr || !Number.isFinite(prev.adx) || !Number.isFinite(curr.adx)) continue;
-      const derivedStep = stickyRoundedStepDirection(points, i);
-      const step = (derivedStep === 'RISING' || derivedStep === 'FALLING') ? derivedStep : curr.stepDirection;
-      ctx.strokeStyle = step==='RISING' ? '#26A69A' : step==='FALLING' ? '#EF5350' : '#64748b';
-      ctx.lineWidth=2; ctx.lineJoin='miter';
-      ctx.beginPath(); ctx.moveTo(xAt(i-1),y(prev.adx)); ctx.lineTo(xAt(i),y(prev.adx)); ctx.lineTo(xAt(i),y(curr.adx)); ctx.stroke();
+      if (!prev || !curr || !Number.isFinite(prev.sma) || !Number.isFinite(curr.sma)) continue;
+      const d=String(curr.smoothingDirection || '').toUpperCase();
+      ctx.strokeStyle=d==='YELLOW'?'#fde047':d==='PURPLE'?'#bba4e8':'#64748b';
+      ctx.lineWidth=2.1; ctx.lineJoin='miter';
+      ctx.beginPath(); ctx.moveTo(xAt(i-1),y(prev.sma)); ctx.lineTo(xAt(i),y(prev.sma)); ctx.lineTo(xAt(i),y(curr.sma)); ctx.stroke();
     }
 
-    const drawIndicatorLine = (key,color) => {
-      ctx.strokeStyle=color; ctx.lineWidth=1.35; ctx.beginPath(); let started=false;
-      points.forEach((p,i) => {
-        const v=p && p[key];
-        if (!Number.isFinite(v)) { started=false; return; }
-        const xx=xAt(i), yy=y(v);
-        if (!started) { ctx.moveTo(xx,yy); started=true; } else ctx.lineTo(xx,yy);
-      });
-      ctx.stroke();
-    };
-    drawIndicatorLine('diPlus','#fde047');
-    drawIndicatorLine('diMinus','#bba4e8');
+    // CCI20 white line.
+    ctx.strokeStyle='#f8fafc'; ctx.lineWidth=1.55; ctx.lineJoin='round'; ctx.lineCap='round';
+    ctx.beginPath(); let started=false;
+    points.forEach((p,i) => {
+      if (!p || !Number.isFinite(p.cci)) { started=false; return; }
+      const xx=xAt(i), yy=y(p.cci);
+      if (!started) { ctx.moveTo(xx,yy); started=true; } else ctx.lineTo(xx,yy);
+    });
+    ctx.stroke();
 
     const last=points[points.length-1];
     if (last) {
-      if (Number.isFinite(last.diPlus)) { ctx.fillStyle='#fde047';ctx.strokeStyle='#f8fafc';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(xAt(points.length-1),y(last.diPlus),3.5,0,Math.PI*2);ctx.fill();ctx.stroke(); }
-      if (Number.isFinite(last.diMinus)) { ctx.fillStyle='#bba4e8';ctx.strokeStyle='#f8fafc';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(xAt(points.length-1),y(last.diMinus),3.5,0,Math.PI*2);ctx.fill();ctx.stroke(); }
+      if (Number.isFinite(last.cci)) { ctx.fillStyle='#f8fafc';ctx.strokeStyle='#cbd5e1';ctx.lineWidth=1.1;ctx.beginPath();ctx.arc(xAt(points.length-1),y(last.cci),3.5,0,Math.PI*2);ctx.fill();ctx.stroke(); }
+      if (Number.isFinite(last.sma)) {
+        const d=String(last.smoothingDirection || '').toUpperCase();
+        ctx.fillStyle=d==='YELLOW'?'#fde047':d==='PURPLE'?'#bba4e8':'#94a3b8';ctx.strokeStyle='#f8fafc';ctx.lineWidth=1.1;ctx.beginPath();ctx.arc(xAt(points.length-1),y(last.sma),3.5,0,Math.PI*2);ctx.fill();ctx.stroke();
+      }
     }
 
-    // Dates belong to the lowest panel, matching Terminal/TradingView reading order.
+    // Dates live on the lowest CCI panel.
     const step=Math.max(1,Math.ceil(rows.length/7));
     for(let i=0;i<rows.length;i+=step){
       const xx=xAt(i);
@@ -1246,7 +1188,7 @@
       ctx.save();ctx.translate(xx,bottomY+7);ctx.rotate(-Math.PI/5);ctx.fillStyle='#77859b';ctx.font='9px sans-serif';ctx.textAlign='right';ctx.textBaseline='top';ctx.fillText(label,0,0);ctx.restore();
     }
     ctx.restore();
-    return { topY, bottomY, y, maxVal, points };
+    return { topY, bottomY, y, minVal, maxVal, points };
   }
 
   function drawLine(rows, xAt, yAt, getter, color, width) {
@@ -1275,10 +1217,12 @@
     const blind=$('blindMode').checked && !state.trade && state.closedTrades.length === 0 && state.revealed < q.maxFutureDays;
     const date=blind ? relativeDayLabel(r.index-q.cutoff) : formatDate(r.time);
     const haColor=r.ha.color==='yellow'?'黃':r.ha.color==='purple'?'紫':'平';
-    const point=dmiPointForRow(r);
-    const dominance=adxDominanceStateFromPoint(point);
-    const dmiText=point ? `<br>DI+ ${Number.isFinite(point.diPlus)?point.diPlus.toFixed(1):'—'}　DI− ${Number.isFinite(point.diMinus)?point.diMinus.toFixed(1):'—'}　ADX ${Number.isFinite(point.adx)?point.adx.toFixed(1):'—'}<br>${escapeHtml(dominance.text)}` : '';
-    tooltip.innerHTML = `${date}<br>O ${formatPrice(r.open)}　H ${formatPrice(r.high)}<br>L ${formatPrice(r.low)}　C ${formatPrice(r.close)}<br>HA ${haColor} ${formatPrice(r.ha.close)}${r.bb?`<br>BB中軌 ${formatPrice(r.bb.basis)}`:''}${dmiText}`;
+    const point=cciPointForRow(r);
+    const timeline=timelineRowForRow(r);
+    const pred=(timeline && state.activeModel) ? lookupProbability(state.activeModel, timeline.state, MODEL_HORIZON, timeline.features || {}) : null;
+    const comment=timeline ? buildCciPathCommentary(timeline.state, timeline.features || {}, pred) : null;
+    const cciText=point ? `<br>CCI ${Number.isFinite(point.cci)?point.cci.toFixed(1):'—'}　SMA14 ${Number.isFinite(point.sma)?point.sma.toFixed(1):'—'}${comment?`<br>${escapeHtml(comment.label)}`:''}` : '';
+    tooltip.innerHTML = `${date}<br>O ${formatPrice(r.open)}　H ${formatPrice(r.high)}<br>L ${formatPrice(r.low)}　C ${formatPrice(r.close)}<br>HA ${haColor} ${formatPrice(r.ha.close)}${r.bb?`<br>BB中軌 ${formatPrice(r.bb.basis)}`:''}${cciText}`;
     tooltip.classList.remove('hidden');
     const tw=tooltip.offsetWidth, th=tooltip.offsetHeight;
     tooltip.style.left=`${Math.min(rect.width-tw-8,mx+14)}px`;
