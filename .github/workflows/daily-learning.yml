@@ -192,25 +192,6 @@ jobs:
           )
           python champion_daily.py "${ARGS[@]}"
 
-      - name: Refresh Champion generation after active-model sync
-        shell: bash
-        run: |
-          GEN=$(python - <<'PY'
-          import json
-          d=json.load(open('data/champion/generation.json', encoding='utf-8'))
-          print(int(d.get('generation') or 1))
-          PY
-          )
-          MODEL=$(python - <<'PY'
-          import json
-          d=json.load(open('data/champion/generation.json', encoding='utf-8'))
-          print(str(d.get('champion_model_id') or ''))
-          PY
-          )
-          test -n "$MODEL" || (echo "generation champion_model_id missing after champion_daily" && exit 1)
-          echo "CHAMPION_GENERATION=$GEN" >> "$GITHUB_ENV"
-          echo "Champion generation after sync: GEN$(printf '%03d' "$GEN") / $MODEL"
-
       - name: Upload Generation/date Frozen ledger shards and performance to R2
         shell: bash
         run: |
@@ -366,100 +347,89 @@ jobs:
               raise SystemExit('Next Champion publish verification failed')
           PY
 
-      - name: Roll over Generation immediately to published Champion
+      - name: Roll over performance to evolved Champion immediately
         if: ${{ env.EVOLUTION_DUE == 'true' }}
         shell: bash
         run: |
+          BASE="${WORKER_BASE_URL%/}"
+
           python - <<'PY'
           import json, os
           from datetime import datetime, timezone
           from pathlib import Path
+          from training.champion_learning import ensure_generation, load_json, save_json
+
+          active=json.load(open('/tmp/verify-active.json', encoding='utf-8'))
+          active_id=str(active.get('model_id') or '')
+          expected=os.environ.get('NEXT_MODEL_ID','')
+          if not active_id or active_id != expected:
+              raise SystemExit('Cannot roll Generation: verified Active does not equal NEXT_MODEL_ID')
+
+          gen_path=Path('data/champion/generation.json')
+          hist_path=Path('data/champion/generations.json')
+          manifest=load_json(gen_path, {
+              'schema_version':1,
+              'generation':1,
+              'champion_model_id':'',
+              'evolution_min_settled_72h':120,
+          })
+          history=load_json(hist_path, [])
+          manifest, history, changed=ensure_generation(
+              manifest,
+              history,
+              active_id,
+              datetime.now(timezone.utc).isoformat(),
+          )
+          save_json(gen_path, manifest)
+          save_json(hist_path, history)
+
+          print('Generation rollover changed:', changed)
+          print('Generation:', manifest.get('generation'))
+          print('Champion  :', manifest.get('champion_model_id'))
+          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
+              f.write('SYNC_GENERATION=' + str(int(manifest.get('generation') or 1)) + '\n')
+          PY
+
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
+            "$BASE/api/internal/champion/ledger/export?generation=$SYNC_GENERATION&days=3650" \
+            -o /tmp/new-generation-ledger-export.json
+
+          python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
           from training.champion_learning import (
-              build_evolution_policy,
-              build_evolution_review,
               build_performance,
-              ensure_generation,
+              build_evolution_review,
+              build_evolution_policy,
               load_json,
-              load_ledger,
               save_json,
           )
 
-          expected = str(os.environ.get('NEXT_MODEL_ID') or '').strip()
-          if not expected:
-              raise SystemExit('NEXT_MODEL_ID missing during Champion rollover')
+          payload=json.load(open('/tmp/new-generation-ledger-export.json', encoding='utf-8'))
+          rows=payload.get('rows') or []
+          manifest=load_json(Path('data/champion/generation.json'), {})
+          history=load_json(Path('data/champion/generations.json'), [])
+          now_ms=int(datetime.now(timezone.utc).timestamp()*1000)
 
-          active = json.load(open('/tmp/verify-active.json', encoding='utf-8'))
-          active_id = str(active.get('model_id') or '').strip()
-          if active_id != expected:
-              raise SystemExit(f'R2 Active changed before rollover: {active_id} != {expected}')
+          performance=build_performance(rows, manifest, history, now_ms=now_ms)
+          review=build_evolution_review(rows, manifest)
+          policy=build_evolution_policy(review, rows, manifest)
 
-          generation_path = Path('data/champion/generation.json')
-          generations_path = Path('data/champion/generations.json')
-          performance_path = Path('data/champion/performance.json')
-          review_path = Path('reports/evolution_review.json')
-          policy_path = Path('reports/evolution_policy.json')
-          ledger_path = Path('/tmp/champion-ledger.jsonl')
+          save_json(Path('data/champion/performance.json'), performance)
+          save_json(Path('reports/evolution_review.json'), review)
+          save_json(Path('reports/evolution_policy.json'), policy)
 
-          manifest = load_json(generation_path, {
-              'schema_version': 1,
-              'generation': 1,
-              'champion_model_id': '',
-              'evolution_min_settled_72h': 120,
-          })
-          history = load_json(generations_path, [])
-          old_generation = int(manifest.get('generation') or 1)
-          old_model = str(manifest.get('champion_model_id') or '')
-          now = datetime.now(timezone.utc)
-          now_iso = now.isoformat()
-          now_ms = int(now.timestamp() * 1000)
-
-          manifest, history, changed = ensure_generation(
-              manifest, history, expected, now_iso
-          )
-          if str(manifest.get('champion_model_id') or '') != expected:
-              raise SystemExit('Generation rollover did not adopt the published Champion')
-          if old_model != expected and not changed:
-              raise SystemExit('Generation rollover expected a generation change but none occurred')
-
-          ledger = load_ledger(ledger_path)
-          performance = build_performance(ledger, manifest, history, now_ms=now_ms)
-          review = build_evolution_review(ledger, manifest)
-          policy = build_evolution_policy(review, ledger, manifest)
-
-          save_json(generation_path, manifest)
-          save_json(generations_path, history)
-          save_json(performance_path, performance)
-          save_json(review_path, review)
-          save_json(policy_path, policy)
-
-          new_generation = int(manifest.get('generation') or 1)
-          current_all = (performance.get('windows') or {}).get('all') or {}
-          print(f'Champion rollover: GEN{old_generation:03d} {old_model} -> GEN{new_generation:03d} {expected}')
-          print('New generation snapshots :', current_all.get('snapshots'))
-          print('New generation settled   :', current_all.get('settled_72h'))
-          print('New generation pending   :', current_all.get('pending_72h'))
-
-          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
-              f.write(f'CHAMPION_GENERATION={new_generation}\n')
+          c=performance.get('champion') or {}
+          a=(performance.get('windows') or {}).get('all') or {}
+          print('Performance Champion:', c.get('model_id'))
+          print('Performance GEN     :', c.get('generation'))
+          print('Existing snapshots  :', a.get('snapshots'))
+          print('72H settled         :', a.get('settled_72h'))
           PY
 
-      - name: Commit Champion generation rollover
-        if: ${{ env.EVOLUTION_DUE == 'true' }}
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/champion/generation.json data/champion/generations.json data/champion/performance.json reports/evolution_review.json reports/evolution_policy.json
-          if git diff --cached --quiet; then
-            echo "Champion generation rollover produced no Git changes."
-          else
-            git commit -m "champion: roll over performance to published Champion"
-            git fetch origin main
-            git rebase origin/main
-            git push origin HEAD:main
-          fi
-
-      - name: Publish rolled-over Champion performance to R2
+      - name: Upload evolved Champion performance rollover to R2
         if: ${{ env.EVOLUTION_DUE == 'true' }}
         shell: bash
         run: |
@@ -471,25 +441,48 @@ jobs:
             -H "Content-Type: application/json" \
             --data-binary "@data/champion/performance.json" \
             "$BASE/api/internal/champion/performance" \
-            -o /tmp/performance-rollover-upload.json
+            -o /tmp/new-performance-upload.json
 
           curl --fail --silent --show-error \
             -X PUT \
             -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
             -H "Content-Type: application/json" \
             --data-binary "@reports/evolution_review.json" \
-            "$BASE/api/internal/champion/evolution?generation=$CHAMPION_GENERATION&kind=review" \
-            -o /tmp/evolution-rollover-review-upload.json
+            "$BASE/api/internal/champion/evolution?generation=$SYNC_GENERATION&kind=review" \
+            -o /tmp/new-review-upload.json
 
           curl --fail --silent --show-error \
             -X PUT \
             -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
             -H "Content-Type: application/json" \
             --data-binary "@reports/evolution_policy.json" \
-            "$BASE/api/internal/champion/evolution?generation=$CHAMPION_GENERATION&kind=policy" \
-            -o /tmp/evolution-rollover-policy-upload.json
+            "$BASE/api/internal/champion/evolution?generation=$SYNC_GENERATION&kind=policy" \
+            -o /tmp/new-policy-upload.json
 
-      - name: Verify Active Champion and performance ledger are synchronized
+      - name: Commit evolved Champion performance rollover
+        if: ${{ env.EVOLUTION_DUE == 'true' }}
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            data/champion/generation.json \
+            data/champion/generations.json \
+            data/champion/performance.json \
+            reports/evolution_review.json \
+            reports/evolution_policy.json
+
+          if git diff --cached --quiet; then
+            echo "No Champion rollover metadata changes."
+          else
+            git commit -m "champion: roll performance to evolved active model"
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
+          fi
+
+      - name: Verify evolved Active and performance are synchronized
+        if: ${{ env.EVOLUTION_DUE == 'true' }}
         shell: bash
         run: |
           BASE="${WORKER_BASE_URL%/}"
@@ -500,16 +493,12 @@ jobs:
           active=json.load(open('/tmp/final-active.json', encoding='utf-8'))
           perf=json.load(open('/tmp/final-performance.json', encoding='utf-8'))
           active_id=str(active.get('model_id') or '')
-          champion=perf.get('champion') or {}
-          perf_id=str(champion.get('model_id') or '')
-          generation=int(champion.get('generation') or 0)
-          print('R2 Active model      :', active_id)
-          print('Performance Champion :', perf_id)
-          print('Performance GEN      :', generation)
-          if not active_id or not perf_id:
-              raise SystemExit('Final Champion synchronization verification missing model_id')
-          if active_id != perf_id:
-              raise SystemExit(f'FINAL CHAMPION MISMATCH: Active={active_id} performance={perf_id}')
+          perf_id=str((perf.get('champion') or {}).get('model_id') or '')
+          print('R2 Active   :', active_id)
+          print('Performance :', perf_id)
+          print('Generation  :', (perf.get('champion') or {}).get('generation'))
+          if not active_id or active_id != perf_id:
+              raise SystemExit('FATAL: Active Champion and performance are out of sync')
           PY
 
       - name: Daily summary
