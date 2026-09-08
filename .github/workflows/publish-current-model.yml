@@ -1,192 +1,56 @@
-name: Champion Publish / Performance Sync
+name: Restore Champion Performance to R2
 
 on:
   workflow_dispatch:
-    inputs:
-      mode:
-        description: "預設只同步 R2 Active → 戰績頁；不寫考卷。只有要手動發布本機模型時才選 publish_local_and_sync"
-        required: true
-        default: "sync_active_performance"
-        type: choice
-        options:
-          - sync_active_performance
-          - publish_local_and_sync
 
 permissions:
-  contents: write
-
-concurrency:
-  group: champion-publish-performance-sync
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  sync-champion:
+  restore-performance:
     runs-on: ubuntu-latest
     env:
       WORKER_BASE_URL: ${{ secrets.WORKER_BASE_URL }}
       WORKER_CALLBACK_TOKEN: ${{ secrets.WORKER_CALLBACK_TOKEN }}
-      SYNC_MODE: ${{ inputs.mode }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
 
-      - name: Validate bridge secrets
+      - name: Validate restored performance file
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          p=json.load(open('data/champion/performance.json', encoding='utf-8'))
+          c=p.get('champion') or {}
+          w=(p.get('windows') or {}).get('all') or {}
+
+          expected = {
+              'generation': 3,
+              'model_id': 'e321f6d35445798b',
+              'snapshots': 319,
+              'settled_72h': 124,
+              'pending_72h': 195,
+          }
+          actual = {
+              'generation': int(c.get('generation') or 0),
+              'model_id': str(c.get('model_id') or ''),
+              'snapshots': int(w.get('snapshots') or 0),
+              'settled_72h': int(w.get('settled_72h') or 0),
+              'pending_72h': int(w.get('pending_72h') or 0),
+          }
+          print('Expected:', expected)
+          print('Actual  :', actual)
+          if actual != expected:
+              raise SystemExit('STOP: local restored performance.json does not match the verified pre-error record')
+          PY
+
+      - name: Restore ONLY performance.json to R2
         shell: bash
         run: |
           test -n "$WORKER_BASE_URL" || (echo "WORKER_BASE_URL missing" && exit 1)
           test -n "$WORKER_CALLBACK_TOKEN" || (echo "WORKER_CALLBACK_TOKEN missing" && exit 1)
-
-      - name: Optional publish local Schema 5 model
-        if: ${{ env.SYNC_MODE == 'publish_local_and_sync' }}
-        shell: bash
-        run: |
-          python - <<'PY'
-          import json, os
-          from pathlib import Path
-          path=Path('models/probability_model.json')
-          if not path.exists() or path.stat().st_size == 0:
-              raise SystemExit('models/probability_model.json is empty; refusing to publish')
-          m=json.load(open(path, encoding='utf-8'))
-          model_id=str(m.get('model_id') or '')
-          schema=int(m.get('schema_version') or 0)
-          if not model_id:
-              raise SystemExit('model_id missing')
-          if schema != 5:
-              raise SystemExit(f'Only CCI PRIMARY schema 5 may be published; got schema {schema}')
-          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
-              f.write('LOCAL_MODEL_ID=' + model_id + '\n')
-          print('Local Champion to publish:', model_id)
-          PY
-
-          BASE="${WORKER_BASE_URL%/}"
-          curl --fail --silent --show-error \
-            -X PUT \
-            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
-            -H "Content-Type: application/json" \
-            --data-binary "@models/probability_model.json" \
-            "$BASE/api/internal/model/active" \
-            -o /tmp/publish-active.json
-          cat /tmp/publish-active.json
-
-      - name: Read R2 Active Champion
-        shell: bash
-        run: |
-          BASE="${WORKER_BASE_URL%/}"
-          curl --fail --silent --show-error "$BASE/api/model/active" -o /tmp/active.json
-          python - <<'PY'
-          import json, os
-          active=json.load(open('/tmp/active.json', encoding='utf-8'))
-          active_id=str(active.get('model_id') or '')
-          schema=int(active.get('schema_version') or 0)
-          if not active_id:
-              raise SystemExit('R2 Active model_id missing')
-          if schema != 5:
-              raise SystemExit(f'R2 Active is not CCI PRIMARY schema 5: {schema}')
-          if os.environ.get('SYNC_MODE') == 'publish_local_and_sync':
-              expected=os.environ.get('LOCAL_MODEL_ID','')
-              if active_id != expected:
-                  raise SystemExit('Published local model != R2 Active')
-          print('R2 Active:', active_id)
-          print('Schema   :', schema)
-          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
-              f.write('ACTIVE_MODEL_ID=' + active_id + '\n')
-          PY
-
-      - name: Synchronize Generation to R2 Active - NO EXAM
-        shell: bash
-        run: |
-          python - <<'PY'
-          import json, os
-          from datetime import datetime, timezone
-          from pathlib import Path
-          from training.champion_learning import ensure_generation, load_json, save_json
-
-          active_id=os.environ['ACTIVE_MODEL_ID']
-          gen_path=Path('data/champion/generation.json')
-          hist_path=Path('data/champion/generations.json')
-          manifest=load_json(gen_path, {
-              'schema_version':1,
-              'generation':1,
-              'champion_model_id':'',
-              'evolution_min_settled_72h':120,
-          })
-          history=load_json(hist_path, [])
-          before_id=str(manifest.get('champion_model_id') or '')
-          before_gen=int(manifest.get('generation') or 1)
-          manifest, history, changed=ensure_generation(
-              manifest,
-              history,
-              active_id,
-              datetime.now(timezone.utc).isoformat(),
-          )
-          save_json(gen_path, manifest)
-          save_json(hist_path, history)
-
-          print('Before:', f'GEN{before_gen:03d}', before_id)
-          print('After :', f"GEN{int(manifest.get('generation') or 1):03d}", manifest.get('champion_model_id'))
-          print('Changed:', changed)
-          with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as f:
-              f.write('SYNC_GENERATION=' + str(int(manifest.get('generation') or 1)) + '\n')
-          PY
-
-      - name: Download current synchronized Generation ledger from R2 - NO EXAM
-        shell: bash
-        run: |
-          BASE="${WORKER_BASE_URL%/}"
-          curl --fail --silent --show-error \
-            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
-            "$BASE/api/internal/champion/ledger/export?generation=$SYNC_GENERATION&days=3650" \
-            -o /tmp/sync-ledger-export.json
-          python - <<'PY'
-          import json
-          payload=json.load(open('/tmp/sync-ledger-export.json', encoding='utf-8'))
-          rows=payload.get('rows') or []
-          print('Existing records in synced Generation:', len(rows))
-          PY
-
-      - name: Rebuild Active Champion performance - NO EXAM
-        shell: bash
-        run: |
-          python - <<'PY'
-          import json
-          from datetime import datetime, timezone
-          from pathlib import Path
-          from training.champion_learning import (
-              build_performance,
-              build_evolution_review,
-              build_evolution_policy,
-              load_json,
-              save_json,
-          )
-
-          payload=json.load(open('/tmp/sync-ledger-export.json', encoding='utf-8'))
-          rows=payload.get('rows') or []
-          manifest=load_json(Path('data/champion/generation.json'), {})
-          history=load_json(Path('data/champion/generations.json'), [])
-          now_ms=int(datetime.now(timezone.utc).timestamp()*1000)
-
-          performance=build_performance(rows, manifest, history, now_ms=now_ms)
-          review=build_evolution_review(rows, manifest)
-          policy=build_evolution_policy(review, rows, manifest)
-
-          save_json(Path('data/champion/performance.json'), performance)
-          save_json(Path('reports/evolution_review.json'), review)
-          save_json(Path('reports/evolution_policy.json'), policy)
-
-          c=performance.get('champion') or {}
-          a=(performance.get('windows') or {}).get('all') or {}
-          print('Performance Champion:', c.get('model_id'))
-          print('Generation:', c.get('generation'))
-          print('Snapshots :', a.get('snapshots'))
-          print('72H settled:', a.get('settled_72h'))
-          PY
-
-      - name: Upload synchronized performance to R2
-        shell: bash
-        run: |
           BASE="${WORKER_BASE_URL%/}"
 
           curl --fail --silent --show-error \
@@ -195,60 +59,38 @@ jobs:
             -H "Content-Type: application/json" \
             --data-binary "@data/champion/performance.json" \
             "$BASE/api/internal/champion/performance" \
-            -o /tmp/performance-upload.json
+            -o /tmp/performance-restore.json
 
-          curl --fail --silent --show-error \
-            -X PUT \
-            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
-            -H "Content-Type: application/json" \
-            --data-binary "@reports/evolution_review.json" \
-            "$BASE/api/internal/champion/evolution?generation=$SYNC_GENERATION&kind=review" \
-            -o /tmp/review-upload.json
+          cat /tmp/performance-restore.json
 
-          curl --fail --silent --show-error \
-            -X PUT \
-            -H "Authorization: Bearer $WORKER_CALLBACK_TOKEN" \
-            -H "Content-Type: application/json" \
-            --data-binary "@reports/evolution_policy.json" \
-            "$BASE/api/internal/champion/evolution?generation=$SYNC_GENERATION&kind=policy" \
-            -o /tmp/policy-upload.json
-
-      - name: Commit synchronized performance metadata
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            data/champion/generation.json \
-            data/champion/generations.json \
-            data/champion/performance.json \
-            reports/evolution_review.json \
-            reports/evolution_policy.json
-
-          if git diff --cached --quiet; then
-            echo "No performance metadata changes."
-          else
-            git commit -m "champion: sync performance to R2 active model"
-            git fetch origin main
-            git rebase origin/main
-            git push origin HEAD:main
-          fi
-
-      - name: Final Active vs performance verification
+      - name: Verify R2 performance restored
         shell: bash
         run: |
           BASE="${WORKER_BASE_URL%/}"
-          curl --fail --silent --show-error "$BASE/api/model/active" -o /tmp/final-active.json
-          curl --fail --silent --show-error "$BASE/api/champion/performance" -o /tmp/final-performance.json
+          curl --fail --silent --show-error \
+            "$BASE/api/champion/performance" \
+            -o /tmp/r2-performance.json
+
           python - <<'PY'
           import json
-          active=json.load(open('/tmp/final-active.json', encoding='utf-8'))
-          perf=json.load(open('/tmp/final-performance.json', encoding='utf-8'))
-          active_id=str(active.get('model_id') or '')
-          perf_id=str((perf.get('champion') or {}).get('model_id') or '')
-          print('R2 Active   :', active_id)
-          print('Performance :', perf_id)
-          print('Generation  :', (perf.get('champion') or {}).get('generation'))
-          if not active_id or active_id != perf_id:
-              raise SystemExit('FATAL: Active Champion and performance are out of sync')
+          p=json.load(open('/tmp/r2-performance.json', encoding='utf-8'))
+          c=p.get('champion') or {}
+          w=(p.get('windows') or {}).get('all') or {}
+          actual = {
+              'generation': int(c.get('generation') or 0),
+              'model_id': str(c.get('model_id') or ''),
+              'snapshots': int(w.get('snapshots') or 0),
+              'settled_72h': int(w.get('settled_72h') or 0),
+              'pending_72h': int(w.get('pending_72h') or 0),
+          }
+          expected = {
+              'generation': 3,
+              'model_id': 'e321f6d35445798b',
+              'snapshots': 319,
+              'settled_72h': 124,
+              'pending_72h': 195,
+          }
+          print('R2 restored:', actual)
+          if actual != expected:
+              raise SystemExit('FATAL: R2 performance restore verification failed')
           PY
