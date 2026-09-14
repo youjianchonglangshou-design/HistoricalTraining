@@ -2,24 +2,24 @@
   "schema_version": 2,
   "champion_model_id": "cafa35c8a4e7246b",
   "generation": 4,
-  "settled_72h": 32,
+  "settled_72h": 64,
   "legacy_excluded": 0,
   "minimum_settled_72h": 120,
   "evolution_due": false,
   "overall_calibration": {
-    "samples": 32,
-    "average_predicted_success": 0.354674,
-    "actual_success_rate": 0.09375,
-    "calibration_gap": -0.260924,
+    "samples": 64,
+    "average_predicted_success": 0.317591,
+    "actual_success_rate": 0.1875,
+    "calibration_gap": -0.130091,
     "overconfident_misses": 2,
-    "underconfident_successes": 1,
-    "true_fail": 12
+    "underconfident_successes": 9,
+    "true_fail": 17
   },
   "state_review": {
     "S0.5": {
-      "snapshots": 26,
+      "snapshots": 29,
       "settled_72h": 2,
-      "pending_72h": 24,
+      "pending_72h": 27,
       "success": 0,
       "alive_slow": 1,
       "true_fail": 1,
@@ -31,134 +31,134 @@
       "other_rate": 0.0
     },
     "S1": {
-      "snapshots": 37,
-      "settled_72h": 8,
+      "snapshots": 39,
+      "settled_72h": 10,
       "pending_72h": 29,
-      "success": 1,
-      "alive_slow": 1,
+      "success": 2,
+      "alive_slow": 2,
       "true_fail": 0,
       "other": 6,
-      "success_rate": 0.125,
-      "alive_slow_rate": 0.125,
-      "structural_survival_rate": 0.25,
+      "success_rate": 0.2,
+      "alive_slow_rate": 0.2,
+      "structural_survival_rate": 0.4,
       "true_fail_rate": 0.0,
-      "other_rate": 0.75
+      "other_rate": 0.6
     },
     "S2": {
-      "snapshots": 134,
-      "settled_72h": 22,
-      "pending_72h": 112,
-      "success": 2,
-      "alive_slow": 9,
-      "true_fail": 11,
-      "other": 0,
-      "success_rate": 0.090909,
-      "alive_slow_rate": 0.409091,
-      "structural_survival_rate": 0.5,
-      "true_fail_rate": 0.5,
-      "other_rate": 0.0
+      "snapshots": 159,
+      "settled_72h": 51,
+      "pending_72h": 108,
+      "success": 9,
+      "alive_slow": 25,
+      "true_fail": 16,
+      "other": 1,
+      "success_rate": 0.176471,
+      "alive_slow_rate": 0.490196,
+      "structural_survival_rate": 0.666667,
+      "true_fail_rate": 0.313725,
+      "other_rate": 0.019608
     },
     "S3": {
-      "snapshots": 11,
-      "settled_72h": 0,
+      "snapshots": 12,
+      "settled_72h": 1,
       "pending_72h": 11,
-      "success": 0,
+      "success": 1,
       "alive_slow": 0,
       "true_fail": 0,
       "other": 0,
-      "success_rate": null,
-      "alive_slow_rate": null,
-      "structural_survival_rate": null,
-      "true_fail_rate": null,
-      "other_rate": null
+      "success_rate": 1.0,
+      "alive_slow_rate": 0.0,
+      "structural_survival_rate": 1.0,
+      "true_fail_rate": 0.0,
+      "other_rate": 0.0
     }
   },
   "market_review": {
     "CRYPTO": {
-      "snapshots": 50,
-      "settled_72h": 12,
+      "snapshots": 58,
+      "settled_72h": 20,
       "pending_72h": 38,
-      "success": 1,
-      "alive_slow": 4,
+      "success": 2,
+      "alive_slow": 11,
       "true_fail": 7,
       "other": 0,
-      "success_rate": 0.083333,
-      "alive_slow_rate": 0.333333,
-      "structural_survival_rate": 0.416667,
-      "true_fail_rate": 0.583333,
+      "success_rate": 0.1,
+      "alive_slow_rate": 0.55,
+      "structural_survival_rate": 0.65,
+      "true_fail_rate": 0.35,
       "other_rate": 0.0
     },
     "US_STOCK": {
-      "snapshots": 158,
-      "settled_72h": 20,
-      "pending_72h": 138,
-      "success": 2,
-      "alive_slow": 7,
-      "true_fail": 5,
-      "other": 6,
-      "success_rate": 0.1,
-      "alive_slow_rate": 0.35,
-      "structural_survival_rate": 0.45,
-      "true_fail_rate": 0.25,
-      "other_rate": 0.3
+      "snapshots": 181,
+      "settled_72h": 44,
+      "pending_72h": 137,
+      "success": 10,
+      "alive_slow": 17,
+      "true_fail": 10,
+      "other": 7,
+      "success_rate": 0.227273,
+      "alive_slow_rate": 0.386364,
+      "structural_survival_rate": 0.613636,
+      "true_fail_rate": 0.227273,
+      "other_rate": 0.159091
     }
   },
   "cci_regime_review": {
     "ABOVE_PURPLE": {
-      "snapshots": 2,
-      "settled_72h": 2,
+      "snapshots": 3,
+      "settled_72h": 3,
       "pending_72h": 0,
       "success": 0,
-      "alive_slow": 1,
+      "alive_slow": 2,
       "true_fail": 1,
       "other": 0,
       "success_rate": 0.0,
-      "alive_slow_rate": 0.5,
-      "structural_survival_rate": 0.5,
-      "true_fail_rate": 0.5,
+      "alive_slow_rate": 0.666667,
+      "structural_survival_rate": 0.666667,
+      "true_fail_rate": 0.333333,
       "other_rate": 0.0
     },
     "ABOVE_YELLOW": {
-      "snapshots": 14,
-      "settled_72h": 14,
+      "snapshots": 25,
+      "settled_72h": 25,
       "pending_72h": 0,
-      "success": 2,
-      "alive_slow": 3,
-      "true_fail": 3,
+      "success": 5,
+      "alive_slow": 10,
+      "true_fail": 4,
       "other": 6,
-      "success_rate": 0.142857,
-      "alive_slow_rate": 0.214286,
-      "structural_survival_rate": 0.357143,
-      "true_fail_rate": 0.214286,
-      "other_rate": 0.428571
+      "success_rate": 0.2,
+      "alive_slow_rate": 0.4,
+      "structural_survival_rate": 0.6,
+      "true_fail_rate": 0.16,
+      "other_rate": 0.24
     },
     "BELOW_PURPLE": {
-      "snapshots": 15,
-      "settled_72h": 15,
+      "snapshots": 30,
+      "settled_72h": 30,
       "pending_72h": 0,
-      "success": 1,
-      "alive_slow": 7,
-      "true_fail": 7,
+      "success": 5,
+      "alive_slow": 16,
+      "true_fail": 9,
       "other": 0,
-      "success_rate": 0.066667,
-      "alive_slow_rate": 0.466667,
-      "structural_survival_rate": 0.533333,
-      "true_fail_rate": 0.466667,
+      "success_rate": 0.166667,
+      "alive_slow_rate": 0.533333,
+      "structural_survival_rate": 0.7,
+      "true_fail_rate": 0.3,
       "other_rate": 0.0
     },
     "BELOW_YELLOW": {
-      "snapshots": 1,
-      "settled_72h": 1,
+      "snapshots": 6,
+      "settled_72h": 6,
       "pending_72h": 0,
-      "success": 0,
+      "success": 2,
       "alive_slow": 0,
-      "true_fail": 1,
-      "other": 0,
-      "success_rate": 0.0,
+      "true_fail": 3,
+      "other": 1,
+      "success_rate": 0.333333,
       "alive_slow_rate": 0.0,
-      "structural_survival_rate": 0.0,
-      "true_fail_rate": 1.0,
-      "other_rate": 0.0
+      "structural_survival_rate": 0.333333,
+      "true_fail_rate": 0.5,
+      "other_rate": 0.166667
     }
   },
   "error_groups": {
@@ -173,42 +173,51 @@
         "true_fail": 1
       },
       "S1": {
-        "samples": 8,
-        "average_predicted_success": 0.477155,
-        "actual_success_rate": 0.125,
-        "calibration_gap": -0.352155,
+        "samples": 10,
+        "average_predicted_success": 0.434688,
+        "actual_success_rate": 0.2,
+        "calibration_gap": -0.234688,
         "overconfident_misses": 1,
-        "underconfident_successes": 0,
+        "underconfident_successes": 1,
         "true_fail": 0
       },
       "S2": {
-        "samples": 22,
-        "average_predicted_success": 0.286936,
-        "actual_success_rate": 0.090909,
-        "calibration_gap": -0.196027,
+        "samples": 51,
+        "average_predicted_success": 0.282124,
+        "actual_success_rate": 0.176471,
+        "calibration_gap": -0.105653,
+        "overconfident_misses": 0,
+        "underconfident_successes": 7,
+        "true_fail": 16
+      },
+      "S3": {
+        "samples": 1,
+        "average_predicted_success": 0.370869,
+        "actual_success_rate": 1.0,
+        "calibration_gap": 0.629131,
         "overconfident_misses": 0,
         "underconfident_successes": 1,
-        "true_fail": 11
+        "true_fail": 0
       }
     },
     "market": {
       "CRYPTO": {
-        "samples": 12,
-        "average_predicted_success": 0.291279,
-        "actual_success_rate": 0.083333,
-        "calibration_gap": -0.207945,
+        "samples": 20,
+        "average_predicted_success": 0.289772,
+        "actual_success_rate": 0.1,
+        "calibration_gap": -0.189772,
         "overconfident_misses": 0,
-        "underconfident_successes": 0,
+        "underconfident_successes": 1,
         "true_fail": 7
       },
       "US_STOCK": {
-        "samples": 20,
-        "average_predicted_success": 0.392712,
-        "actual_success_rate": 0.1,
-        "calibration_gap": -0.292712,
+        "samples": 44,
+        "average_predicted_success": 0.330235,
+        "actual_success_rate": 0.227273,
+        "calibration_gap": -0.102963,
         "overconfident_misses": 2,
-        "underconfident_successes": 1,
-        "true_fail": 5
+        "underconfident_successes": 8,
+        "true_fail": 10
       }
     },
     "state_regime": {
@@ -231,49 +240,58 @@
         "true_fail": 0
       },
       "S1|ABOVE_PURPLE": {
-        "samples": 1,
-        "average_predicted_success": 0.444887,
+        "samples": 2,
+        "average_predicted_success": 0.352317,
         "actual_success_rate": 0.0,
-        "calibration_gap": -0.444887,
+        "calibration_gap": -0.352317,
         "overconfident_misses": 0,
         "underconfident_successes": 0,
         "true_fail": 0
       },
       "S1|ABOVE_YELLOW": {
-        "samples": 7,
-        "average_predicted_success": 0.481765,
-        "actual_success_rate": 0.142857,
-        "calibration_gap": -0.338907,
+        "samples": 8,
+        "average_predicted_success": 0.45528,
+        "actual_success_rate": 0.25,
+        "calibration_gap": -0.20528,
         "overconfident_misses": 1,
-        "underconfident_successes": 0,
+        "underconfident_successes": 1,
         "true_fail": 0
       },
       "S2|ABOVE_YELLOW": {
-        "samples": 7,
-        "average_predicted_success": 0.265634,
+        "samples": 17,
+        "average_predicted_success": 0.287349,
+        "actual_success_rate": 0.176471,
+        "calibration_gap": -0.110878,
+        "overconfident_misses": 0,
+        "underconfident_successes": 3,
+        "true_fail": 4
+      },
+      "S2|BELOW_PURPLE": {
+        "samples": 28,
+        "average_predicted_success": 0.263076,
         "actual_success_rate": 0.142857,
-        "calibration_gap": -0.122777,
+        "calibration_gap": -0.120219,
+        "overconfident_misses": 0,
+        "underconfident_successes": 3,
+        "true_fail": 9
+      },
+      "S2|BELOW_YELLOW": {
+        "samples": 6,
+        "average_predicted_success": 0.356207,
+        "actual_success_rate": 0.333333,
+        "calibration_gap": -0.022874,
         "overconfident_misses": 0,
         "underconfident_successes": 1,
         "true_fail": 3
       },
-      "S2|BELOW_PURPLE": {
-        "samples": 14,
-        "average_predicted_success": 0.292113,
-        "actual_success_rate": 0.071429,
-        "calibration_gap": -0.220685,
-        "overconfident_misses": 0,
-        "underconfident_successes": 0,
-        "true_fail": 7
-      },
-      "S2|BELOW_YELLOW": {
+      "S3|BELOW_PURPLE": {
         "samples": 1,
-        "average_predicted_success": 0.363566,
-        "actual_success_rate": 0.0,
-        "calibration_gap": -0.363566,
+        "average_predicted_success": 0.370869,
+        "actual_success_rate": 1.0,
+        "calibration_gap": 0.629131,
         "overconfident_misses": 0,
-        "underconfident_successes": 0,
-        "true_fail": 1
+        "underconfident_successes": 1,
+        "true_fail": 0
       }
     },
     "state_turn": {
@@ -287,12 +305,12 @@
         "true_fail": 1
       },
       "S1|NONE": {
-        "samples": 7,
-        "average_predicted_success": 0.42354,
-        "actual_success_rate": 0.142857,
-        "calibration_gap": -0.280683,
+        "samples": 9,
+        "average_predicted_success": 0.388268,
+        "actual_success_rate": 0.222222,
+        "calibration_gap": -0.166046,
         "overconfident_misses": 0,
-        "underconfident_successes": 0,
+        "underconfident_successes": 1,
         "true_fail": 0
       },
       "S1|PURPLE_TO_YELLOW": {
@@ -305,13 +323,13 @@
         "true_fail": 0
       },
       "S2|NONE": {
-        "samples": 19,
-        "average_predicted_success": 0.284627,
-        "actual_success_rate": 0.105263,
-        "calibration_gap": -0.179364,
+        "samples": 39,
+        "average_predicted_success": 0.293612,
+        "actual_success_rate": 0.179487,
+        "calibration_gap": -0.114125,
         "overconfident_misses": 0,
-        "underconfident_successes": 1,
-        "true_fail": 9
+        "underconfident_successes": 5,
+        "true_fail": 12
       },
       "S2|PURPLE_TO_YELLOW": {
         "samples": 1,
@@ -323,13 +341,22 @@
         "true_fail": 1
       },
       "S2|YELLOW_TO_PURPLE": {
-        "samples": 2,
-        "average_predicted_success": 0.344892,
-        "actual_success_rate": 0.0,
-        "calibration_gap": -0.344892,
+        "samples": 11,
+        "average_predicted_success": 0.247505,
+        "actual_success_rate": 0.181818,
+        "calibration_gap": -0.065686,
         "overconfident_misses": 0,
-        "underconfident_successes": 0,
-        "true_fail": 1
+        "underconfident_successes": 2,
+        "true_fail": 3
+      },
+      "S3|NONE": {
+        "samples": 1,
+        "average_predicted_success": 0.370869,
+        "actual_success_rate": 1.0,
+        "calibration_gap": 0.629131,
+        "overconfident_misses": 0,
+        "underconfident_successes": 1,
+        "true_fail": 0
       }
     },
     "state_cross_cycle": {
@@ -352,19 +379,19 @@
         "true_fail": 1
       },
       "S1|POST_UP_1_3D": {
-        "samples": 2,
-        "average_predicted_success": 0.360099,
-        "actual_success_rate": 0.0,
-        "calibration_gap": -0.360099,
+        "samples": 3,
+        "average_predicted_success": 0.33003,
+        "actual_success_rate": 0.333333,
+        "calibration_gap": 0.003304,
         "overconfident_misses": 0,
-        "underconfident_successes": 0,
+        "underconfident_successes": 1,
         "true_fail": 0
       },
       "S1|POST_UP_4PLUS": {
-        "samples": 4,
-        "average_predicted_success": 0.366294,
+        "samples": 5,
+        "average_predicted_success": 0.344985,
         "actual_success_rate": 0.0,
-        "calibration_gap": -0.366294,
+        "calibration_gap": -0.344985,
         "overconfident_misses": 0,
         "underconfident_successes": 0,
         "true_fail": 0
@@ -387,20 +414,29 @@
         "underconfident_successes": 0,
         "true_fail": 0
       },
-      "S2|DOWN_SECOND_PLUS_21D": {
-        "samples": 8,
-        "average_predicted_success": 0.240289,
-        "actual_success_rate": 0.0,
-        "calibration_gap": -0.240289,
+      "S2|DOWN_FIRST_21D": {
+        "samples": 2,
+        "average_predicted_success": 0.294872,
+        "actual_success_rate": 0.5,
+        "calibration_gap": 0.205128,
         "overconfident_misses": 0,
-        "underconfident_successes": 0,
-        "true_fail": 6
+        "underconfident_successes": 1,
+        "true_fail": 1
+      },
+      "S2|DOWN_SECOND_PLUS_21D": {
+        "samples": 20,
+        "average_predicted_success": 0.237923,
+        "actual_success_rate": 0.15,
+        "calibration_gap": -0.087923,
+        "overconfident_misses": 0,
+        "underconfident_successes": 3,
+        "true_fail": 9
       },
       "S2|POST_DOWN_1_3D": {
-        "samples": 6,
-        "average_predicted_success": 0.348116,
-        "actual_success_rate": 0.166667,
-        "calibration_gap": -0.181449,
+        "samples": 11,
+        "average_predicted_success": 0.337548,
+        "actual_success_rate": 0.181818,
+        "calibration_gap": -0.15573,
         "overconfident_misses": 0,
         "underconfident_successes": 0,
         "true_fail": 2
@@ -415,13 +451,22 @@
         "true_fail": 0
       },
       "S2|POST_UP_4PLUS": {
-        "samples": 7,
-        "average_predicted_success": 0.265634,
-        "actual_success_rate": 0.142857,
-        "calibration_gap": -0.122777,
+        "samples": 17,
+        "average_predicted_success": 0.287349,
+        "actual_success_rate": 0.176471,
+        "calibration_gap": -0.110878,
+        "overconfident_misses": 0,
+        "underconfident_successes": 3,
+        "true_fail": 4
+      },
+      "S3|POST_DOWN_4PLUS": {
+        "samples": 1,
+        "average_predicted_success": 0.370869,
+        "actual_success_rate": 1.0,
+        "calibration_gap": 0.629131,
         "overconfident_misses": 0,
         "underconfident_successes": 1,
-        "true_fail": 3
+        "true_fail": 0
       }
     },
     "state_midline_phase": {
@@ -453,10 +498,10 @@
         "true_fail": 0
       },
       "S1|FALLING_WORSEN": {
-        "samples": 1,
-        "average_predicted_success": 0.444887,
+        "samples": 2,
+        "average_predicted_success": 0.352317,
         "actual_success_rate": 0.0,
-        "calibration_gap": -0.444887,
+        "calibration_gap": -0.352317,
         "overconfident_misses": 0,
         "underconfident_successes": 0,
         "true_fail": 0
@@ -471,22 +516,31 @@
         "true_fail": 0
       },
       "S1|RISING_DECEL": {
-        "samples": 1,
-        "average_predicted_success": 0.852461,
-        "actual_success_rate": 0.0,
-        "calibration_gap": -0.852461,
+        "samples": 2,
+        "average_predicted_success": 0.561176,
+        "actual_success_rate": 0.5,
+        "calibration_gap": -0.061176,
         "overconfident_misses": 1,
-        "underconfident_successes": 0,
+        "underconfident_successes": 1,
         "true_fail": 0
       },
       "S2|FALLING_IMPROVE": {
-        "samples": 2,
-        "average_predicted_success": 0.289884,
+        "samples": 5,
+        "average_predicted_success": 0.26948,
+        "actual_success_rate": 0.2,
+        "calibration_gap": -0.06948,
+        "overconfident_misses": 0,
+        "underconfident_successes": 1,
+        "true_fail": 0
+      },
+      "S2|FALLING_WORSEN": {
+        "samples": 1,
+        "average_predicted_success": 0.116375,
         "actual_success_rate": 0.0,
-        "calibration_gap": -0.289884,
+        "calibration_gap": -0.116375,
         "overconfident_misses": 0,
         "underconfident_successes": 0,
-        "true_fail": 0
+        "true_fail": 1
       },
       "S2|FLAT": {
         "samples": 2,
@@ -498,22 +552,31 @@
         "true_fail": 2
       },
       "S2|RISING_ACCEL": {
-        "samples": 3,
-        "average_predicted_success": 0.33568,
-        "actual_success_rate": 0.333333,
-        "calibration_gap": -0.002346,
+        "samples": 16,
+        "average_predicted_success": 0.303272,
+        "actual_success_rate": 0.3125,
+        "calibration_gap": 0.009228,
         "overconfident_misses": 0,
-        "underconfident_successes": 1,
-        "true_fail": 1
+        "underconfident_successes": 4,
+        "true_fail": 4
       },
       "S2|RISING_DECEL": {
-        "samples": 15,
-        "average_predicted_success": 0.286965,
-        "actual_success_rate": 0.066667,
-        "calibration_gap": -0.220299,
+        "samples": 27,
+        "average_predicted_success": 0.283366,
+        "actual_success_rate": 0.111111,
+        "calibration_gap": -0.172255,
         "overconfident_misses": 0,
-        "underconfident_successes": 0,
-        "true_fail": 8
+        "underconfident_successes": 2,
+        "true_fail": 9
+      },
+      "S3|RISING_DECEL": {
+        "samples": 1,
+        "average_predicted_success": 0.370869,
+        "actual_success_rate": 1.0,
+        "calibration_gap": 0.629131,
+        "overconfident_misses": 0,
+        "underconfident_successes": 1,
+        "true_fail": 0
       }
     },
     "state_retest": {
@@ -536,10 +599,10 @@
         "true_fail": 1
       },
       "S1|PURPLE_BREAK_ABOVE": {
-        "samples": 1,
-        "average_predicted_success": 0.444887,
+        "samples": 2,
+        "average_predicted_success": 0.352317,
         "actual_success_rate": 0.0,
-        "calibration_gap": -0.444887,
+        "calibration_gap": -0.352317,
         "overconfident_misses": 0,
         "underconfident_successes": 0,
         "true_fail": 0
@@ -562,14 +625,32 @@
         "underconfident_successes": 0,
         "true_fail": 0
       },
+      "S1|YELLOW_RETEST_NEAR_SMA": {
+        "samples": 1,
+        "average_predicted_success": 0.269891,
+        "actual_success_rate": 1.0,
+        "calibration_gap": 0.730109,
+        "overconfident_misses": 0,
+        "underconfident_successes": 1,
+        "true_fail": 0
+      },
       "S2|PURPLE_BELOW": {
-        "samples": 9,
-        "average_predicted_success": 0.304938,
+        "samples": 22,
+        "average_predicted_success": 0.268392,
+        "actual_success_rate": 0.136364,
+        "calibration_gap": -0.132028,
+        "overconfident_misses": 0,
+        "underconfident_successes": 3,
+        "true_fail": 4
+      },
+      "S2|PURPLE_REJECT_AFTER_BREAK": {
+        "samples": 1,
+        "average_predicted_success": 0.116375,
         "actual_success_rate": 0.0,
-        "calibration_gap": -0.304938,
+        "calibration_gap": -0.116375,
         "overconfident_misses": 0,
         "underconfident_successes": 0,
-        "true_fail": 3
+        "true_fail": 1
       },
       "S2|PURPLE_RETEST_NEAR_SMA": {
         "samples": 5,
@@ -581,31 +662,40 @@
         "true_fail": 4
       },
       "S2|YELLOW_ABOVE": {
-        "samples": 1,
-        "average_predicted_success": 0.202216,
+        "samples": 2,
+        "average_predicted_success": 0.246092,
         "actual_success_rate": 0.0,
-        "calibration_gap": -0.202216,
+        "calibration_gap": -0.246092,
         "overconfident_misses": 0,
         "underconfident_successes": 0,
         "true_fail": 0
       },
       "S2|YELLOW_BREAK_BELOW": {
-        "samples": 1,
-        "average_predicted_success": 0.363566,
-        "actual_success_rate": 0.0,
-        "calibration_gap": -0.363566,
-        "overconfident_misses": 0,
-        "underconfident_successes": 0,
-        "true_fail": 1
-      },
-      "S2|YELLOW_RETEST_NEAR_SMA": {
         "samples": 6,
-        "average_predicted_success": 0.276204,
-        "actual_success_rate": 0.166667,
-        "calibration_gap": -0.109537,
+        "average_predicted_success": 0.356207,
+        "actual_success_rate": 0.333333,
+        "calibration_gap": -0.022874,
         "overconfident_misses": 0,
         "underconfident_successes": 1,
         "true_fail": 3
+      },
+      "S2|YELLOW_RETEST_NEAR_SMA": {
+        "samples": 15,
+        "average_predicted_success": 0.29285,
+        "actual_success_rate": 0.2,
+        "calibration_gap": -0.09285,
+        "overconfident_misses": 0,
+        "underconfident_successes": 3,
+        "true_fail": 4
+      },
+      "S3|PURPLE_RETEST_NEAR_SMA": {
+        "samples": 1,
+        "average_predicted_success": 0.370869,
+        "actual_success_rate": 1.0,
+        "calibration_gap": 0.629131,
+        "overconfident_misses": 0,
+        "underconfident_successes": 1,
+        "true_fail": 0
       }
     },
     "state_divergence": {
@@ -619,31 +709,40 @@
         "true_fail": 1
       },
       "S1|NONE": {
-        "samples": 8,
-        "average_predicted_success": 0.477155,
-        "actual_success_rate": 0.125,
-        "calibration_gap": -0.352155,
+        "samples": 10,
+        "average_predicted_success": 0.434688,
+        "actual_success_rate": 0.2,
+        "calibration_gap": -0.234688,
         "overconfident_misses": 1,
-        "underconfident_successes": 0,
+        "underconfident_successes": 1,
         "true_fail": 0
       },
       "S2|BEARISH_PRICE_HH_CCI_LH": {
-        "samples": 1,
-        "average_predicted_success": 0.329521,
-        "actual_success_rate": 0.0,
-        "calibration_gap": -0.329521,
+        "samples": 6,
+        "average_predicted_success": 0.300516,
+        "actual_success_rate": 0.166667,
+        "calibration_gap": -0.133849,
         "overconfident_misses": 0,
         "underconfident_successes": 0,
-        "true_fail": 0
+        "true_fail": 1
       },
       "S2|NONE": {
-        "samples": 21,
-        "average_predicted_success": 0.284908,
-        "actual_success_rate": 0.095238,
-        "calibration_gap": -0.18967,
+        "samples": 45,
+        "average_predicted_success": 0.279671,
+        "actual_success_rate": 0.177778,
+        "calibration_gap": -0.101894,
+        "overconfident_misses": 0,
+        "underconfident_successes": 7,
+        "true_fail": 15
+      },
+      "S3|NONE": {
+        "samples": 1,
+        "average_predicted_success": 0.370869,
+        "actual_success_rate": 1.0,
+        "calibration_gap": 0.629131,
         "overconfident_misses": 0,
         "underconfident_successes": 1,
-        "true_fail": 11
+        "true_fail": 0
       }
     }
   },
