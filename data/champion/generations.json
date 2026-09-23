@@ -56,5 +56,15 @@
     "frozen_live_reinforcement_weight": 10,
     "ended_at": "2026-09-17T00:28:36.540162+00:00",
     "end_reason": "active_champion_changed"
+  },
+  {
+    "schema_version": 1,
+    "generation": 5,
+    "champion_model_id": "d8b3379e6eef1be4",
+    "started_at": "2026-09-17T00:28:36.540162+00:00",
+    "evolution_min_settled_72h": 120,
+    "frozen_live_reinforcement_weight": 10,
+    "ended_at": "2026-09-23T00:30:08.451242+00:00",
+    "end_reason": "active_champion_changed"
   }
 ]
