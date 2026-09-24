@@ -17,9 +17,9 @@
   },
   "state_review": {
     "S0.5": {
-      "snapshots": 3,
+      "snapshots": 4,
       "settled_72h": 0,
-      "pending_72h": 3,
+      "pending_72h": 4,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -31,9 +31,9 @@
       "other_rate": null
     },
     "S1": {
-      "snapshots": 18,
+      "snapshots": 32,
       "settled_72h": 0,
-      "pending_72h": 18,
+      "pending_72h": 32,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -45,9 +45,9 @@
       "other_rate": null
     },
     "S2": {
-      "snapshots": 2,
+      "snapshots": 15,
       "settled_72h": 0,
-      "pending_72h": 2,
+      "pending_72h": 15,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -59,9 +59,9 @@
       "other_rate": null
     },
     "S3": {
-      "snapshots": 1,
+      "snapshots": 3,
       "settled_72h": 0,
-      "pending_72h": 1,
+      "pending_72h": 3,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -75,9 +75,9 @@
   },
   "market_review": {
     "CRYPTO": {
-      "snapshots": 0,
+      "snapshots": 4,
       "settled_72h": 0,
-      "pending_72h": 0,
+      "pending_72h": 4,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -89,9 +89,9 @@
       "other_rate": null
     },
     "US_STOCK": {
-      "snapshots": 24,
+      "snapshots": 50,
       "settled_72h": 0,
-      "pending_72h": 24,
+      "pending_72h": 50,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
