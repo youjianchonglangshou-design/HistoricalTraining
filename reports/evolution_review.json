@@ -31,9 +31,9 @@
       "other_rate": null
     },
     "S1": {
-      "snapshots": 1,
+      "snapshots": 2,
       "settled_72h": 0,
-      "pending_72h": 1,
+      "pending_72h": 2,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -45,9 +45,9 @@
       "other_rate": null
     },
     "S2": {
-      "snapshots": 7,
+      "snapshots": 12,
       "settled_72h": 0,
-      "pending_72h": 7,
+      "pending_72h": 12,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
@@ -89,9 +89,9 @@
       "other_rate": null
     },
     "US_STOCK": {
-      "snapshots": 7,
+      "snapshots": 13,
       "settled_72h": 0,
-      "pending_72h": 7,
+      "pending_72h": 13,
       "success": 0,
       "alive_slow": 0,
       "true_fail": 0,
