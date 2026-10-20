@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "policy_version": "EVOLUTION-POLICY-v1",
-  "policy_id": "EVOLUTION-POLICY-v1-GEN009-4",
+  "policy_id": "EVOLUTION-POLICY-v1-GEN009-15",
   "active_for_next_training": false,
   "source_review": {
     "champion_model_id": "a14777c4edc80502",
     "generation": 9,
-    "settled_72h": 4,
+    "settled_72h": 15,
     "minimum_settled_72h": 120
   },
   "objective": "Use this generation's real Frozen mistakes to change live-case reinforcement in the next model; reduce repeated high-confidence errors without rewriting fixed S-state rules.",
@@ -18,7 +18,189 @@
     "ordinary_non_success_p50": 1.4,
     "default": 1.0
   },
-  "group_rules": [],
+  "group_rules": [
+    {
+      "group_type": "state_regime",
+      "key": "S0.5|BELOW_PURPLE",
+      "samples": 5,
+      "average_predicted_success": 0.40351,
+      "actual_success_rate": 0.0,
+      "calibration_gap": -0.40351,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 2,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "state_cross_cycle",
+      "key": "S0.5|POST_DOWN_4PLUS",
+      "samples": 5,
+      "average_predicted_success": 0.40351,
+      "actual_success_rate": 0.0,
+      "calibration_gap": -0.40351,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 2,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "state_midline_phase",
+      "key": "S2|RISING_DECEL",
+      "samples": 5,
+      "average_predicted_success": 0.336654,
+      "actual_success_rate": 0.0,
+      "calibration_gap": -0.336654,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 0,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "state_regime",
+      "key": "S2|BELOW_PURPLE",
+      "samples": 5,
+      "average_predicted_success": 0.33312,
+      "actual_success_rate": 0.0,
+      "calibration_gap": -0.33312,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 0,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "state_retest",
+      "key": "S2|PURPLE_BELOW",
+      "samples": 5,
+      "average_predicted_success": 0.33312,
+      "actual_success_rate": 0.0,
+      "calibration_gap": -0.33312,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 0,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "state_divergence",
+      "key": "S2|NONE",
+      "samples": 6,
+      "average_predicted_success": 0.307384,
+      "actual_success_rate": 0.0,
+      "calibration_gap": -0.307384,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 0,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "state_turn",
+      "key": "S0.5|NONE",
+      "samples": 6,
+      "average_predicted_success": 0.463395,
+      "actual_success_rate": 0.166667,
+      "calibration_gap": -0.296729,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 2,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "state",
+      "key": "S2",
+      "samples": 7,
+      "average_predicted_success": 0.295763,
+      "actual_success_rate": 0.0,
+      "calibration_gap": -0.295763,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 0,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "market",
+      "key": "CRYPTO",
+      "samples": 8,
+      "average_predicted_success": 0.39593,
+      "actual_success_rate": 0.125,
+      "calibration_gap": -0.27093,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 2,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "market",
+      "key": "US_STOCK",
+      "samples": 7,
+      "average_predicted_success": 0.400426,
+      "actual_success_rate": 0.142857,
+      "calibration_gap": -0.257569,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 0,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "state",
+      "key": "S0.5",
+      "samples": 7,
+      "average_predicted_success": 0.48865,
+      "actual_success_rate": 0.285714,
+      "calibration_gap": -0.202936,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 2,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "state_divergence",
+      "key": "S0.5|NONE",
+      "samples": 7,
+      "average_predicted_success": 0.48865,
+      "actual_success_rate": 0.285714,
+      "calibration_gap": -0.202936,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 2,
+      "underconfident_successes": 0
+    }
+  ],
   "max_effective_case_weight": 50,
-  "overconfident_failures": []
+  "overconfident_failures": [
+    {
+      "symbol": "DOT",
+      "decision_time_tw": "2026-10-17T08:00:00+08:00",
+      "market_type": "CRYPTO",
+      "state": "S0.5",
+      "predicted_success": 0.656646,
+      "actual": "TRUE_FAIL",
+      "cci_regime": "BELOW_PURPLE",
+      "cci_smoothing_turn_event": "NONE",
+      "cci": -24.884488,
+      "cci_zone": "NEG80_0",
+      "cci_cross_event": "NO_NEW_CROSS",
+      "cci_smoothing_direction": "PURPLE",
+      "cci_cross_cycle": "POST_DOWN_4PLUS",
+      "midline_path_phase": "FALLING_WORSEN",
+      "cci_retest_state": "PURPLE_RETEST_NEAR_SMA",
+      "cci_divergence": "NONE"
+    },
+    {
+      "symbol": "WLD",
+      "decision_time_tw": "2026-10-17T08:00:00+08:00",
+      "market_type": "CRYPTO",
+      "state": "S0.5",
+      "predicted_success": 0.656646,
+      "actual": "ALIVE_SLOW",
+      "cci_regime": "BELOW_PURPLE",
+      "cci_smoothing_turn_event": "NONE",
+      "cci": -27.804462,
+      "cci_zone": "NEG80_0",
+      "cci_cross_event": "NO_NEW_CROSS",
+      "cci_smoothing_direction": "PURPLE",
+      "cci_cross_cycle": "POST_DOWN_4PLUS",
+      "midline_path_phase": "RISING_DECEL",
+      "cci_retest_state": "PURPLE_RETEST_NEAR_SMA",
+      "cci_divergence": "NONE"
+    }
+  ]
 }
