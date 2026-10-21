@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "policy_version": "EVOLUTION-POLICY-v1",
-  "policy_id": "EVOLUTION-POLICY-v1-GEN009-15",
+  "policy_id": "EVOLUTION-POLICY-v1-GEN009-21",
   "active_for_next_training": false,
   "source_review": {
     "champion_model_id": "a14777c4edc80502",
     "generation": 9,
-    "settled_72h": 15,
+    "settled_72h": 21,
     "minimum_settled_72h": 120
   },
   "objective": "Use this generation's real Frozen mistakes to change live-case reinforcement in the next model; reduce repeated high-confidence errors without rewriting fixed S-state rules.",
@@ -44,12 +44,24 @@
       "underconfident_successes": 0
     },
     {
+      "group_type": "state_cross_cycle",
+      "key": "S2|POST_DOWN_1_3D",
+      "samples": 6,
+      "average_predicted_success": 0.376428,
+      "actual_success_rate": 0.0,
+      "calibration_gap": -0.376428,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 0,
+      "underconfident_successes": 0
+    },
+    {
       "group_type": "state_midline_phase",
       "key": "S2|RISING_DECEL",
-      "samples": 5,
-      "average_predicted_success": 0.336654,
+      "samples": 7,
+      "average_predicted_success": 0.343123,
       "actual_success_rate": 0.0,
-      "calibration_gap": -0.336654,
+      "calibration_gap": -0.343123,
       "direction": "LOWER_CONFIDENCE",
       "live_weight_multiplier": 2.0,
       "overconfident_misses": 0,
@@ -58,10 +70,10 @@
     {
       "group_type": "state_regime",
       "key": "S2|BELOW_PURPLE",
-      "samples": 5,
-      "average_predicted_success": 0.33312,
+      "samples": 7,
+      "average_predicted_success": 0.308296,
       "actual_success_rate": 0.0,
-      "calibration_gap": -0.33312,
+      "calibration_gap": -0.308296,
       "direction": "LOWER_CONFIDENCE",
       "live_weight_multiplier": 2.0,
       "overconfident_misses": 0,
@@ -70,22 +82,10 @@
     {
       "group_type": "state_retest",
       "key": "S2|PURPLE_BELOW",
-      "samples": 5,
-      "average_predicted_success": 0.33312,
+      "samples": 7,
+      "average_predicted_success": 0.308296,
       "actual_success_rate": 0.0,
-      "calibration_gap": -0.33312,
-      "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 2.0,
-      "overconfident_misses": 0,
-      "underconfident_successes": 0
-    },
-    {
-      "group_type": "state_divergence",
-      "key": "S2|NONE",
-      "samples": 6,
-      "average_predicted_success": 0.307384,
-      "actual_success_rate": 0.0,
-      "calibration_gap": -0.307384,
+      "calibration_gap": -0.308296,
       "direction": "LOWER_CONFIDENCE",
       "live_weight_multiplier": 2.0,
       "overconfident_misses": 0,
@@ -104,18 +104,6 @@
       "underconfident_successes": 0
     },
     {
-      "group_type": "state",
-      "key": "S2",
-      "samples": 7,
-      "average_predicted_success": 0.295763,
-      "actual_success_rate": 0.0,
-      "calibration_gap": -0.295763,
-      "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 2.0,
-      "overconfident_misses": 0,
-      "underconfident_successes": 0
-    },
-    {
       "group_type": "market",
       "key": "CRYPTO",
       "samples": 8,
@@ -128,12 +116,36 @@
       "underconfident_successes": 0
     },
     {
-      "group_type": "market",
-      "key": "US_STOCK",
-      "samples": 7,
-      "average_predicted_success": 0.400426,
-      "actual_success_rate": 0.142857,
-      "calibration_gap": -0.257569,
+      "group_type": "state_turn",
+      "key": "S2|NONE",
+      "samples": 9,
+      "average_predicted_success": 0.379288,
+      "actual_success_rate": 0.111111,
+      "calibration_gap": -0.268177,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 0,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "state_divergence",
+      "key": "S2|NONE",
+      "samples": 9,
+      "average_predicted_success": 0.36623,
+      "actual_success_rate": 0.111111,
+      "calibration_gap": -0.255119,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 0,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "state",
+      "key": "S2",
+      "samples": 12,
+      "average_predicted_success": 0.332673,
+      "actual_success_rate": 0.083333,
+      "calibration_gap": -0.24934,
       "direction": "LOWER_CONFIDENCE",
       "live_weight_multiplier": 2.0,
       "overconfident_misses": 0,
@@ -161,6 +173,18 @@
       "direction": "LOWER_CONFIDENCE",
       "live_weight_multiplier": 2.0,
       "overconfident_misses": 2,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "market",
+      "key": "US_STOCK",
+      "samples": 13,
+      "average_predicted_success": 0.427488,
+      "actual_success_rate": 0.230769,
+      "calibration_gap": -0.196719,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 1.9836,
+      "overconfident_misses": 0,
       "underconfident_successes": 0
     }
   ],
