@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "policy_version": "EVOLUTION-POLICY-v1",
-  "policy_id": "EVOLUTION-POLICY-v1-GEN009-107",
+  "policy_id": "EVOLUTION-POLICY-v1-GEN009-111",
   "active_for_next_training": false,
   "source_review": {
     "champion_model_id": "a14777c4edc80502",
     "generation": 9,
-    "settled_72h": 107,
+    "settled_72h": 111,
     "minimum_settled_72h": 120
   },
   "objective": "Use this generation's real Frozen mistakes to change live-case reinforcement in the next model; reduce repeated high-confidence errors without rewriting fixed S-state rules.",
@@ -19,18 +19,6 @@
     "default": 1.0
   },
   "group_rules": [
-    {
-      "group_type": "state_cross_cycle",
-      "key": "S0.5|POST_UP_4PLUS",
-      "samples": 5,
-      "average_predicted_success": 0.485564,
-      "actual_success_rate": 0.0,
-      "calibration_gap": -0.485564,
-      "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 2.0,
-      "overconfident_misses": 2,
-      "underconfident_successes": 0
-    },
     {
       "group_type": "state_cross_cycle",
       "key": "S2|POST_DOWN_4PLUS",
@@ -80,6 +68,18 @@
       "underconfident_successes": 0
     },
     {
+      "group_type": "state_cross_cycle",
+      "key": "S0.5|POST_UP_4PLUS",
+      "samples": 6,
+      "average_predicted_success": 0.51462,
+      "actual_success_rate": 0.166667,
+      "calibration_gap": -0.347953,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 2,
+      "underconfident_successes": 0
+    },
+    {
       "group_type": "state_regime",
       "key": "S2|BELOW_PURPLE",
       "samples": 15,
@@ -117,18 +117,6 @@
     },
     {
       "group_type": "state_midline_phase",
-      "key": "S2|RISING_DECEL",
-      "samples": 16,
-      "average_predicted_success": 0.339225,
-      "actual_success_rate": 0.0625,
-      "calibration_gap": -0.276725,
-      "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 2.0,
-      "overconfident_misses": 0,
-      "underconfident_successes": 1
-    },
-    {
-      "group_type": "state_midline_phase",
       "key": "S1|FALLING_IMPROVE",
       "samples": 8,
       "average_predicted_success": 0.522207,
@@ -152,52 +140,16 @@
       "underconfident_successes": 0
     },
     {
-      "group_type": "state_regime",
-      "key": "S0.5|ABOVE_YELLOW",
-      "samples": 15,
-      "average_predicted_success": 0.429001,
-      "actual_success_rate": 0.2,
-      "calibration_gap": -0.229001,
-      "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 2.0,
-      "overconfident_misses": 2,
-      "underconfident_successes": 1
-    },
-    {
-      "group_type": "state_retest",
-      "key": "S0.5|YELLOW_ABOVE",
-      "samples": 15,
-      "average_predicted_success": 0.429001,
-      "actual_success_rate": 0.2,
-      "calibration_gap": -0.229001,
-      "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 2.0,
-      "overconfident_misses": 2,
-      "underconfident_successes": 1
-    },
-    {
-      "group_type": "market",
-      "key": "CRYPTO",
-      "samples": 32,
-      "average_predicted_success": 0.44323,
-      "actual_success_rate": 0.21875,
-      "calibration_gap": -0.22448,
-      "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 2.0,
-      "overconfident_misses": 4,
-      "underconfident_successes": 3
-    },
-    {
-      "group_type": "state_divergence",
-      "key": "S2|NONE",
-      "samples": 23,
-      "average_predicted_success": 0.348513,
-      "actual_success_rate": 0.130435,
-      "calibration_gap": -0.218078,
+      "group_type": "state_midline_phase",
+      "key": "S2|RISING_DECEL",
+      "samples": 17,
+      "average_predicted_success": 0.334565,
+      "actual_success_rate": 0.117647,
+      "calibration_gap": -0.216918,
       "direction": "LOWER_CONFIDENCE",
       "live_weight_multiplier": 2.0,
       "overconfident_misses": 0,
-      "underconfident_successes": 0
+      "underconfident_successes": 2
     },
     {
       "group_type": "state_turn",
@@ -225,15 +177,39 @@
     },
     {
       "group_type": "state_regime",
-      "key": "S2|ABOVE_YELLOW",
-      "samples": 5,
-      "average_predicted_success": 0.202673,
-      "actual_success_rate": 0.0,
-      "calibration_gap": -0.202673,
+      "key": "S0.5|ABOVE_YELLOW",
+      "samples": 17,
+      "average_predicted_success": 0.444911,
+      "actual_success_rate": 0.235294,
+      "calibration_gap": -0.209617,
       "direction": "LOWER_CONFIDENCE",
       "live_weight_multiplier": 2.0,
-      "overconfident_misses": 0,
-      "underconfident_successes": 0
+      "overconfident_misses": 2,
+      "underconfident_successes": 1
+    },
+    {
+      "group_type": "state_retest",
+      "key": "S0.5|YELLOW_ABOVE",
+      "samples": 17,
+      "average_predicted_success": 0.444911,
+      "actual_success_rate": 0.235294,
+      "calibration_gap": -0.209617,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 2,
+      "underconfident_successes": 1
+    },
+    {
+      "group_type": "market",
+      "key": "CRYPTO",
+      "samples": 33,
+      "average_predicted_success": 0.449795,
+      "actual_success_rate": 0.242424,
+      "calibration_gap": -0.207371,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 4,
+      "underconfident_successes": 3
     },
     {
       "group_type": "state_midline_phase",
@@ -260,16 +236,52 @@
       "underconfident_successes": 1
     },
     {
-      "group_type": "state_midline_phase",
-      "key": "S0.5|FALLING_WORSEN",
-      "samples": 7,
-      "average_predicted_success": 0.340496,
-      "actual_success_rate": 0.142857,
-      "calibration_gap": -0.197639,
+      "group_type": "state_cross_cycle",
+      "key": "S0.5|POST_UP_1_3D",
+      "samples": 20,
+      "average_predicted_success": 0.399226,
+      "actual_success_rate": 0.2,
+      "calibration_gap": -0.199226,
       "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 1.9882,
+      "live_weight_multiplier": 1.9961,
       "overconfident_misses": 1,
-      "underconfident_successes": 1
+      "underconfident_successes": 2
+    },
+    {
+      "group_type": "state_regime",
+      "key": "S2|ABOVE_YELLOW",
+      "samples": 6,
+      "average_predicted_success": 0.198342,
+      "actual_success_rate": 0.0,
+      "calibration_gap": -0.198342,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 1.9917,
+      "overconfident_misses": 0,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "state_cross_cycle",
+      "key": "S2|POST_UP_4PLUS",
+      "samples": 5,
+      "average_predicted_success": 0.196168,
+      "actual_success_rate": 0.0,
+      "calibration_gap": -0.196168,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 1.9808,
+      "overconfident_misses": 0,
+      "underconfident_successes": 0
+    },
+    {
+      "group_type": "state_retest",
+      "key": "S2|YELLOW_RETEST_NEAR_SMA",
+      "samples": 5,
+      "average_predicted_success": 0.196168,
+      "actual_success_rate": 0.0,
+      "calibration_gap": -0.196168,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 1.9808,
+      "overconfident_misses": 0,
+      "underconfident_successes": 0
     },
     {
       "group_type": "state_cross_cycle",
@@ -284,28 +296,28 @@
       "underconfident_successes": 1
     },
     {
-      "group_type": "state_cross_cycle",
-      "key": "S0.5|POST_UP_1_3D",
-      "samples": 19,
-      "average_predicted_success": 0.395576,
-      "actual_success_rate": 0.210526,
-      "calibration_gap": -0.185049,
-      "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 1.9252,
-      "overconfident_misses": 1,
-      "underconfident_successes": 2
-    },
-    {
       "group_type": "state_midline_phase",
       "key": "S0.5|FALLING_IMPROVE",
-      "samples": 41,
-      "average_predicted_success": 0.39289,
-      "actual_success_rate": 0.219512,
-      "calibration_gap": -0.173378,
+      "samples": 42,
+      "average_predicted_success": 0.394692,
+      "actual_success_rate": 0.214286,
+      "calibration_gap": -0.180406,
       "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 1.8669,
+      "live_weight_multiplier": 1.902,
       "overconfident_misses": 3,
       "underconfident_successes": 5
+    },
+    {
+      "group_type": "state_divergence",
+      "key": "S2|NONE",
+      "samples": 25,
+      "average_predicted_success": 0.3381,
+      "actual_success_rate": 0.16,
+      "calibration_gap": -0.1781,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 1.8905,
+      "overconfident_misses": 0,
+      "underconfident_successes": 1
     },
     {
       "group_type": "state_regime",
@@ -333,37 +345,13 @@
     },
     {
       "group_type": "state",
-      "key": "S2",
-      "samples": 30,
-      "average_predicted_success": 0.333178,
-      "actual_success_rate": 0.166667,
-      "calibration_gap": -0.166512,
-      "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 1.8326,
-      "overconfident_misses": 0,
-      "underconfident_successes": 2
-    },
-    {
-      "group_type": "state_turn",
-      "key": "S2|NONE",
-      "samples": 26,
-      "average_predicted_success": 0.341309,
-      "actual_success_rate": 0.192308,
-      "calibration_gap": -0.149001,
-      "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 1.745,
-      "overconfident_misses": 0,
-      "underconfident_successes": 2
-    },
-    {
-      "group_type": "state",
       "key": "S0.5",
-      "samples": 59,
-      "average_predicted_success": 0.381714,
-      "actual_success_rate": 0.237288,
-      "calibration_gap": -0.144426,
+      "samples": 61,
+      "average_predicted_success": 0.387698,
+      "actual_success_rate": 0.245902,
+      "calibration_gap": -0.141797,
       "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 1.7221,
+      "live_weight_multiplier": 1.709,
       "overconfident_misses": 5,
       "underconfident_successes": 9
     },
@@ -380,28 +368,52 @@
       "underconfident_successes": 1
     },
     {
-      "group_type": "market",
-      "key": "US_STOCK",
-      "samples": 75,
-      "average_predicted_success": 0.359411,
-      "actual_success_rate": 0.226667,
-      "calibration_gap": -0.132744,
+      "group_type": "state",
+      "key": "S2",
+      "samples": 32,
+      "average_predicted_success": 0.326002,
+      "actual_success_rate": 0.1875,
+      "calibration_gap": -0.138502,
       "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 1.6637,
-      "overconfident_misses": 3,
-      "underconfident_successes": 9
+      "live_weight_multiplier": 1.6925,
+      "overconfident_misses": 0,
+      "underconfident_successes": 3
     },
     {
-      "group_type": "state_divergence",
-      "key": "S0.5|NONE",
-      "samples": 49,
-      "average_predicted_success": 0.381308,
-      "actual_success_rate": 0.265306,
-      "calibration_gap": -0.116002,
+      "group_type": "state_midline_phase",
+      "key": "S0.5|FALLING_WORSEN",
+      "samples": 8,
+      "average_predicted_success": 0.380422,
+      "actual_success_rate": 0.25,
+      "calibration_gap": -0.130422,
       "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 1.58,
-      "overconfident_misses": 4,
-      "underconfident_successes": 8
+      "live_weight_multiplier": 1.6521,
+      "overconfident_misses": 1,
+      "underconfident_successes": 1
+    },
+    {
+      "group_type": "market",
+      "key": "US_STOCK",
+      "samples": 78,
+      "average_predicted_success": 0.357193,
+      "actual_success_rate": 0.230769,
+      "calibration_gap": -0.126424,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 1.6321,
+      "overconfident_misses": 3,
+      "underconfident_successes": 10
+    },
+    {
+      "group_type": "state_turn",
+      "key": "S2|NONE",
+      "samples": 28,
+      "average_predicted_success": 0.332526,
+      "actual_success_rate": 0.214286,
+      "calibration_gap": -0.11824,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 1.5912,
+      "overconfident_misses": 0,
+      "underconfident_successes": 3
     },
     {
       "group_type": "state_regime",
@@ -416,14 +428,26 @@
       "underconfident_successes": 1
     },
     {
-      "group_type": "state_turn",
+      "group_type": "state_divergence",
       "key": "S0.5|NONE",
       "samples": 51,
-      "average_predicted_success": 0.366295,
-      "actual_success_rate": 0.254902,
-      "calibration_gap": -0.111393,
+      "average_predicted_success": 0.388482,
+      "actual_success_rate": 0.27451,
+      "calibration_gap": -0.113972,
       "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 1.557,
+      "live_weight_multiplier": 1.5699,
+      "overconfident_misses": 4,
+      "underconfident_successes": 8
+    },
+    {
+      "group_type": "state_turn",
+      "key": "S0.5|NONE",
+      "samples": 53,
+      "average_predicted_success": 0.373764,
+      "actual_success_rate": 0.264151,
+      "calibration_gap": -0.109613,
+      "direction": "LOWER_CONFIDENCE",
+      "live_weight_multiplier": 1.5481,
       "overconfident_misses": 4,
       "underconfident_successes": 9
     },
@@ -476,18 +500,6 @@
       "underconfident_successes": 2
     },
     {
-      "group_type": "state_midline_phase",
-      "key": "S2|RISING_ACCEL",
-      "samples": 8,
-      "average_predicted_success": 0.407135,
-      "actual_success_rate": 0.5,
-      "calibration_gap": 0.092865,
-      "direction": "RAISE_CONFIDENCE",
-      "live_weight_multiplier": 1.4643,
-      "overconfident_misses": 0,
-      "underconfident_successes": 1
-    },
-    {
       "group_type": "state_cross_cycle",
       "key": "S1|UP_SECOND_PLUS_21D",
       "samples": 5,
@@ -510,6 +522,18 @@
       "live_weight_multiplier": 1.3981,
       "overconfident_misses": 2,
       "underconfident_successes": 5
+    },
+    {
+      "group_type": "state_midline_phase",
+      "key": "S2|RISING_ACCEL",
+      "samples": 9,
+      "average_predicted_success": 0.38153,
+      "actual_success_rate": 0.444444,
+      "calibration_gap": 0.062915,
+      "direction": "RAISE_CONFIDENCE",
+      "live_weight_multiplier": 1.3146,
+      "overconfident_misses": 0,
+      "underconfident_successes": 1
     },
     {
       "group_type": "state_cross_cycle",
