@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generation": 9,
-  "champion_model_id": "a14777c4edc80502",
-  "started_at": "2026-10-16T00:05:31.263418+00:00",
+  "generation": 10,
+  "champion_model_id": "5e2fade935089831",
+  "started_at": "2026-10-29T00:07:51.714147+00:00",
   "evolution_min_settled_72h": 120,
   "frozen_live_reinforcement_weight": 10
 }
