@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-02T00:07:41.445000+00:00",
+  "generated_at": "2026-11-03T00:06:25.650000+00:00",
   "contract": "Official Champion records only: Taiwan 08:25 exam using the completed 08:00 daily close. Intraday 4H/partial-daily states cannot score SUCCESS; 12H is observation-only; 24H/48H/72H use confirmed daily checkpoints.",
   "legacy_excluded": 0,
   "champion": {
@@ -11,81 +11,81 @@
   },
   "windows": {
     "7": {
-      "snapshots": 93,
-      "settled_72h": 63,
+      "snapshots": 101,
+      "settled_72h": 71,
       "pending_72h": 30,
-      "success": 8,
-      "alive_slow": 17,
-      "true_fail": 15,
+      "success": 11,
+      "alive_slow": 20,
+      "true_fail": 17,
       "other": 23,
-      "success_rate": 0.126984,
-      "alive_slow_rate": 0.269841,
-      "structural_survival_rate": 0.396825,
-      "true_fail_rate": 0.238095,
-      "other_rate": 0.365079
+      "success_rate": 0.15493,
+      "alive_slow_rate": 0.28169,
+      "structural_survival_rate": 0.43662,
+      "true_fail_rate": 0.239437,
+      "other_rate": 0.323944
     },
     "14": {
-      "snapshots": 93,
-      "settled_72h": 63,
+      "snapshots": 101,
+      "settled_72h": 71,
       "pending_72h": 30,
-      "success": 8,
-      "alive_slow": 17,
-      "true_fail": 15,
+      "success": 11,
+      "alive_slow": 20,
+      "true_fail": 17,
       "other": 23,
-      "success_rate": 0.126984,
-      "alive_slow_rate": 0.269841,
-      "structural_survival_rate": 0.396825,
-      "true_fail_rate": 0.238095,
-      "other_rate": 0.365079
+      "success_rate": 0.15493,
+      "alive_slow_rate": 0.28169,
+      "structural_survival_rate": 0.43662,
+      "true_fail_rate": 0.239437,
+      "other_rate": 0.323944
     },
     "30": {
-      "snapshots": 93,
-      "settled_72h": 63,
+      "snapshots": 101,
+      "settled_72h": 71,
       "pending_72h": 30,
-      "success": 8,
-      "alive_slow": 17,
-      "true_fail": 15,
+      "success": 11,
+      "alive_slow": 20,
+      "true_fail": 17,
       "other": 23,
-      "success_rate": 0.126984,
-      "alive_slow_rate": 0.269841,
-      "structural_survival_rate": 0.396825,
-      "true_fail_rate": 0.238095,
-      "other_rate": 0.365079
+      "success_rate": 0.15493,
+      "alive_slow_rate": 0.28169,
+      "structural_survival_rate": 0.43662,
+      "true_fail_rate": 0.239437,
+      "other_rate": 0.323944
     },
     "90": {
-      "snapshots": 93,
-      "settled_72h": 63,
+      "snapshots": 101,
+      "settled_72h": 71,
       "pending_72h": 30,
-      "success": 8,
-      "alive_slow": 17,
-      "true_fail": 15,
+      "success": 11,
+      "alive_slow": 20,
+      "true_fail": 17,
       "other": 23,
-      "success_rate": 0.126984,
-      "alive_slow_rate": 0.269841,
-      "structural_survival_rate": 0.396825,
-      "true_fail_rate": 0.238095,
-      "other_rate": 0.365079
+      "success_rate": 0.15493,
+      "alive_slow_rate": 0.28169,
+      "structural_survival_rate": 0.43662,
+      "true_fail_rate": 0.239437,
+      "other_rate": 0.323944
     },
     "all": {
-      "snapshots": 93,
-      "settled_72h": 63,
+      "snapshots": 101,
+      "settled_72h": 71,
       "pending_72h": 30,
-      "success": 8,
-      "alive_slow": 17,
-      "true_fail": 15,
+      "success": 11,
+      "alive_slow": 20,
+      "true_fail": 17,
       "other": 23,
-      "success_rate": 0.126984,
-      "alive_slow_rate": 0.269841,
-      "structural_survival_rate": 0.396825,
-      "true_fail_rate": 0.238095,
-      "other_rate": 0.365079
+      "success_rate": 0.15493,
+      "alive_slow_rate": 0.28169,
+      "structural_survival_rate": 0.43662,
+      "true_fail_rate": 0.239437,
+      "other_rate": 0.323944
     }
   },
   "by_state": {
     "S0.5": {
-      "snapshots": 21,
+      "snapshots": 22,
       "settled_72h": 19,
-      "pending_72h": 2,
+      "pending_72h": 3,
       "success": 2,
       "alive_slow": 7,
       "true_fail": 10,
@@ -97,9 +97,9 @@
       "other_rate": 0.0
     },
     "S1": {
-      "snapshots": 38,
+      "snapshots": 40,
       "settled_72h": 37,
-      "pending_72h": 1,
+      "pending_72h": 3,
       "success": 3,
       "alive_slow": 7,
       "true_fail": 4,
@@ -111,24 +111,24 @@
       "other_rate": 0.621622
     },
     "S2": {
-      "snapshots": 30,
-      "settled_72h": 6,
-      "pending_72h": 24,
-      "success": 2,
-      "alive_slow": 3,
-      "true_fail": 1,
+      "snapshots": 34,
+      "settled_72h": 13,
+      "pending_72h": 21,
+      "success": 4,
+      "alive_slow": 6,
+      "true_fail": 3,
       "other": 0,
-      "success_rate": 0.333333,
-      "alive_slow_rate": 0.5,
-      "structural_survival_rate": 0.833333,
-      "true_fail_rate": 0.166667,
+      "success_rate": 0.307692,
+      "alive_slow_rate": 0.461538,
+      "structural_survival_rate": 0.769231,
+      "true_fail_rate": 0.230769,
       "other_rate": 0.0
     },
     "S3": {
-      "snapshots": 4,
-      "settled_72h": 1,
+      "snapshots": 5,
+      "settled_72h": 2,
       "pending_72h": 3,
-      "success": 1,
+      "success": 2,
       "alive_slow": 0,
       "true_fail": 0,
       "other": 0,
@@ -142,17 +142,17 @@
   "by_market": {
     "CRYPTO": {
       "all": {
-        "snapshots": 11,
-        "settled_72h": 6,
-        "pending_72h": 5,
+        "snapshots": 13,
+        "settled_72h": 7,
+        "pending_72h": 6,
         "success": 0,
-        "alive_slow": 3,
+        "alive_slow": 4,
         "true_fail": 3,
         "other": 0,
         "success_rate": 0.0,
-        "alive_slow_rate": 0.5,
-        "structural_survival_rate": 0.5,
-        "true_fail_rate": 0.5,
+        "alive_slow_rate": 0.571429,
+        "structural_survival_rate": 0.571429,
+        "true_fail_rate": 0.428571,
         "other_rate": 0.0
       },
       "by_state": {
@@ -171,9 +171,9 @@
           "other_rate": 0.0
         },
         "S1": {
-          "snapshots": 2,
+          "snapshots": 3,
           "settled_72h": 1,
-          "pending_72h": 1,
+          "pending_72h": 2,
           "success": 0,
           "alive_slow": 0,
           "true_fail": 1,
@@ -185,11 +185,11 @@
           "other_rate": 0.0
         },
         "S2": {
-          "snapshots": 3,
-          "settled_72h": 1,
+          "snapshots": 4,
+          "settled_72h": 2,
           "pending_72h": 2,
           "success": 0,
-          "alive_slow": 1,
+          "alive_slow": 2,
           "true_fail": 0,
           "other": 0,
           "success_rate": 0.0,
@@ -216,24 +216,24 @@
     },
     "US_STOCK": {
       "all": {
-        "snapshots": 82,
-        "settled_72h": 57,
-        "pending_72h": 25,
-        "success": 8,
-        "alive_slow": 14,
-        "true_fail": 12,
+        "snapshots": 88,
+        "settled_72h": 64,
+        "pending_72h": 24,
+        "success": 11,
+        "alive_slow": 16,
+        "true_fail": 14,
         "other": 23,
-        "success_rate": 0.140351,
-        "alive_slow_rate": 0.245614,
-        "structural_survival_rate": 0.385965,
-        "true_fail_rate": 0.210526,
-        "other_rate": 0.403509
+        "success_rate": 0.171875,
+        "alive_slow_rate": 0.25,
+        "structural_survival_rate": 0.421875,
+        "true_fail_rate": 0.21875,
+        "other_rate": 0.359375
       },
       "by_state": {
         "S0.5": {
-          "snapshots": 15,
+          "snapshots": 16,
           "settled_72h": 15,
-          "pending_72h": 0,
+          "pending_72h": 1,
           "success": 2,
           "alive_slow": 5,
           "true_fail": 8,
@@ -245,9 +245,9 @@
           "other_rate": 0.0
         },
         "S1": {
-          "snapshots": 36,
+          "snapshots": 37,
           "settled_72h": 36,
-          "pending_72h": 0,
+          "pending_72h": 1,
           "success": 3,
           "alive_slow": 7,
           "true_fail": 3,
@@ -259,24 +259,24 @@
           "other_rate": 0.638889
         },
         "S2": {
-          "snapshots": 27,
-          "settled_72h": 5,
-          "pending_72h": 22,
-          "success": 2,
-          "alive_slow": 2,
-          "true_fail": 1,
+          "snapshots": 30,
+          "settled_72h": 11,
+          "pending_72h": 19,
+          "success": 4,
+          "alive_slow": 4,
+          "true_fail": 3,
           "other": 0,
-          "success_rate": 0.4,
-          "alive_slow_rate": 0.4,
-          "structural_survival_rate": 0.8,
-          "true_fail_rate": 0.2,
+          "success_rate": 0.363636,
+          "alive_slow_rate": 0.363636,
+          "structural_survival_rate": 0.727273,
+          "true_fail_rate": 0.272727,
           "other_rate": 0.0
         },
         "S3": {
-          "snapshots": 4,
-          "settled_72h": 1,
+          "snapshots": 5,
+          "settled_72h": 2,
           "pending_72h": 3,
-          "success": 1,
+          "success": 2,
           "alive_slow": 0,
           "true_fail": 0,
           "other": 0,
@@ -317,6 +317,21 @@
   },
   "daily": [
     {
+      "snapshots": 8,
+      "settled_72h": 8,
+      "pending_72h": 0,
+      "success": 3,
+      "alive_slow": 3,
+      "true_fail": 2,
+      "other": 0,
+      "success_rate": 0.375,
+      "alive_slow_rate": 0.375,
+      "structural_survival_rate": 0.75,
+      "true_fail_rate": 0.25,
+      "other_rate": 0.0,
+      "date": "2026-10-31"
+    },
+    {
       "snapshots": 21,
       "settled_72h": 21,
       "pending_72h": 0,
@@ -349,17 +364,143 @@
   ],
   "recent_records": [
     {
-      "snapshot_id": "5e2fade935089831:CRYPTO:UNI:1793577600000",
-      "decision_time_tw": "2026-11-02T08:00:00+08:00",
-      "checkpoint_time_tw": "2026-11-02T08:02:50.014198+08:00",
+      "snapshot_id": "5e2fade935089831:CRYPTO:PEPE:1793664000000",
+      "decision_time_tw": "2026-11-03T08:00:00+08:00",
+      "checkpoint_time_tw": "2026-11-03T08:02:43.949071+08:00",
+      "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT",
+      "symbol": "PEPE",
+      "market_type": "CRYPTO",
+      "state": "S2",
+      "target": "S3",
+      "success_probability": 0.525126,
+      "structural_survival_probability": 0.76891,
+      "true_fail_probability": 0.101959,
+      "status_72h": "PENDING",
+      "outcome_72h": null,
+      "state_path_72h": [],
+      "max_return_72h": null,
+      "max_drawdown_72h": null
+    },
+    {
+      "snapshot_id": "5e2fade935089831:CRYPTO:UNI:1793664000000",
+      "decision_time_tw": "2026-11-03T08:00:00+08:00",
+      "checkpoint_time_tw": "2026-11-03T08:02:43.949071+08:00",
       "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT",
       "symbol": "UNI",
       "market_type": "CRYPTO",
       "state": "S1",
       "target": "BANDPOS_GT_075",
-      "success_probability": 0.381629,
-      "structural_survival_probability": 0.707099,
-      "true_fail_probability": 0.051457,
+      "success_probability": 0.374494,
+      "structural_survival_probability": 0.670696,
+      "true_fail_probability": 0.075897,
+      "status_72h": "PENDING",
+      "outcome_72h": null,
+      "state_path_72h": [],
+      "max_return_72h": null,
+      "max_drawdown_72h": null
+    },
+    {
+      "snapshot_id": "5e2fade935089831:US_STOCK:COPPER:1793664000000",
+      "decision_time_tw": "2026-11-03T08:00:00+08:00",
+      "checkpoint_time_tw": "2026-11-03T08:05:10.141333+08:00",
+      "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT",
+      "symbol": "COPPER",
+      "market_type": "US_STOCK",
+      "state": "S0.5",
+      "target": "S1_OR_HIGHER",
+      "success_probability": 0.497435,
+      "structural_survival_probability": 0.880722,
+      "true_fail_probability": 0.119228,
+      "status_72h": "PENDING",
+      "outcome_72h": null,
+      "state_path_72h": [],
+      "max_return_72h": null,
+      "max_drawdown_72h": null
+    },
+    {
+      "snapshot_id": "5e2fade935089831:US_STOCK:DRAMX:1793664000000",
+      "decision_time_tw": "2026-11-03T08:00:00+08:00",
+      "checkpoint_time_tw": "2026-11-03T08:05:10.141333+08:00",
+      "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT",
+      "symbol": "DRAMX",
+      "market_type": "US_STOCK",
+      "state": "S2",
+      "target": "S3",
+      "success_probability": 0.317375,
+      "structural_survival_probability": 0.64985,
+      "true_fail_probability": 0.294199,
+      "status_72h": "PENDING",
+      "outcome_72h": null,
+      "state_path_72h": [],
+      "max_return_72h": null,
+      "max_drawdown_72h": null
+    },
+    {
+      "snapshot_id": "5e2fade935089831:US_STOCK:EWYX:1793664000000",
+      "decision_time_tw": "2026-11-03T08:00:00+08:00",
+      "checkpoint_time_tw": "2026-11-03T08:05:10.141333+08:00",
+      "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT",
+      "symbol": "EWYX",
+      "market_type": "US_STOCK",
+      "state": "S1",
+      "target": "BANDPOS_GT_075",
+      "success_probability": 0.54463,
+      "structural_survival_probability": 0.729201,
+      "true_fail_probability": 0.131994,
+      "status_72h": "PENDING",
+      "outcome_72h": null,
+      "state_path_72h": [],
+      "max_return_72h": null,
+      "max_drawdown_72h": null
+    },
+    {
+      "snapshot_id": "5e2fade935089831:US_STOCK:IBMX:1793664000000",
+      "decision_time_tw": "2026-11-03T08:00:00+08:00",
+      "checkpoint_time_tw": "2026-11-03T08:05:10.141333+08:00",
+      "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT",
+      "symbol": "IBMX",
+      "market_type": "US_STOCK",
+      "state": "S2",
+      "target": "S3",
+      "success_probability": 0.335339,
+      "structural_survival_probability": 0.684709,
+      "true_fail_probability": 0.192589,
+      "status_72h": "PENDING",
+      "outcome_72h": null,
+      "state_path_72h": [],
+      "max_return_72h": null,
+      "max_drawdown_72h": null
+    },
+    {
+      "snapshot_id": "5e2fade935089831:US_STOCK:SMSN:1793664000000",
+      "decision_time_tw": "2026-11-03T08:00:00+08:00",
+      "checkpoint_time_tw": "2026-11-03T08:05:10.141333+08:00",
+      "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT",
+      "symbol": "SMSN",
+      "market_type": "US_STOCK",
+      "state": "S3",
+      "target": "BANDPOS_GT_075",
+      "success_probability": 0.669578,
+      "structural_survival_probability": 0.723637,
+      "true_fail_probability": 0.24517,
+      "status_72h": "PENDING",
+      "outcome_72h": null,
+      "state_path_72h": [],
+      "max_return_72h": null,
+      "max_drawdown_72h": null
+    },
+    {
+      "snapshot_id": "5e2fade935089831:US_STOCK:WDCX:1793664000000",
+      "decision_time_tw": "2026-11-03T08:00:00+08:00",
+      "checkpoint_time_tw": "2026-11-03T08:05:10.141333+08:00",
+      "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT",
+      "symbol": "WDCX",
+      "market_type": "US_STOCK",
+      "state": "S2",
+      "target": "S3",
+      "success_probability": 0.186423,
+      "structural_survival_probability": 0.306379,
+      "true_fail_probability": 0.653808,
       "status_72h": "PENDING",
       "outcome_72h": null,
       "state_path_72h": [],
@@ -378,24 +519,6 @@
       "success_probability": 0.168735,
       "structural_survival_probability": 0.424856,
       "true_fail_probability": 0.490274,
-      "status_72h": "PENDING",
-      "outcome_72h": null,
-      "state_path_72h": [],
-      "max_return_72h": null,
-      "max_drawdown_72h": null
-    },
-    {
-      "snapshot_id": "5e2fade935089831:US_STOCK:WTI:1793577600000",
-      "decision_time_tw": "2026-11-02T08:00:00+08:00",
-      "checkpoint_time_tw": "2026-11-02T08:06:27.024840+08:00",
-      "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT",
-      "symbol": "WTI",
-      "market_type": "US_STOCK",
-      "state": "S2",
-      "target": "S3",
-      "success_probability": 0.294859,
-      "structural_survival_probability": 0.628036,
-      "true_fail_probability": 0.181949,
       "status_72h": "PENDING",
       "outcome_72h": null,
       "state_path_72h": [],
@@ -511,42 +634,6 @@
       "max_drawdown_72h": null
     },
     {
-      "snapshot_id": "5e2fade935089831:US_STOCK:TXNX:1793577600000",
-      "decision_time_tw": "2026-11-02T08:00:00+08:00",
-      "checkpoint_time_tw": "2026-11-02T08:06:27.024840+08:00",
-      "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT",
-      "symbol": "TXNX",
-      "market_type": "US_STOCK",
-      "state": "S2",
-      "target": "S3",
-      "success_probability": 0.462052,
-      "structural_survival_probability": 0.859611,
-      "true_fail_probability": 0.104211,
-      "status_72h": "PENDING",
-      "outcome_72h": null,
-      "state_path_72h": [],
-      "max_return_72h": null,
-      "max_drawdown_72h": null
-    },
-    {
-      "snapshot_id": "5e2fade935089831:US_STOCK:WDCX:1793577600000",
-      "decision_time_tw": "2026-11-02T08:00:00+08:00",
-      "checkpoint_time_tw": "2026-11-02T08:06:27.024840+08:00",
-      "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT",
-      "symbol": "WDCX",
-      "market_type": "US_STOCK",
-      "state": "S2",
-      "target": "S3",
-      "success_probability": 0.450558,
-      "structural_survival_probability": 0.8826,
-      "true_fail_probability": 0.092717,
-      "status_72h": "PENDING",
-      "outcome_72h": null,
-      "state_path_72h": [],
-      "max_return_72h": null,
-      "max_drawdown_72h": null
-    },
-    {
       "snapshot_id": "5e2fade935089831:US_STOCK:SKHY:1793577600000",
       "decision_time_tw": "2026-11-02T08:00:00+08:00",
       "checkpoint_time_tw": "2026-11-02T08:06:27.024840+08:00",
@@ -576,6 +663,78 @@
       "success_probability": 0.296233,
       "structural_survival_probability": 0.3302,
       "true_fail_probability": 0.630013,
+      "status_72h": "PENDING",
+      "outcome_72h": null,
+      "state_path_72h": [],
+      "max_return_72h": null,
+      "max_drawdown_72h": null
+    },
+    {
+      "snapshot_id": "5e2fade935089831:US_STOCK:TXNX:1793577600000",
+      "decision_time_tw": "2026-11-02T08:00:00+08:00",
+      "checkpoint_time_tw": "2026-11-02T08:06:27.024840+08:00",
+      "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT",
+      "symbol": "TXNX",
+      "market_type": "US_STOCK",
+      "state": "S2",
+      "target": "S3",
+      "success_probability": 0.462052,
+      "structural_survival_probability": 0.859611,
+      "true_fail_probability": 0.104211,
+      "status_72h": "PENDING",
+      "outcome_72h": null,
+      "state_path_72h": [],
+      "max_return_72h": null,
+      "max_drawdown_72h": null
+    },
+    {
+      "snapshot_id": "5e2fade935089831:CRYPTO:UNI:1793577600000",
+      "decision_time_tw": "2026-11-02T08:00:00+08:00",
+      "checkpoint_time_tw": "2026-11-02T08:02:50.014198+08:00",
+      "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT",
+      "symbol": "UNI",
+      "market_type": "CRYPTO",
+      "state": "S1",
+      "target": "BANDPOS_GT_075",
+      "success_probability": 0.381629,
+      "structural_survival_probability": 0.707099,
+      "true_fail_probability": 0.051457,
+      "status_72h": "PENDING",
+      "outcome_72h": null,
+      "state_path_72h": [],
+      "max_return_72h": null,
+      "max_drawdown_72h": null
+    },
+    {
+      "snapshot_id": "5e2fade935089831:US_STOCK:WDCX:1793577600000",
+      "decision_time_tw": "2026-11-02T08:00:00+08:00",
+      "checkpoint_time_tw": "2026-11-02T08:06:27.024840+08:00",
+      "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT",
+      "symbol": "WDCX",
+      "market_type": "US_STOCK",
+      "state": "S2",
+      "target": "S3",
+      "success_probability": 0.450558,
+      "structural_survival_probability": 0.8826,
+      "true_fail_probability": 0.092717,
+      "status_72h": "PENDING",
+      "outcome_72h": null,
+      "state_path_72h": [],
+      "max_return_72h": null,
+      "max_drawdown_72h": null
+    },
+    {
+      "snapshot_id": "5e2fade935089831:US_STOCK:WTI:1793577600000",
+      "decision_time_tw": "2026-11-02T08:00:00+08:00",
+      "checkpoint_time_tw": "2026-11-02T08:06:27.024840+08:00",
+      "frozen_source": "TERMINAL_0825_DAILY_CHECKPOINT",
+      "symbol": "WTI",
+      "market_type": "US_STOCK",
+      "state": "S2",
+      "target": "S3",
+      "success_probability": 0.294859,
+      "structural_survival_probability": 0.628036,
+      "true_fail_probability": 0.181949,
       "status_72h": "PENDING",
       "outcome_72h": null,
       "state_path_72h": [],
@@ -756,11 +915,16 @@
       "success_probability": 0.527268,
       "structural_survival_probability": 0.845725,
       "true_fail_probability": 0.066039,
-      "status_72h": "PENDING",
-      "outcome_72h": null,
-      "state_path_72h": [],
-      "max_return_72h": null,
-      "max_drawdown_72h": null
+      "status_72h": "SETTLED",
+      "outcome_72h": "ALIVE_SLOW",
+      "state_path_72h": [
+        "S2",
+        "OTHER",
+        "S2",
+        "OTHER"
+      ],
+      "max_return_72h": 0.0,
+      "max_drawdown_72h": -0.05986395
     },
     {
       "snapshot_id": "5e2fade935089831:US_STOCK:ONDSX:1793404800000",
@@ -774,11 +938,14 @@
       "success_probability": 0.344285,
       "structural_survival_probability": 0.731471,
       "true_fail_probability": 0.203371,
-      "status_72h": "PENDING",
-      "outcome_72h": null,
-      "state_path_72h": [],
-      "max_return_72h": null,
-      "max_drawdown_72h": null
+      "status_72h": "SETTLED",
+      "outcome_72h": "TRUE_FAIL",
+      "state_path_72h": [
+        "S2",
+        "OTHER"
+      ],
+      "max_return_72h": 0.0,
+      "max_drawdown_72h": -0.08675079
     },
     {
       "snapshot_id": "5e2fade935089831:US_STOCK:ORCLX:1793404800000",
@@ -792,11 +959,16 @@
       "success_probability": 0.344285,
       "structural_survival_probability": 0.731471,
       "true_fail_probability": 0.203371,
-      "status_72h": "PENDING",
-      "outcome_72h": null,
-      "state_path_72h": [],
-      "max_return_72h": null,
-      "max_drawdown_72h": null
+      "status_72h": "SETTLED",
+      "outcome_72h": "TRUE_FAIL",
+      "state_path_72h": [
+        "S2",
+        "OTHER",
+        "S2",
+        "OTHER"
+      ],
+      "max_return_72h": 0.00213366,
+      "max_drawdown_72h": -0.08504153
     },
     {
       "snapshot_id": "5e2fade935089831:US_STOCK:PANWX:1793404800000",
@@ -810,11 +982,14 @@
       "success_probability": 0.37086,
       "structural_survival_probability": 0.64841,
       "true_fail_probability": 0.301615,
-      "status_72h": "PENDING",
-      "outcome_72h": null,
-      "state_path_72h": [],
-      "max_return_72h": null,
-      "max_drawdown_72h": null
+      "status_72h": "SETTLED",
+      "outcome_72h": "ALIVE_SLOW",
+      "state_path_72h": [
+        "S2",
+        "OTHER"
+      ],
+      "max_return_72h": 0.00114848,
+      "max_drawdown_72h": -0.0340443
     },
     {
       "snapshot_id": "5e2fade935089831:US_STOCK:SKHX:1793404800000",
@@ -828,11 +1003,14 @@
       "success_probability": 0.280535,
       "structural_survival_probability": 0.691475,
       "true_fail_probability": 0.181477,
-      "status_72h": "PENDING",
-      "outcome_72h": null,
-      "state_path_72h": [],
-      "max_return_72h": null,
-      "max_drawdown_72h": null
+      "status_72h": "SETTLED",
+      "outcome_72h": "SUCCESS_WITHIN_HORIZON",
+      "state_path_72h": [
+        "S2",
+        "OTHER"
+      ],
+      "max_return_72h": 0.01141482,
+      "max_drawdown_72h": -0.00062298
     },
     {
       "snapshot_id": "5e2fade935089831:US_STOCK:SKHY:1793404800000",
@@ -846,11 +1024,14 @@
       "success_probability": 0.280535,
       "structural_survival_probability": 0.691475,
       "true_fail_probability": 0.181477,
-      "status_72h": "PENDING",
-      "outcome_72h": null,
-      "state_path_72h": [],
-      "max_return_72h": null,
-      "max_drawdown_72h": null
+      "status_72h": "SETTLED",
+      "outcome_72h": "SUCCESS_WITHIN_HORIZON",
+      "state_path_72h": [
+        "S2",
+        "OTHER"
+      ],
+      "max_return_72h": 0.01013806,
+      "max_drawdown_72h": -0.00520243
     },
     {
       "snapshot_id": "5e2fade935089831:US_STOCK:SOXSX:1793404800000",
@@ -864,11 +1045,14 @@
       "success_probability": 0.566138,
       "structural_survival_probability": 0.650954,
       "true_fail_probability": 0.333263,
-      "status_72h": "PENDING",
-      "outcome_72h": null,
-      "state_path_72h": [],
-      "max_return_72h": null,
-      "max_drawdown_72h": null
+      "status_72h": "SETTLED",
+      "outcome_72h": "SUCCESS_WITHIN_HORIZON",
+      "state_path_72h": [
+        "S3",
+        "OTHER"
+      ],
+      "max_return_72h": 0.1006424,
+      "max_drawdown_72h": -0.01732529
     },
     {
       "snapshot_id": "5e2fade935089831:US_STOCK:WDCX:1793404800000",
@@ -882,11 +1066,13 @@
       "success_probability": 0.180802,
       "structural_survival_probability": 0.586112,
       "true_fail_probability": 0.302279,
-      "status_72h": "PENDING",
-      "outcome_72h": null,
-      "state_path_72h": [],
-      "max_return_72h": null,
-      "max_drawdown_72h": null
+      "status_72h": "SETTLED",
+      "outcome_72h": "ALIVE_SLOW",
+      "state_path_72h": [
+        "S2"
+      ],
+      "max_return_72h": 0.00814553,
+      "max_drawdown_72h": -0.07276677
     },
     {
       "snapshot_id": "5e2fade935089831:US_STOCK:ASMLX:1793318400000",
@@ -906,7 +1092,7 @@
         "S0.5",
         "OTHER"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.04096994
     },
     {
@@ -927,7 +1113,7 @@
         "S1",
         "OTHER"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.02566469
     },
     {
@@ -948,7 +1134,7 @@
         "S1",
         "OTHER"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.02622778
     },
     {
@@ -971,7 +1157,7 @@
         "S2"
       ],
       "max_return_72h": 0.07338445,
-      "max_drawdown_72h": 0.0
+      "max_drawdown_72h": 0
     },
     {
       "snapshot_id": "5e2fade935089831:US_STOCK:COPPER:1793318400000",
@@ -991,7 +1177,7 @@
         "S1",
         "OTHER"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.01002735
     },
     {
@@ -1012,7 +1198,7 @@
         "S1",
         "OTHER"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.05220775
     },
     {
@@ -1034,7 +1220,7 @@
         "OTHER",
         "S2"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.02396295
     },
     {
@@ -1055,7 +1241,7 @@
         "S1",
         "OTHER"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.02342354
     },
     {
@@ -1076,7 +1262,7 @@
         "S1",
         "OTHER"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.03955586
     },
     {
@@ -1098,7 +1284,7 @@
         "OTHER",
         "S2"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.04175911
     },
     {
@@ -1119,7 +1305,7 @@
         "S1",
         "OTHER"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.01124528
     },
     {
@@ -1162,7 +1348,7 @@
         "S2",
         "OTHER"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.0246241
     },
     {
@@ -1183,7 +1369,7 @@
         "S2",
         "OTHER"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.06500274
     },
     {
@@ -1204,7 +1390,7 @@
         "S1",
         "OTHER"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.0305961
     },
     {
@@ -1225,7 +1411,7 @@
         "S1",
         "S2"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.0368458
     },
     {
@@ -1246,7 +1432,7 @@
         "S0.5",
         "OTHER"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.02987931
     },
     {
@@ -1267,7 +1453,7 @@
         "S1",
         "OTHER"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.02568719
     },
     {
@@ -1288,7 +1474,7 @@
         "S1",
         "OTHER"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.03917675
     },
     {
@@ -1309,7 +1495,7 @@
         "S1",
         "OTHER"
       ],
-      "max_return_72h": 0.0,
+      "max_return_72h": 0,
       "max_drawdown_72h": -0.03873874
     },
     {
