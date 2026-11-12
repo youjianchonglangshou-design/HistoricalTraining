@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "policy_version": "EVOLUTION-POLICY-v1",
-  "policy_id": "EVOLUTION-POLICY-v1-GEN011-0",
+  "policy_id": "EVOLUTION-POLICY-v1-GEN011-11",
   "active_for_next_training": false,
   "source_review": {
     "champion_model_id": "2b902646ff631127",
     "generation": 11,
-    "settled_72h": 0,
+    "settled_72h": 11,
     "minimum_settled_72h": 120
   },
   "objective": "Use this generation's real Frozen mistakes to change live-case reinforcement in the next model; reduce repeated high-confidence errors without rewriting fixed S-state rules.",
@@ -18,7 +18,68 @@
     "ordinary_non_success_p50": 1.4,
     "default": 1.0
   },
-  "group_rules": [],
+  "group_rules": [
+    {
+      "group_type": "market",
+      "key": "US_STOCK",
+      "samples": 10,
+      "average_predicted_success": 0.408931,
+      "actual_success_rate": 0.8,
+      "calibration_gap": 0.391069,
+      "direction": "RAISE_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 0,
+      "underconfident_successes": 4
+    },
+    {
+      "group_type": "state",
+      "key": "S1",
+      "samples": 5,
+      "average_predicted_success": 0.41641,
+      "actual_success_rate": 0.8,
+      "calibration_gap": 0.38359,
+      "direction": "RAISE_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 0,
+      "underconfident_successes": 2
+    },
+    {
+      "group_type": "state_regime",
+      "key": "S1|ABOVE_YELLOW",
+      "samples": 5,
+      "average_predicted_success": 0.41641,
+      "actual_success_rate": 0.8,
+      "calibration_gap": 0.38359,
+      "direction": "RAISE_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 0,
+      "underconfident_successes": 2
+    },
+    {
+      "group_type": "state_turn",
+      "key": "S1|NONE",
+      "samples": 5,
+      "average_predicted_success": 0.41641,
+      "actual_success_rate": 0.8,
+      "calibration_gap": 0.38359,
+      "direction": "RAISE_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 0,
+      "underconfident_successes": 2
+    },
+    {
+      "group_type": "state_retest",
+      "key": "S1|YELLOW_ABOVE",
+      "samples": 5,
+      "average_predicted_success": 0.41641,
+      "actual_success_rate": 0.8,
+      "calibration_gap": 0.38359,
+      "direction": "RAISE_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 0,
+      "underconfident_successes": 2
+    }
+  ],
   "max_effective_case_weight": 50,
   "overconfident_failures": []
 }
