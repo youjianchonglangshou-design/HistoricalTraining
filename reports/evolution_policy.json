@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "policy_version": "EVOLUTION-POLICY-v1",
-  "policy_id": "EVOLUTION-POLICY-v1-GEN012-0",
+  "policy_id": "EVOLUTION-POLICY-v1-GEN012-13",
   "active_for_next_training": false,
   "source_review": {
     "champion_model_id": "ac0e08e352d32b3d",
     "generation": 12,
-    "settled_72h": 0,
+    "settled_72h": 13,
     "minimum_settled_72h": 120
   },
   "objective": "Use this generation's real Frozen mistakes to change live-case reinforcement in the next model; reduce repeated high-confidence errors without rewriting fixed S-state rules.",
@@ -18,7 +18,68 @@
     "ordinary_non_success_p50": 1.4,
     "default": 1.0
   },
-  "group_rules": [],
+  "group_rules": [
+    {
+      "group_type": "market",
+      "key": "US_STOCK",
+      "samples": 13,
+      "average_predicted_success": 0.392665,
+      "actual_success_rate": 0.538462,
+      "calibration_gap": 0.145797,
+      "direction": "RAISE_CONFIDENCE",
+      "live_weight_multiplier": 1.729,
+      "overconfident_misses": 0,
+      "underconfident_successes": 3
+    },
+    {
+      "group_type": "state_divergence",
+      "key": "S2|NONE",
+      "samples": 8,
+      "average_predicted_success": 0.38975,
+      "actual_success_rate": 0.5,
+      "calibration_gap": 0.11025,
+      "direction": "RAISE_CONFIDENCE",
+      "live_weight_multiplier": 1.5513,
+      "overconfident_misses": 0,
+      "underconfident_successes": 2
+    },
+    {
+      "group_type": "state_turn",
+      "key": "S2|NONE",
+      "samples": 9,
+      "average_predicted_success": 0.383371,
+      "actual_success_rate": 0.444444,
+      "calibration_gap": 0.061074,
+      "direction": "RAISE_CONFIDENCE",
+      "live_weight_multiplier": 1.3054,
+      "overconfident_misses": 0,
+      "underconfident_successes": 2
+    },
+    {
+      "group_type": "state",
+      "key": "S2",
+      "samples": 10,
+      "average_predicted_success": 0.36995,
+      "actual_success_rate": 0.4,
+      "calibration_gap": 0.03005,
+      "direction": "HOLD",
+      "live_weight_multiplier": 1.1502,
+      "overconfident_misses": 0,
+      "underconfident_successes": 2
+    },
+    {
+      "group_type": "state_midline_phase",
+      "key": "S2|RISING_DECEL",
+      "samples": 5,
+      "average_predicted_success": 0.38674,
+      "actual_success_rate": 0.4,
+      "calibration_gap": 0.01326,
+      "direction": "HOLD",
+      "live_weight_multiplier": 1.0663,
+      "overconfident_misses": 0,
+      "underconfident_successes": 0
+    }
+  ],
   "max_effective_case_weight": 50,
   "overconfident_failures": []
 }
