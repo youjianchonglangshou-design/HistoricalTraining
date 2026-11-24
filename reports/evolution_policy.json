@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "policy_version": "EVOLUTION-POLICY-v1",
-  "policy_id": "EVOLUTION-POLICY-v1-GEN012-39",
+  "policy_id": "EVOLUTION-POLICY-v1-GEN012-40",
   "active_for_next_training": false,
   "source_review": {
     "champion_model_id": "ac0e08e352d32b3d",
     "generation": 12,
-    "settled_72h": 39,
+    "settled_72h": 40,
     "minimum_settled_72h": 120
   },
   "objective": "Use this generation's real Frozen mistakes to change live-case reinforcement in the next model; reduce repeated high-confidence errors without rewriting fixed S-state rules.",
@@ -128,6 +128,42 @@
       "underconfident_successes": 0
     },
     {
+      "group_type": "state",
+      "key": "S1",
+      "samples": 8,
+      "average_predicted_success": 0.421915,
+      "actual_success_rate": 0.625,
+      "calibration_gap": 0.203085,
+      "direction": "RAISE_CONFIDENCE",
+      "live_weight_multiplier": 2.0,
+      "overconfident_misses": 0,
+      "underconfident_successes": 3
+    },
+    {
+      "group_type": "state_turn",
+      "key": "S1|NONE",
+      "samples": 7,
+      "average_predicted_success": 0.386558,
+      "actual_success_rate": 0.571429,
+      "calibration_gap": 0.184871,
+      "direction": "RAISE_CONFIDENCE",
+      "live_weight_multiplier": 1.9244,
+      "overconfident_misses": 0,
+      "underconfident_successes": 3
+    },
+    {
+      "group_type": "state_divergence",
+      "key": "S1|NONE",
+      "samples": 7,
+      "average_predicted_success": 0.386558,
+      "actual_success_rate": 0.571429,
+      "calibration_gap": 0.184871,
+      "direction": "RAISE_CONFIDENCE",
+      "live_weight_multiplier": 1.9244,
+      "overconfident_misses": 0,
+      "underconfident_successes": 3
+    },
+    {
       "group_type": "state_regime",
       "key": "S2|BELOW_PURPLE",
       "samples": 5,
@@ -152,18 +188,6 @@
       "underconfident_successes": 0
     },
     {
-      "group_type": "state",
-      "key": "S1",
-      "samples": 7,
-      "average_predicted_success": 0.424947,
-      "actual_success_rate": 0.571429,
-      "calibration_gap": 0.146482,
-      "direction": "RAISE_CONFIDENCE",
-      "live_weight_multiplier": 1.7324,
-      "overconfident_misses": 0,
-      "underconfident_successes": 2
-    },
-    {
       "group_type": "state_retest",
       "key": "S2|YELLOW_RETEST_NEAR_SMA",
       "samples": 5,
@@ -178,62 +202,14 @@
     {
       "group_type": "market",
       "key": "US_STOCK",
-      "samples": 39,
-      "average_predicted_success": 0.401497,
-      "actual_success_rate": 0.282051,
-      "calibration_gap": -0.119446,
+      "samples": 40,
+      "average_predicted_success": 0.401477,
+      "actual_success_rate": 0.3,
+      "calibration_gap": -0.101477,
       "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 1.5972,
+      "live_weight_multiplier": 1.5074,
       "overconfident_misses": 4,
-      "underconfident_successes": 6
-    },
-    {
-      "group_type": "state_turn",
-      "key": "S1|NONE",
-      "samples": 6,
-      "average_predicted_success": 0.384202,
-      "actual_success_rate": 0.5,
-      "calibration_gap": 0.115798,
-      "direction": "RAISE_CONFIDENCE",
-      "live_weight_multiplier": 1.579,
-      "overconfident_misses": 0,
-      "underconfident_successes": 2
-    },
-    {
-      "group_type": "state_divergence",
-      "key": "S1|NONE",
-      "samples": 6,
-      "average_predicted_success": 0.384202,
-      "actual_success_rate": 0.5,
-      "calibration_gap": 0.115798,
-      "direction": "RAISE_CONFIDENCE",
-      "live_weight_multiplier": 1.579,
-      "overconfident_misses": 0,
-      "underconfident_successes": 2
-    },
-    {
-      "group_type": "state_regime",
-      "key": "S1|ABOVE_YELLOW",
-      "samples": 5,
-      "average_predicted_success": 0.511263,
-      "actual_success_rate": 0.4,
-      "calibration_gap": -0.111263,
-      "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 1.5563,
-      "overconfident_misses": 0,
-      "underconfident_successes": 0
-    },
-    {
-      "group_type": "state_retest",
-      "key": "S1|YELLOW_ABOVE",
-      "samples": 5,
-      "average_predicted_success": 0.511263,
-      "actual_success_rate": 0.4,
-      "calibration_gap": -0.111263,
-      "direction": "LOWER_CONFIDENCE",
-      "live_weight_multiplier": 1.5563,
-      "overconfident_misses": 0,
-      "underconfident_successes": 0
+      "underconfident_successes": 7
     },
     {
       "group_type": "state_midline_phase",
@@ -297,6 +273,18 @@
     },
     {
       "group_type": "state_cross_cycle",
+      "key": "S1|POST_UP_4PLUS",
+      "samples": 5,
+      "average_predicted_success": 0.530493,
+      "actual_success_rate": 0.6,
+      "calibration_gap": 0.069507,
+      "direction": "RAISE_CONFIDENCE",
+      "live_weight_multiplier": 1.3475,
+      "overconfident_misses": 0,
+      "underconfident_successes": 1
+    },
+    {
+      "group_type": "state_cross_cycle",
       "key": "S2|POST_DOWN_1_3D",
       "samples": 6,
       "average_predicted_success": 0.432139,
@@ -342,6 +330,30 @@
       "live_weight_multiplier": 1.0603,
       "overconfident_misses": 0,
       "underconfident_successes": 2
+    },
+    {
+      "group_type": "state_regime",
+      "key": "S1|ABOVE_YELLOW",
+      "samples": 6,
+      "average_predicted_success": 0.492835,
+      "actual_success_rate": 0.5,
+      "calibration_gap": 0.007165,
+      "direction": "HOLD",
+      "live_weight_multiplier": 1.0358,
+      "overconfident_misses": 0,
+      "underconfident_successes": 1
+    },
+    {
+      "group_type": "state_retest",
+      "key": "S1|YELLOW_ABOVE",
+      "samples": 6,
+      "average_predicted_success": 0.492835,
+      "actual_success_rate": 0.5,
+      "calibration_gap": 0.007165,
+      "direction": "HOLD",
+      "live_weight_multiplier": 1.0358,
+      "overconfident_misses": 0,
+      "underconfident_successes": 1
     },
     {
       "group_type": "state_divergence",
